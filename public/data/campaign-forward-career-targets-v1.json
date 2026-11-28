@@ -1,0 +1,5470 @@
+{
+  "schema": "ATLAS_FORWARD_CAREER_TARGETS_V1",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "scope": "BOUNDED_RESEARCH_TARGETS_ONLY; NO_LEGACY_ACTIONS; NO_CAREER_REPLAY",
+  "graphs": [
+    {
+      "file": "campaign-forward-tree-v2-japan-d4.json",
+      "states": 439,
+      "edges": 687,
+      "sha256": "86656de4acd914be09c43e86f158ac4cef843de33624226d57256aad7aacd900",
+      "gitBlob": "88dc852b924502acf03a455573631b50ba51fc40"
+    },
+    {
+      "file": "campaign-forward-tree-v6-hybrid-synced-d7.json",
+      "states": 343,
+      "edges": 496,
+      "sha256": "ea92a958de4896375b42f3f6c3f5a2c0625400d197e99a7c7b063d5dd04b9ee5",
+      "gitBlob": "b29bed7dab875055a72df0143afee59a50de0f09"
+    },
+    {
+      "file": "campaign-forward-tree-v7-hybrid-awards-d20.json",
+      "states": 525,
+      "edges": 903,
+      "sha256": "e3fc4f6bbc6e669b20194eb7462c11e322bb83236bae3dd511387ee3afdd3742",
+      "gitBlob": "88845e4524566125a670ec02c45b39e3b185249f"
+    },
+    {
+      "file": "campaign-forward-tree-v8-supply-d9.json",
+      "states": 650,
+      "edges": 1260,
+      "sha256": "2c4e2553375f744712dea3161fbf93ca7cae49029b88031758bd2d015c3bad0d",
+      "gitBlob": "78a66346a37f728ac2f669112f2363ecf94924b0"
+    }
+  ],
+  "summary": {
+    "profiles": {
+      "total": 72,
+      "jointResearch": 3,
+      "noExplicitResearch": 9,
+      "notObservedJointly": 60,
+      "manufactureActions": 1,
+      "careerCertified": 0
+    },
+    "trainings": {
+      "total": 83,
+      "jointResearch": 1,
+      "noExplicitResearch": 0,
+      "notObservedJointly": 82,
+      "manufactureActions": 0,
+      "careerCertified": 0
+    },
+    "missingResearchTopics": 140,
+    "gameCertified": 0
+  },
+  "runtimeSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+  "profiles": [
+    {
+      "id": "manufacture:STR_FREAK_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_FREAK_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_X",
+      "requires": [
+        "STR_FREAK_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_FREAK_GAL": 1,
+        "STR_APPLE": 1,
+        "STR_RAGS": 1,
+        "STR_RAIDER_CORPSE": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_FREAK_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_POLTERGEIST_EMBODIMENT",
+      "soldierType": "STR_SOLDIER_X",
+      "requires": [
+        "STR_POLTERGEIST_EMBODIMENT"
+      ],
+      "functions": [
+        "MED"
+      ],
+      "items": {
+        "STR_POLTERGEIST": 1,
+        "STR_ZOMBIE_STERILE_TERRORIST": 1,
+        "STR_GLAMOUR": 10,
+        "STR_ZOMBIE_ESSENCE": 5
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_POLTERGEIST_EMBODIMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_ZOMBIE_EMBODIMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_ZOMBIE_EMBODIMENT",
+      "soldierType": "STR_SOLDIER_X",
+      "requires": [
+        "STR_ZOMBIE_EMBODIMENT"
+      ],
+      "functions": [
+        "BDSWAP"
+      ],
+      "items": {
+        "STR_ZOMBIE_BRAIN": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ZOMBIE_EMBODIMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_X",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_X",
+      "soldierType": "STR_SOLDIER_X",
+      "requires": [
+        "STR_BOUNTY_HUNTING_PRIZE_SOLDIER_X"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BOUNTY_HUNTING_PRIZE_SOLDIER_X",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_SOLDIER_SLAVE_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_SOLDIER_SLAVE_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "requires": [
+        "STR_SLAVE_SOLDIERS"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_SLAVE": 1,
+        "STR_MUTANT_MEAT": 1,
+        "STR_GLAMOUR": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SLAVE_SOLDIERS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "requires": [
+        "STR_APOSTATE_OF_APOCALYPSE"
+      ],
+      "functions": [],
+      "items": {
+        "STR_APOSTATE_OF_APOCALYPSE": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_APOSTATE_OF_APOCALYPSE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_MILITIAMAN_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_MILITIAMAN_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "requires": [
+        "STR_MILITIAMAN_RECRUIT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_MILITIAMAN_RECRUIT": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_MILITIAMAN_RECRUIT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_VOLUNTEER_SOLDIER_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_VOLUNTEER_SOLDIER_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "requires": [
+        "STR_VOLUNTEER_SOLDIER"
+      ],
+      "functions": [],
+      "items": {
+        "STR_VOLUNTEER_SOLDIER": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_VOLUNTEER_SOLDIER",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_SURVIVOR_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_SURVIVOR_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "requires": [
+        "STR_SURVIVOR"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SURVIVOR": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SURVIVOR",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_ZONE_STALKER_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_ZONE_STALKER_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "requires": [
+        "STR_ZONE_STALKER"
+      ],
+      "functions": [],
+      "items": {
+        "STR_ZONE_STALKER": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ZONE_STALKER",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_START_COUNTRY_NIGERIA_EVENT",
+      "sourceType": "event",
+      "sourceId": "STR_START_COUNTRY_NIGERIA_EVENT",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_SLAVE",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_SLAVE",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "requires": [
+        "STR_WE_NEED_MALE_TOUCH"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_WE_NEED_MALE_TOUCH",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_GNOME_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_GNOME_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_GNOME",
+      "requires": [
+        "STR_SOLDIER_TYPE_GNOME"
+      ],
+      "functions": [
+        "LAB"
+      ],
+      "items": {
+        "STR_GNOME": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SOLDIER_TYPE_GNOME",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_WILD_GNOME_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_WILD_GNOME_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_GNOME",
+      "requires": [
+        "STR_WILD_GNOME"
+      ],
+      "functions": [],
+      "items": {
+        "STR_WILD_GNOME": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_WILD_GNOME",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_START_COUNTRY_GERMANY_EVENT",
+      "sourceType": "event",
+      "sourceId": "STR_START_COUNTRY_GERMANY_EVENT",
+      "soldierType": "STR_SOLDIER_GNOME",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_JUNGLEFIGHTER_GIRL"
+      ],
+      "functions": [],
+      "items": {
+        "STR_JUNGLEFIGHTER_GIRL": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_JUNGLEFIGHTER_GIRL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_SNIPER_GIRL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_SNIPER_GIRL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_SNIPER_GIRL"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SNIPER_GIRL": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SNIPER_GIRL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_REVOLUTIONARY_GIRL",
+        "STR_GLAMOUR"
+      ],
+      "functions": [],
+      "items": {
+        "STR_REVOLUTIONARY_GIRL": 1,
+        "STR_GLAMOUR": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_REVOLUTIONARY_GIRL",
+          "observed": false
+        },
+        {
+          "id": "STR_GLAMOUR",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_HALF_UBER_GIRL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_HALF_UBER_GIRL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_HALF_UBER_GIRL",
+        "STR_RECRUIT_PEASANTS"
+      ],
+      "functions": [],
+      "items": {
+        "STR_HALF_UBER_GIRL": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HALF_UBER_GIRL",
+          "observed": false
+        },
+        {
+          "id": "STR_RECRUIT_PEASANTS",
+          "observed": true
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_WILD_GIRL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_WILD_GIRL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_WILD_GIRL"
+      ],
+      "functions": [],
+      "items": {
+        "STR_WILD_GIRL": 1,
+        "STR_MEDALLION": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_WILD_GIRL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_ROGUE_CLONE_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_ROGUE_CLONE_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_ROGUE_CLONE"
+      ],
+      "functions": [],
+      "items": {
+        "STR_ROGUE_CLONE": 1,
+        "STR_KALTES_KLARES": 20
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ROGUE_CLONE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_WASTELAND_GIRL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_WASTELAND_GIRL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_WASTELAND_GIRL"
+      ],
+      "functions": [],
+      "items": {
+        "STR_WASTELAND_GIRL": 1,
+        "STR_LINGERIE": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_WASTELAND_GIRL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CLONE",
+      "sourceType": "manufacture",
+      "sourceId": "STR_THEBAN_ASSAULT_CLONE",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_THEBAN_ASSAULT_CLONE_LICENSE"
+      ],
+      "functions": [],
+      "items": {
+        "STR_THEBAN_ASSAULT_CLONE_LICENSE": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_THEBAN_ASSAULT_CLONE_LICENSE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_PEASANT",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_PEASANT",
+      "soldierType": "STR_SOLDIER_PEASANT",
+      "requires": [
+        "STR_RECRUIT_PEASANTS"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "joint-model-reached",
+      "researchWitness": {
+        "file": "campaign-forward-tree-v2-japan-d4.json",
+        "state": 3,
+        "stateHash": "2edc3c5298819986174f301d8aed4990621cee3f0e10b72a1f8a6a6e128ed95a",
+        "scenario": {
+          "difficulty": 1,
+          "regions": null,
+          "countries": [
+            "STR_JAPAN"
+          ]
+        },
+        "conditional": true,
+        "steps": [
+          {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          }
+        ],
+        "gameCertified": false
+      },
+      "topicStatus": [
+        {
+          "id": "STR_RECRUIT_PEASANTS",
+          "observed": true
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_RECRUIT_KILLBOT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_RECRUIT_KILLBOT",
+      "soldierType": "STR_SOLDIER_KILLBOT",
+      "requires": [
+        "STR_SDD_CONTROL"
+      ],
+      "functions": [
+        "CPU"
+      ],
+      "items": {
+        "STR_SDD": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SDD_CONTROL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_SDD_SUMMONING",
+      "sourceType": "manufacture",
+      "sourceId": "STR_SDD_SUMMONING",
+      "soldierType": "STR_SOLDIER_KILLBOT",
+      "requires": [
+        "STR_SDD_SUMMONING"
+      ],
+      "functions": [
+        "SUMM"
+      ],
+      "items": {
+        "STR_SKULL": 60,
+        "STR_ZORTRIUM_CRYSTAL": 2
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SDD_SUMMONING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_START_LOCATION_EVENT_MEDUSA",
+      "sourceType": "event",
+      "sourceId": "STR_START_LOCATION_EVENT_MEDUSA",
+      "soldierType": "STR_SOLDIER_LAMIA",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_LAMIA",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_LAMIA",
+      "soldierType": "STR_SOLDIER_LAMIA",
+      "requires": [
+        "STR_LAMIA_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_LAMIA_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_LOKNAR",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_LOKNAR",
+      "soldierType": "STR_SOLDIER_LOKNAR",
+      "requires": [
+        "STR_LOKNAR_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_LOKNAR_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_CATGIRL_VICTIM_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_CATGIRL_VICTIM_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI_O",
+      "requires": [
+        "STR_CATGIRL_VICTIM"
+      ],
+      "functions": [],
+      "items": {
+        "STR_CATGIRL_VICTIM": 1,
+        "STR_VODKA": 1,
+        "STR_CIGS": 5,
+        "STR_MUTANT_FISH": 5
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CATGIRL_VICTIM",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_NEKOMIMI_O",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_NEKOMIMI_O",
+      "soldierType": "STR_SOLDIER_NEKOMIMI_O",
+      "requires": [
+        "STR_CAT_PATH"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CAT_PATH",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_SISTER_VICTIM_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_SISTER_VICTIM_RECRUITMENT",
+      "soldierType": "STR_SOLDIER",
+      "requires": [
+        "STR_SISTER_VICTIM_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SISTER_VICTIM": 1,
+        "STR_FOOD_BAG": 1,
+        "STR_MUTANT_MEAT": 1,
+        "STR_MOONSHINE": 1,
+        "STR_RAIDER_CORPSE": 1,
+        "STR_BANDAGE": 4
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SISTER_VICTIM_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_STASIS_POD_GREEN_GAL_EXTRACTION",
+      "sourceType": "manufacture",
+      "sourceId": "STR_STASIS_POD_GREEN_GAL_EXTRACTION",
+      "soldierType": "STR_SOLDIER",
+      "requires": [
+        "STR_STASIS_POD_GREEN_GAL"
+      ],
+      "functions": [],
+      "items": {
+        "STR_STASIS_POD_GREEN_GAL": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_STASIS_POD_GREEN_GAL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_HYBRID_LONER_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_HYBRID_LONER_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_HYBRID",
+      "requires": [
+        "STR_HYBRID_PATH"
+      ],
+      "functions": [],
+      "items": {
+        "STR_MOONSHINE": 8
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HYBRID_PATH",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_HYBRID_HIVER_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_HYBRID_HIVER_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_HYBRID",
+      "requires": [
+        "STR_HYBRID_PATH"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SECTOWEED": 50
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HYBRID_PATH",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_HYBRID_OF_TWILIGHT_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_HYBRID_OF_TWILIGHT_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_HYBRID",
+      "requires": [
+        "STR_HYBRID_OF_TWILIGHT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_HYBRID_OF_TWILIGHT": 1
+      },
+      "kind": "profile",
+      "researchStatus": "joint-model-reached",
+      "researchWitness": {
+        "file": "campaign-forward-tree-v6-hybrid-synced-d7.json",
+        "state": 88,
+        "stateHash": "b06efc6b3e17b9aa69bbcfe92c2de07c34011e5312c17f0f1e7ff118f7b19522",
+        "scenario": {
+          "difficulty": 1,
+          "regions": [
+            "STR_SIBERIA"
+          ],
+          "countries": null
+        },
+        "conditional": true,
+        "steps": [
+          {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          {
+            "type": "acquireEventItems",
+            "event": "STR_KNOCK_KNOCK_HYBRID_OF_TWILIGHT",
+            "script": "STR_KNOCK_KNOCK_0",
+            "item": "STR_HYBRID_OF_TWILIGHT",
+            "count": 1,
+            "assumeOutcome": true
+          },
+          {
+            "type": "acquireEventItems",
+            "event": "STR_KNOCK_KNOCK_WILLING_SLAVE",
+            "script": "STR_KNOCK_KNOCK_0",
+            "item": "STR_SLAVE",
+            "count": 1,
+            "assumeOutcome": true
+          },
+          {
+            "type": "research",
+            "id": "STR_HYBRID_OF_TWILIGHT"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_HYBRID_OF_TWILIGHT",
+            "research": "STR_HYBRID_HUMAN_LEGACY",
+            "assumeOutcome": false
+          }
+        ],
+        "gameCertified": false
+      },
+      "topicStatus": [
+        {
+          "id": "STR_HYBRID_OF_TWILIGHT",
+          "observed": true
+        }
+      ],
+      "manufactureWitness": {
+        "file": "campaign-forward-tree-v6-hybrid-synced-d7.json",
+        "state": 113,
+        "stateHash": "f78802c437f18298ea38a4a8f9c5d4af3ce87a8c2b4b191761236e682eab6842",
+        "scenario": {
+          "difficulty": 1,
+          "regions": [
+            "STR_SIBERIA"
+          ],
+          "countries": null
+        },
+        "conditional": true,
+        "steps": [
+          {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          {
+            "type": "acquireEventItems",
+            "event": "STR_KNOCK_KNOCK_HYBRID_OF_TWILIGHT",
+            "script": "STR_KNOCK_KNOCK_0",
+            "item": "STR_HYBRID_OF_TWILIGHT",
+            "count": 1,
+            "assumeOutcome": true
+          },
+          {
+            "type": "acquireEventItems",
+            "event": "STR_KNOCK_KNOCK_WILLING_SLAVE",
+            "script": "STR_KNOCK_KNOCK_0",
+            "item": "STR_SLAVE",
+            "count": 1,
+            "assumeOutcome": true
+          },
+          {
+            "type": "research",
+            "id": "STR_HYBRID_OF_TWILIGHT"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_HYBRID_OF_TWILIGHT",
+            "research": "STR_HYBRID_HUMAN_LEGACY",
+            "assumeOutcome": false
+          },
+          {
+            "type": "manufactureBundle",
+            "recipe": "STR_HYBRID_OF_TWILIGHT_RECRUITMENT",
+            "count": 1
+          }
+        ],
+        "gameCertified": false
+      },
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_START_COUNTRY_BRAZIL_EVENT",
+      "sourceType": "event",
+      "sourceId": "STR_START_COUNTRY_BRAZIL_EVENT",
+      "soldierType": "STR_SOLDIER_HYBRID",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_HYBRID",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_HYBRID",
+      "soldierType": "STR_SOLDIER_HYBRID",
+      "requires": [
+        "STR_HYBRID_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HYBRID_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_GLAMOUR_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_GLAMOUR_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_V",
+      "requires": [
+        "STR_GLAMOUR_RECRUITMENT"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_GLAMOUR": 250
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_GLAMOUR_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_V",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_V",
+      "soldierType": "STR_SOLDIER_V",
+      "requires": [
+        "STR_SOLDIER_V_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SOLDIER_V_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_RECRUIT_PUREBLOOD",
+      "sourceType": "manufacture",
+      "sourceId": "STR_RECRUIT_PUREBLOOD",
+      "soldierType": "STR_SOLDIER_PUREBLOOD",
+      "requires": [
+        "STR_RECRUIT_PUREBLOODS"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_TROPHY_CREDIT_MUTANT_ALLIANCE": 250
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_RECRUIT_PUREBLOODS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_SYNTH_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_SYNTH_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_SYNTH",
+      "requires": [
+        "STR_SYNTH_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SYNTH_GAL": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SYNTH_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_SOLDIER_TYPE_SYNTH_REPAIR",
+      "sourceType": "manufacture",
+      "sourceId": "STR_SOLDIER_TYPE_SYNTH_REPAIR",
+      "soldierType": "STR_SOLDIER_SYNTH",
+      "requires": [
+        "STR_SYNTH_EXAMINATION"
+      ],
+      "functions": [
+        "SUR"
+      ],
+      "items": {
+        "STR_MEDICAL_SUPPLIES": 50,
+        "STR_ALIEN_ALLOYS": 3,
+        "STR_SYNTH_CORPSE": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SYNTH_EXAMINATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_RAIDER_SCOUT_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_RAIDER_SCOUT_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_S",
+      "requires": [
+        "STR_RAIDER_SCOUT_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_RAIDER_SCOUT": 1,
+        "STR_GLAMOUR": 25
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_RAIDER_SCOUT_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_YOUNG_UBER_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_YOUNG_UBER_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_S",
+      "requires": [
+        "STR_YOUNG_UBER_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {
+        "CIVILIAN_YOUNG_UBER": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_YOUNG_UBER_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_YOUNG_UBER_RECRUITMENT_SPY",
+      "sourceType": "manufacture",
+      "sourceId": "STR_YOUNG_UBER_RECRUITMENT_SPY",
+      "soldierType": "STR_SOLDIER_S",
+      "requires": [
+        "STR_SPY_BADGE"
+      ],
+      "functions": [],
+      "items": {
+        "CIVILIAN_YOUNG_UBER": 1,
+        "STR_SPY_BADGE": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SPY_BADGE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_S",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_S",
+      "soldierType": "STR_SOLDIER_S",
+      "requires": [
+        "STR_GALS_ARE_SUPERIOR"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_GALS_ARE_SUPERIOR",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_DAMSEL",
+      "requires": [
+        "STR_ORTHODOX_MAGE_DAMSEL"
+      ],
+      "functions": [],
+      "items": {
+        "STR_ORTHODOX_MAGE_DAMSEL": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ORTHODOX_MAGE_DAMSEL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_SPY_DAMSEL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_SPY_DAMSEL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_DAMSEL",
+      "requires": [
+        "STR_SPY_DAMSEL"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SPY_DAMSEL": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SPY_DAMSEL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_DAMSEL_OF_WAR_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_DAMSEL_OF_WAR_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_DAMSEL",
+      "requires": [
+        "STR_DAMSEL_OF_WAR"
+      ],
+      "functions": [],
+      "items": {
+        "STR_DAMSEL_OF_WAR": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_DAMSEL_OF_WAR",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_DAMSEL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_DAMSEL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_DAMSEL",
+      "requires": [
+        "STR_DAMSEL_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_DAMSEL_SACRIFICE": 1,
+        "STR_GLAMOUR": 3
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_DAMSEL_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_HERO_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_HERO_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_HERO",
+      "requires": [
+        "STR_HERO_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_HERO": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HERO_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_DOLL",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_DOLL",
+      "soldierType": "STR_SOLDIER_DOLL",
+      "requires": [
+        "STR_SOUL_DOLL_PROCUREMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SOUL_DOLL_PROCUREMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_OGRE_SPY_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_OGRE_SPY_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_OGRE",
+      "requires": [
+        "STR_OGRE_SPY"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_OGRE_SPY": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_OGRE_SPY",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_OGRE",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_OGRE",
+      "soldierType": "STR_SOLDIER_OGRE",
+      "requires": [
+        "STR_OGRE_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_OGRE_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_RAIDER_FLAME_GUARD_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_RAIDER_FLAME_GUARD_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_M",
+      "requires": [
+        "STR_RAIDER_SCOUT_RECRUITMENT",
+        "STR_RAIDER_FLAME_GUARD"
+      ],
+      "functions": [],
+      "items": {
+        "STR_RAIDER_FLAME_GUARD": 1,
+        "STR_GLAMOUR": 50
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_RAIDER_SCOUT_RECRUITMENT",
+          "observed": false
+        },
+        {
+          "id": "STR_RAIDER_FLAME_GUARD",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_AGGRESSOR_GAL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_AGGRESSOR_GAL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_M",
+      "requires": [
+        "STR_AGGRESSOR_GAL"
+      ],
+      "functions": [],
+      "items": {
+        "STR_AGGRESSOR_GAL": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_AGGRESSOR_GAL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_TURANIAN_UBER_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_TURANIAN_UBER_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_M",
+      "requires": [
+        "STR_TURANIAN_UBER_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {
+        "STR_TURANIAN_UBER": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_TURANIAN_UBER_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_M",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_M",
+      "soldierType": "STR_SOLDIER_M",
+      "requires": [
+        "STR_SOLDIER_M_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SOLDIER_M_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_XENFORCER_REPAIR",
+      "sourceType": "manufacture",
+      "sourceId": "STR_XENFORCER_REPAIR",
+      "soldierType": "STR_SOLDIER_XENFORCER",
+      "requires": [
+        "STR_XENFORCER_REPAIR"
+      ],
+      "functions": [
+        "WORKS",
+        "PWR"
+      ],
+      "items": {
+        "STR_WRECKED_XENFORCER": 1,
+        "STR_ALENIUM": 1,
+        "STR_GOVT_CORPSE": 50
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_XENFORCER_REPAIR",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_CATGIRL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_CATGIRL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI",
+      "requires": [
+        "STR_CATGIRL_RECRUITMENT"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_GOVT_CORPSE": 6,
+        "STR_PORN": 36,
+        "STR_CULTURAL_WEALTH": 18
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CATGIRL_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_CATGIRL_TOURIST_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_CATGIRL_TOURIST_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI",
+      "requires": [
+        "STR_CATGIRL_TOURIST",
+        "STR_PEREGRINES"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_CATGIRL_TOURIST": 1,
+        "STR_GOVT_CORPSE": 1
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CATGIRL_TOURIST",
+          "observed": false
+        },
+        {
+          "id": "STR_PEREGRINES",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_CATGIRL_FROM_LAPUTA_EVENT",
+      "sourceType": "event",
+      "sourceId": "STR_CATGIRL_FROM_LAPUTA_EVENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_MRSHAN_ADVENTURER_EVENT",
+      "sourceType": "event",
+      "sourceId": "STR_MRSHAN_ADVENTURER_EVENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_NEKOMIMI",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_NEKOMIMI",
+      "soldierType": "STR_SOLDIER_NEKOMIMI",
+      "requires": [
+        "STR_CATGIRL_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CATGIRL_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_CATGIRL_WARRIOR_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI_W",
+      "requires": [
+        "STR_CATGIRL_WARRIOR_RECRUITMENT"
+      ],
+      "functions": [
+        "WAVE2"
+      ],
+      "items": {
+        "STR_GLAMOUR": 100
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CATGIRL_WARRIOR_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "sourceType": "manufacture",
+      "sourceId": "STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI_W",
+      "requires": [
+        "STR_THEBAN_ASSAULT_CATGIRLS"
+      ],
+      "functions": [],
+      "items": {
+        "STR_BLACK_CAT": 1,
+        "STR_GOLD_BAR": 20
+      },
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_THEBAN_ASSAULT_CATGIRLS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "sourceType": "event",
+      "sourceId": "STR_MRSHAN_FIGHTER_EVENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI_W",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_MRSHAN_WARRIOR_EVENT",
+      "sourceType": "event",
+      "sourceId": "STR_MRSHAN_WARRIOR_EVENT",
+      "soldierType": "STR_SOLDIER_NEKOMIMI_W",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_BLOODOGE",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_BLOODOGE",
+      "soldierType": "STR_SOLDIER_BLOODOGE",
+      "requires": [
+        "STR_BLOODOGE_RECRUITMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BLOODOGE_RECRUITMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "event:STR_CODEX_BONUS_G5",
+      "sourceType": "event",
+      "sourceId": "STR_CODEX_BONUS_G5",
+      "soldierType": "STR_SOLDIER_BLOODOGE",
+      "requires": [],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "no-explicit-research",
+      "researchWitness": null,
+      "topicStatus": [],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_DOGE",
+      "sourceType": "direct",
+      "sourceId": "STR_SOLDIER_DOGE",
+      "soldierType": "STR_SOLDIER_DOGE",
+      "requires": [
+        "STR_DOGE_PROCUREMENT"
+      ],
+      "functions": [],
+      "items": {},
+      "kind": "profile",
+      "researchStatus": "joint-model-reached",
+      "researchWitness": {
+        "file": "campaign-forward-tree-v2-japan-d4.json",
+        "state": 29,
+        "stateHash": "284060ae114e2705419a3e484797446d15b519da0c10523e20fd8637e4536fb8",
+        "scenario": {
+          "difficulty": 1,
+          "regions": null,
+          "countries": [
+            "STR_JAPAN"
+          ]
+        },
+        "conditional": true,
+        "steps": [
+          {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          {
+            "type": "research",
+            "id": "STR_DOGE_PROCUREMENT"
+          }
+        ],
+        "gameCertified": false
+      },
+      "topicStatus": [
+        {
+          "id": "STR_DOGE_PROCUREMENT",
+          "observed": true
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    }
+  ],
+  "trainings": [
+    {
+      "id": "STR_PERSONAL_ATTENTION",
+      "requires": [
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_GLAMOUR": 6
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BREAD_AND_FISHES_TRAINING",
+      "requires": [
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_MUTANT_FISH": 5,
+        "STR_LEEK": 5,
+        "STR_CABBAGE": 5
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_BREAD_AND_FISHES_TRAINING",
+        "STR_WEIRDGAL_TRANSFORMATION",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_CENOBITE_TRAINING",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BREAD_AND_FISHES_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_GUN_KATA_TRAINING",
+      "requires": [
+        "STR_GUN_KATA_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "forbidden": [
+        "STR_GUN_KATA_TRAINING",
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_GLADIATOR_TRAINING",
+      "requires": [
+        "STR_GLADIATOR_TRAINING"
+      ],
+      "functions": [
+        "DEN"
+      ],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_GLADIATOR_TRAINING",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_CAREER_SOLDIER",
+      "requires": [
+        "STR_UNAVAILABLE"
+      ],
+      "functions": [],
+      "items": {
+        "TROLLIUM": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_CAREER_SOLDIER",
+        "STR_BOOT_CAMP_TRAINING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_MILITIA_TRAINING",
+        "STR_REVOLUTIONARY_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_UNAVAILABLE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HIGH_MAGOS_CEREMONY",
+      "requires": [
+        "STR_HIGH_MAGOS"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SECTOWEED": 50,
+        "STR_GLAMOUR": 10,
+        "STR_PORN": 10
+      },
+      "previous": [
+        "STR_MAGOS_CEREMONY"
+      ],
+      "forbidden": [
+        "STR_HIGH_MAGOS_CEREMONY",
+        "STR_ELEMENTALISTA_CEREMONY",
+        "STR_SEER_CEREMONY",
+        "STR_XENOMANCER_CEREMONY"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HIGH_MAGOS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HONORED_WARRIOR_TRAINING",
+      "requires": [
+        "STR_HONORED_WARRIOR_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_HONORED_WARRIOR_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HONORED_WARRIOR_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_MILITARY_DRILL_TRAINING",
+      "requires": [
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "functions": [
+        "DOJO"
+      ],
+      "items": {},
+      "previous": [
+        "STR_BOOT_CAMP_TRAINING"
+      ],
+      "forbidden": [
+        "STR_MILITARY_DRILL_TRAINING",
+        "STR_SIMPLETON_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_HUNTRESS_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_NIGHTSHADE_AUGMENTATION",
+        "STR_FUSION_TRAINING",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_BREAD_AND_FISHES_TRAINING",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_SWIFTPAW_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_MILITARY_DRILL_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BASIC_FIREARMS_TRAINING",
+      "requires": [
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAREER_SOLDIER"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BASIC_FIREARMS_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_DREAMLINK_TRAINING",
+      "requires": [
+        "STR_DREAMLINK_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_GOVT_CORPSE": 10
+      },
+      "previous": [],
+      "forbidden": [],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_NIGHTSHADE_AUGMENTATION",
+      "requires": [
+        "STR_NIGHTSHADE_AUGMENTATION"
+      ],
+      "functions": [
+        "ALKO"
+      ],
+      "items": {
+        "STR_MONSTER_EYE": 1,
+        "STR_SHROOM_RED": 7,
+        "STR_SHROOM_WHITE": 6,
+        "STR_SHROOM_BROWN": 4
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_NIGHTSHADE_AUGMENTATION",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_NIGHTSHADE_AUGMENTATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_NEPHILIM_LEGACY",
+      "requires": [
+        "STR_NEPHILIM_LEGACY"
+      ],
+      "functions": [
+        "PSION"
+      ],
+      "items": {
+        "STR_ETHEREAL_MEAL": 3
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_NEPHILIM_LEGACY",
+        "STR_UBERIZATION"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_NEPHILIM_LEGACY",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SARGEANT_TRAINING",
+      "requires": [
+        "STR_SARGEANT_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_SARGEANT_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SARGEANT_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_CHAPLAIN_TRAINING",
+      "requires": [
+        "STR_CHAPLAIN_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_CHAPLAIN_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CHAPLAIN_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_THEBAN_ASSAULT_CLONE",
+      "requires": [
+        "STR_UNAVAILABLE"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_REVOLUTIONARY_TRAINING",
+        "STR_MILITIA_TRAINING",
+        "STR_HUNTRESS_TRAINING",
+        "STR_NIGHTSHADE_AUGMENTATION",
+        "STR_BATTLE_FORM_AUGMENTATION",
+        "STR_GREEN_BEAUTY",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT",
+        "STR_BREAD_AND_FISHES_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING",
+        "STR_UBERIZATION"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_UNAVAILABLE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_MMA_TRAINING",
+      "requires": [
+        "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_MMA_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_RUNESMITH_TRAINING",
+      "requires": [
+        "STR_RUNESMITH_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_RUNESMITH_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_RUNESMITH_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_MAGOS_CEREMONY",
+      "requires": [
+        "STR_MAGOS_CEREMONY"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SECTOWEED": 50,
+        "STR_GLAMOUR": 5,
+        "STR_PADD": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_MAGOS_CEREMONY"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_MAGOS_CEREMONY",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_CHARMY_DANCE_TRAINING",
+      "requires": [
+        "STR_CHARMY_DANCE_TRAINING"
+      ],
+      "functions": [
+        "DOJO"
+      ],
+      "items": {
+        "STR_GLAMOUR": 6,
+        "STR_PORN": 3
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_MEDAL_BIOFIELD_COLLAPSE",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CHARMY_DANCE_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ARMS_AUTHORITY",
+      "requires": [
+        "STR_ARMS_AUTHORITY"
+      ],
+      "functions": [],
+      "items": {
+        "STR_GLITTERDUST": 1,
+        "STR_GLAMOUR": 300
+      },
+      "previous": [
+        "STR_GUN_KATA_TRAINING"
+      ],
+      "forbidden": [
+        "STR_ARMS_AUTHORITY",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ARMS_AUTHORITY",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_PERSON_OF_CULTURE_TRAINING",
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "functions": [
+        "LIB"
+      ],
+      "items": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PERSON_OF_CULTURE_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BEAUTY_FORMULA_USE",
+      "requires": [
+        "STR_BEAUTY_FORMULA"
+      ],
+      "functions": [],
+      "items": {
+        "STR_BEAUTY_FORMULA": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_GREEN_BEAUTY",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_THEBAN_ASSAULT_CLONE"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BEAUTY_FORMULA",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_MILITIA_TRAINING",
+      "requires": [
+        "STR_PEASANT_MILITIA"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_MILITIA_TRAINING",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_CAREER_SOLDIER"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PEASANT_MILITIA",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_PSYCHONAUT_TRAINING",
+      "requires": [
+        "STR_PSYCHONAUT_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SECTOWEED": 50
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_PSYCHONAUT_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PSYCHONAUT_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_RED_KNIGHT",
+      "requires": [
+        "STR_RED_KNIGHT_PREQ"
+      ],
+      "functions": [
+        "DOJO"
+      ],
+      "items": {
+        "STR_GLAMOUR": 20
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_RED_KNIGHT",
+        "STR_BRIDES_TO_THE_QUEEN"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_RED_KNIGHT_PREQ",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_MEDAL_BIOFIELD_COLLAPSE",
+      "requires": [
+        "STR_BIOFIELD_COLLAPSE"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_MEDAL_BIOFIELD_COLLAPSE",
+        "STR_GREEN_BEAUTY",
+        "STR_CHARMY_DANCE_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BIOFIELD_COLLAPSE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SWIFTPAW_TRAINING",
+      "requires": [
+        "STR_SWIFTPAW_TRAINING"
+      ],
+      "functions": [
+        "DOJO"
+      ],
+      "items": {},
+      "previous": [
+        "STR_GLADIATOR_TRAINING"
+      ],
+      "forbidden": [
+        "STR_SWIFTPAW_TRAINING",
+        "STR_NEKO_BODYBUILDER_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SWIFTPAW_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SADIST_TRAINING",
+      "requires": [
+        "STR_SADIST_TRAINING"
+      ],
+      "functions": [
+        "DUNG"
+      ],
+      "items": {
+        "STR_SLAVE_HALFWIT": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_SADIST_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SADIST_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_JUDICAL_EDUCATION",
+      "requires": [
+        "STR_JUDICAL_EDUCATION"
+      ],
+      "functions": [],
+      "items": {
+        "STR_GOVT_CORPSE": 30,
+        "STR_PORN": 10
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_NEPOTISM",
+        "STR_JUDICAL_EDUCATION"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_JUDICAL_EDUCATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HEROIC_FORM_AUGMENTATION",
+      "requires": [
+        "STR_HEROIC_FORM_AUGMENTATION"
+      ],
+      "functions": [
+        "CLON"
+      ],
+      "items": {
+        "STR_ELERIUM_115": 3
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_HEROIC_FORM_AUGMENTATION",
+        "STR_PROUD_WARRIOR"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HEROIC_FORM_AUGMENTATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BATTLE_FORM_AUGMENTATION",
+      "requires": [
+        "STR_BATTLE_FORM_AUGMENTATION"
+      ],
+      "functions": [
+        "CLON"
+      ],
+      "items": {
+        "STR_ELERIUM_115": 3
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_BATTLE_FORM_AUGMENTATION",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_PROUD_WARRIOR"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BATTLE_FORM_AUGMENTATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+      "requires": [
+        "STR_BATTLE_FORM_GAL_AUGMENTATION"
+      ],
+      "functions": [
+        "CLON"
+      ],
+      "items": {
+        "STR_ELERIUM_115": 3
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_PROUD_WARRIOR",
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_CAPTAINS_11",
+      "requires": [
+        "STR_CAPTAINS_11"
+      ],
+      "functions": [],
+      "items": {
+        "STR_CAPTAINS_11_TOKEN": 1,
+        "STR_GLAMOUR": 21
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_CAPTAINS_11"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_GREEN_BEAUTY",
+      "requires": [
+        "STR_GREEN_BEAUTY"
+      ],
+      "functions": [
+        "BDSWAP"
+      ],
+      "items": {
+        "STR_VAMPIRE_ESSENCE": 7,
+        "STR_PORN": 30,
+        "STR_GLAMOUR": 30
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_GREEN_BEAUTY",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_MEDAL_BIOFIELD_COLLAPSE"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_CENOBITE_TRAINING",
+      "requires": [
+        "STR_CENOBITE_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_JADE_URN": 5
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_CENOBITE_TRAINING",
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CENOBITE_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HOLY_WARRIOR_TRAINING",
+      "requires": [
+        "STR_HOLY_WARRIORS"
+      ],
+      "functions": [],
+      "items": {
+        "STR_PORN": 6
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_HOLY_WARRIOR_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HOLY_WARRIORS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_UBERIZATION",
+      "requires": [
+        "STR_UBERIZATION"
+      ],
+      "functions": [
+        "MED"
+      ],
+      "items": {
+        "STR_VAMPIRE_ESSENCE": 1,
+        "STR_MEDICAL_SUPPLIES": 5
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_UBERIZATION",
+        "STR_PURE_MAIDEN_TRAINING",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_NEPHILIM_LEGACY"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_UBERIZATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ASSIGN_STASIS_POD",
+      "requires": [
+        "STR_SLEEPING_BEAUTY_PROJECT"
+      ],
+      "functions": [
+        "MED"
+      ],
+      "items": {
+        "STR_ALIEN_HABITAT": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_ASSIGN_STASIS_POD"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SLEEPING_BEAUTY_PROJECT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SIVALINGA_RESURRECTION",
+      "requires": [
+        "STR_SIVALINGA_RESURRECTION"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SIVALINGA": 1,
+        "STR_OFFERING_TO_PURPLE_BLOOM": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SIVALINGA_RESURRECTION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BOOT_CAMP_TRAINING",
+      "requires": [
+        "STR_BOOT_CAMP_TRAINING"
+      ],
+      "functions": [
+        "DOJO"
+      ],
+      "items": {},
+      "previous": [
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "forbidden": [
+        "STR_BOOT_CAMP_TRAINING",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_CAREER_SOLDIER"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BOOT_CAMP_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SOLDIER_TYPE_SYNTH_REVIVAL",
+      "requires": [
+        "STR_SOLDIER_TYPE_SYNTH"
+      ],
+      "functions": [
+        "SUR"
+      ],
+      "items": {
+        "STR_SYNTH_CORPSE": 1,
+        "STR_MEDICAL_SUPPLIES": 75,
+        "STR_ALIEN_ALLOYS": 4
+      },
+      "previous": [],
+      "forbidden": [],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SOLDIER_TYPE_SYNTH",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SYN_ACCEPTANCE_TRAINING",
+      "requires": [
+        "STR_SYN_ACCEPTANCE_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_GOVT_CORPSE": 25,
+        "STR_PORN": 15,
+        "STR_GLAMOUR": 5
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_SYN_ACCEPTANCE_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SYN_ACCEPTANCE_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ABYSSAL_TRAINING",
+      "requires": [
+        "STR_ABYSSAL_GNOME_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_DEMONIC_ESSENCE": 3,
+        "STR_DREAM_ECHO": 6,
+        "STR_GLAMOUR": 12,
+        "STR_PORN": 24
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_ABYSSAL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ABYSSAL_GNOME_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ALPHA_PROTOCOLS",
+      "requires": [
+        "STR_ALPHA_PROTOCOLS"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_ALPHA_PROTOCOLS"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ALPHA_PROTOCOLS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_TENTACLEHIVE_PET",
+      "requires": [
+        "STR_TENTACLEHIVE_PET_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_TENTACLEHIVE_TERRORIST": 1,
+        "STR_PILLOW_BOOK": 2
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_TENTACLEHIVE_PET",
+        "STR_BRIDES_TO_THE_QUEEN"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_TENTACLEHIVE_PET_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HERBALIST_TRAINING",
+      "requires": [
+        "STR_HERBALIST_TRAINING"
+      ],
+      "functions": [
+        "LIB"
+      ],
+      "items": {
+        "STR_APPLE": 10,
+        "STR_MEDI_KIT": 10,
+        "STR_SECTOWEED": 10
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_HERBALIST_TRAINING",
+        "STR_SWIFTPAW_TRAINING",
+        "STR_NEKO_BODYBUILDER_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": "STR_SOLDIER_NEKOMIMI_H",
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HERBALIST_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SIMPLETON_TRAINING",
+      "requires": [
+        "STR_SIMPLETON_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_GOVT_CORPSE": 10,
+        "STR_HANDLE": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_SIMPLETON_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SIMPLETON_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HUNTRESS_TRAINING",
+      "requires": [
+        "STR_HUNTRESS_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_HUNTRESS_TRAINING",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HUNTRESS_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BRIDES_TO_THE_QUEEN",
+      "requires": [
+        "STR_BRIDES_TO_THE_QUEEN"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_HAREM_COLLAR": 1
+      },
+      "previous": [
+        "STR_NEPOTISM",
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "forbidden": [
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_TENTACLEHIVE_PET",
+        "STR_RED_KNIGHT"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_MAGICIENNE_TRAINING",
+      "requires": [
+        "STR_MAGICIENNE_TRAINING"
+      ],
+      "functions": [
+        "LIB"
+      ],
+      "items": {
+        "STR_SECTOWEED": 52
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_MAGICIENNE_TRAINING",
+        "STR_NEKO_BODYBUILDER_TRAINING",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_BOOT_CAMP_TRAINING",
+        "STR_BREAD_AND_FISHES_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_MAGICIENNE_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_PURE_MAIDEN_TRAINING",
+      "requires": [
+        "STR_PURE_MAIDEN_TRAINING"
+      ],
+      "functions": [
+        "PSION"
+      ],
+      "items": {
+        "STR_GLITTERDUST": 1,
+        "STR_GLAMOUR": 25
+      },
+      "previous": [
+        "STR_MAGICIENNE_TRAINING"
+      ],
+      "forbidden": [
+        "STR_PURE_MAIDEN_TRAINING",
+        "STR_UBERIZATION"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PURE_MAIDEN_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HERO_GREEN_TRAINING",
+      "requires": [
+        "STR_HERO_GREEN_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SECTOWEED": 90
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_HERO_GREEN_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HERO_GREEN_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HERO_GOLD_TRAINING",
+      "requires": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HERO_GOLD_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_HERO_RED_TRAINING",
+      "requires": [
+        "STR_HERO_RED_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_LIVING_BRIMSTONE": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_HERO_RED_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_HERO_RED_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_PARIAH_TRAINING",
+      "requires": [
+        "STR_PARIAH_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SKULL": 8
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_PARIAH_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PARIAH_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SEER_CEREMONY",
+      "requires": [
+        "STR_SEER"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SECTOWEED": 50,
+        "STR_GLAMOUR": 10,
+        "STR_PORN": 10
+      },
+      "previous": [
+        "STR_MAGOS_CEREMONY"
+      ],
+      "forbidden": [
+        "STR_HIGH_MAGOS_CEREMONY",
+        "STR_ELEMENTALISTA_CEREMONY",
+        "STR_SEER_CEREMONY",
+        "STR_XENOMANCER_CEREMONY"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SEER",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_DESTRUCTOR_TRAINING",
+      "requires": [
+        "STR_DESTRUCTOR_OGRE_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_DREAM_ECHO": 8,
+        "STR_JADE_URN": 8,
+        "STR_PORN": 16
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_DESTRUCTOR_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_DESTRUCTOR_OGRE_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ART_OF_TROUNCING",
+      "requires": [
+        "STR_ART_OF_TROUNCING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_ART_OF_TROUNCING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ART_OF_TROUNCING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_XENOMANCER_CEREMONY",
+      "requires": [
+        "STR_XENOMANCER"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SECTOWEED": 50,
+        "STR_GLAMOUR": 10,
+        "STR_PORN": 10
+      },
+      "previous": [
+        "STR_MAGOS_CEREMONY"
+      ],
+      "forbidden": [
+        "STR_HIGH_MAGOS_CEREMONY",
+        "STR_ELEMENTALISTA_CEREMONY",
+        "STR_SEER_CEREMONY",
+        "STR_XENOMANCER_CEREMONY"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_XENOMANCER",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_LONE_WOLF",
+      "requires": [
+        "STR_UNAVAILABLE"
+      ],
+      "functions": [],
+      "items": {
+        "TROLLIUM": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_LONE_WOLF",
+        "STR_REVOLUTIONARY_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_UNAVAILABLE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ELEMENTALISTA_CEREMONY",
+      "requires": [
+        "STR_ELEMENTALISTA"
+      ],
+      "functions": [],
+      "items": {
+        "STR_SECTOWEED": 50,
+        "STR_GLAMOUR": 10,
+        "STR_PORN": 10
+      },
+      "previous": [
+        "STR_MAGOS_CEREMONY"
+      ],
+      "forbidden": [
+        "STR_HIGH_MAGOS_CEREMONY",
+        "STR_ELEMENTALISTA_CEREMONY",
+        "STR_SEER_CEREMONY",
+        "STR_XENOMANCER_CEREMONY"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ELEMENTALISTA",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_WEIRDGAL_TRANSFORMATION",
+      "requires": [
+        "STR_PSI_INITIATION"
+      ],
+      "functions": [],
+      "items": {
+        "STR_GOLDEN_CUP": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "output": "STR_SOLDIER_W",
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PSI_INITIATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BONDING_CEREMONY",
+      "requires": [
+        "STR_BONDING_CEREMONY"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_BONDING_CEREMONY"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BONDING_CEREMONY",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_BODY_SWAP",
+      "requires": [
+        "STR_BODY_SWAP"
+      ],
+      "functions": [
+        "BDSWAP"
+      ],
+      "items": {
+        "STR_ZOMBIE_ESSENCE": 10,
+        "STR_VAMPIRE_ESSENCE": 2
+      },
+      "previous": [
+        "STR_ZOMBIFICATION"
+      ],
+      "forbidden": [],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_BODY_SWAP",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_FUSION_TRAINING",
+      "requires": [
+        "STR_FUSION_TRAINING"
+      ],
+      "functions": [
+        "CULT"
+      ],
+      "items": {
+        "STR_PORN": 10
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_FUSION_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_FUSION_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SHADE_EMBODIMENT",
+      "requires": [
+        "STR_SHADE_EMBODIMENT"
+      ],
+      "functions": [
+        "BDSWAP"
+      ],
+      "items": {
+        "STR_ZOMBIE_ESSENCE": 20,
+        "STR_VAMPIRE_ESSENCE": 8,
+        "STR_GLAMOUR": 10
+      },
+      "previous": [],
+      "forbidden": [],
+      "output": "STR_SOLDIER",
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SHADE_EMBODIMENT",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SPECTRE_SUMMONING",
+      "requires": [
+        "STR_SPECTRE_SUMMONING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_RAIDER_CORPSE": 1,
+        "STR_MEDALLION": 1,
+        "STR_SECTOWEED": 50
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_SUN_WARRIORS_TRAINING"
+      ],
+      "output": "STR_SOLDIER_SPECTRE",
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SPECTRE_SUMMONING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_OFFICER_TRAINING",
+      "requires": [
+        "STR_OFFICER_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_OFFICER_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_OFFICER_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_PROUD_WARRIOR",
+      "requires": [
+        "STR_PROUD_WARRIOR"
+      ],
+      "functions": [],
+      "items": {
+        "STR_GLAMOUR": 25
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_PROUD_WARRIOR",
+        "STR_HEROIC_FORM_AUGMENTATION",
+        "STR_BATTLE_FORM_AUGMENTATION",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SLEEPING_BEAUTY_REVIVAL_PLUS",
+      "requires": [
+        "STR_TISSUE_NANO_RESTORATION"
+      ],
+      "functions": [
+        "MED",
+        "SUR",
+        "CLON"
+      ],
+      "items": {
+        "STR_MEDICAL_SUPPLIES": 8
+      },
+      "previous": [
+        "STR_ASSIGN_STASIS_POD"
+      ],
+      "forbidden": [],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_TISSUE_NANO_RESTORATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SLEEPING_BEAUTY_REVIVAL",
+      "requires": [
+        "STR_CLONING_CENTRE"
+      ],
+      "functions": [
+        "MED",
+        "SUR",
+        "CLON"
+      ],
+      "items": {
+        "STR_MEDICAL_SUPPLIES": 5
+      },
+      "previous": [
+        "STR_ASSIGN_STASIS_POD"
+      ],
+      "forbidden": [],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CLONING_CENTRE",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SHAKEUP",
+      "requires": [
+        "STR_SHAKEUP_CEREMONY"
+      ],
+      "functions": [
+        "WELL"
+      ],
+      "items": {
+        "STR_NOOSE": 2,
+        "STR_MOONSHINE": 10
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_SHAKEUP"
+      ],
+      "output": "STR_SOLDIER_S",
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SHAKEUP_CEREMONY",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ZOMBI_REVIVAL",
+      "requires": [
+        "STR_ZOMBI_REVIVAL"
+      ],
+      "functions": [
+        "MED",
+        "SUR",
+        "PWR"
+      ],
+      "items": {
+        "STR_ZOMBIE_ESSENCE": 6,
+        "STR_MEDICAL_SUPPLIES": 6
+      },
+      "previous": [
+        "STR_ZOMBIFICATION"
+      ],
+      "forbidden": [],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ZOMBI_REVIVAL",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ZOMBIFICATION",
+      "requires": [
+        "STR_ZOMBIFICATION"
+      ],
+      "functions": [
+        "MED"
+      ],
+      "items": {
+        "STR_ZOMBIE_ESSENCE": 9,
+        "STR_MEDICAL_SUPPLIES": 3
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_ZOMBIFICATION",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_SHADE_EMBODIMENT",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ZOMBIFICATION",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_NEKO_BODYBUILDER_TRAINING",
+      "requires": [
+        "STR_NEKO_BODYBUILDER_TRAINING"
+      ],
+      "functions": [
+        "DEN"
+      ],
+      "items": {
+        "STR_MUTANT_MEAT": 20,
+        "STR_CABBAGE": 20,
+        "STR_MEDICAL_SUPPLIES": 5
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_MAGICIENNE_TRAINING",
+        "STR_SWIFTPAW_TRAINING",
+        "STR_NEKO_BODYBUILDER_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_NEKO_BODYBUILDER_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_CHORT_SUMMONING",
+      "requires": [
+        "STR_CHORT_SUMMONING"
+      ],
+      "functions": [
+        "REDM"
+      ],
+      "items": {
+        "STR_SIMULACRUM_INACTIVE": 1,
+        "STR_ZORTRIUM_CRYSTAL": 3
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_SUN_WARRIORS_TRAINING"
+      ],
+      "output": "STR_SOLDIER_CHORT",
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_CHORT_SUMMONING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SUN_WARRIORS_TRAINING",
+      "requires": [
+        "STR_SUN_WARRIORS_TRAINING"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_NEPOTISM",
+        "STR_REVOLUTIONARY_TRAINING",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SUN_WARRIORS_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_SCHOOL_OF_HARD_KNOCKS",
+      "requires": [
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_RED_FANATIC",
+      "requires": [
+        "STR_PEOPLES_ARMY_PREQ"
+      ],
+      "functions": [
+        "DOJO"
+      ],
+      "items": {
+        "STR_GLAMOUR": 1
+      },
+      "previous": [
+        "STR_REVOLUTIONARY_TRAINING"
+      ],
+      "forbidden": [
+        "STR_RED_FANATIC"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_PEOPLES_ARMY_PREQ",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_NEPOTISM",
+      "requires": [
+        "STR_NEPOTISM"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_JUDICAL_EDUCATION",
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "joint-model-reached",
+      "researchWitness": {
+        "file": "campaign-forward-tree-v2-japan-d4.json",
+        "state": 312,
+        "stateHash": "2cdf79f5627abc45f306b09d463c2ac7463241d2d705b2332ae0e8c615a2bf1f",
+        "scenario": {
+          "difficulty": 1,
+          "regions": null,
+          "countries": [
+            "STR_JAPAN"
+          ]
+        },
+        "conditional": true,
+        "steps": [
+          {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          {
+            "type": "research",
+            "id": "STR_LOOT_DISTRIBUTION"
+          },
+          {
+            "type": "research",
+            "id": "STR_NEPOTISM"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_NEPOTISM",
+            "research": "STR_TRAININGS",
+            "assumeOutcome": false
+          }
+        ],
+        "gameCertified": false
+      },
+      "topicStatus": [
+        {
+          "id": "STR_NEPOTISM",
+          "observed": true
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_TIGER_TOURS",
+      "requires": [
+        "STR_TIGER_TOURS"
+      ],
+      "functions": [],
+      "items": {},
+      "previous": [],
+      "forbidden": [],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_TIGER_TOURS",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_REVOLUTIONARY_TRAINING",
+      "requires": [
+        "STR_REVOLUTIONARY_TRAINING"
+      ],
+      "functions": [],
+      "items": {
+        "STR_MOONSHINE": 3
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_REVOLUTIONARY_TRAINING",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_CAREER_SOLDIER",
+        "STR_LONE_WOLF"
+      ],
+      "output": null,
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_REVOLUTIONARY_TRAINING",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    },
+    {
+      "id": "STR_ANG_102",
+      "requires": [
+        "STR_ANG_102"
+      ],
+      "functions": [],
+      "items": {
+        "STR_PORN": 16,
+        "STR_VAMPIRE_ESSENCE": 1
+      },
+      "previous": [],
+      "forbidden": [
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT"
+      ],
+      "output": "STR_SOLDIER_R",
+      "kind": "training",
+      "researchStatus": "not-observed-jointly",
+      "researchWitness": null,
+      "topicStatus": [
+        {
+          "id": "STR_ANG_102",
+          "observed": false
+        }
+      ],
+      "manufactureWitness": null,
+      "careerStatus": "not-replayed",
+      "gameCertified": false
+    }
+  ],
+  "priorities": [
+    {
+      "id": "STR_UNAVAILABLE",
+      "profiles": [],
+      "trainings": [
+        "STR_CAREER_SOLDIER",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_LONE_WOLF"
+      ]
+    },
+    {
+      "id": "STR_CATGIRL_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_CATGIRL_RECRUITMENT",
+        "direct:STR_SOLDIER_NEKOMIMI"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_HYBRID_PATH",
+      "profiles": [
+        "manufacture:STR_HYBRID_LONER_RECRUITMENT",
+        "manufacture:STR_HYBRID_HIVER_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_RAIDER_SCOUT_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_RAIDER_SCOUT_RECRUITMENT",
+        "manufacture:STR_RAIDER_FLAME_GUARD_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_ABYSSAL_GNOME_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_ABYSSAL_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_AGGRESSOR_GAL",
+      "profiles": [
+        "manufacture:STR_AGGRESSOR_GAL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_ALPHA_PROTOCOLS",
+      "profiles": [],
+      "trainings": [
+        "STR_ALPHA_PROTOCOLS"
+      ]
+    },
+    {
+      "id": "STR_ANG_102",
+      "profiles": [],
+      "trainings": [
+        "STR_ANG_102"
+      ]
+    },
+    {
+      "id": "STR_APOSTATE_OF_APOCALYPSE",
+      "profiles": [
+        "manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_ARMS_AUTHORITY",
+      "profiles": [],
+      "trainings": [
+        "STR_ARMS_AUTHORITY"
+      ]
+    },
+    {
+      "id": "STR_ART_OF_TROUNCING",
+      "profiles": [],
+      "trainings": [
+        "STR_ART_OF_TROUNCING"
+      ]
+    },
+    {
+      "id": "STR_BASIC_FIREARMS_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_BASIC_FIREARMS_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_BATTLE_FORM_AUGMENTATION",
+      "profiles": [],
+      "trainings": [
+        "STR_BATTLE_FORM_AUGMENTATION"
+      ]
+    },
+    {
+      "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+      "profiles": [],
+      "trainings": [
+        "STR_BATTLE_FORM_GAL_AUGMENTATION"
+      ]
+    },
+    {
+      "id": "STR_BEAUTY_FORMULA",
+      "profiles": [],
+      "trainings": [
+        "STR_BEAUTY_FORMULA_USE"
+      ]
+    },
+    {
+      "id": "STR_BIOFIELD_COLLAPSE",
+      "profiles": [],
+      "trainings": [
+        "STR_MEDAL_BIOFIELD_COLLAPSE"
+      ]
+    },
+    {
+      "id": "STR_BLOODOGE_RECRUITMENT",
+      "profiles": [
+        "direct:STR_SOLDIER_BLOODOGE"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_BODY_SWAP",
+      "profiles": [],
+      "trainings": [
+        "STR_BODY_SWAP"
+      ]
+    },
+    {
+      "id": "STR_BONDING_CEREMONY",
+      "profiles": [],
+      "trainings": [
+        "STR_BONDING_CEREMONY"
+      ]
+    },
+    {
+      "id": "STR_BOOT_CAMP_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_BOOT_CAMP_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+      "profiles": [],
+      "trainings": [
+        "STR_MMA_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_BOUNTY_HUNTING_PRIZE_SOLDIER_X",
+      "profiles": [
+        "direct:STR_SOLDIER_X"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_BREAD_AND_FISHES_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_BRIDES_TO_THE_QUEEN",
+      "profiles": [],
+      "trainings": [
+        "STR_BRIDES_TO_THE_QUEEN"
+      ]
+    },
+    {
+      "id": "STR_CAPTAINS_11",
+      "profiles": [],
+      "trainings": [
+        "STR_CAPTAINS_11"
+      ]
+    },
+    {
+      "id": "STR_CAT_PATH",
+      "profiles": [
+        "direct:STR_SOLDIER_NEKOMIMI_O"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_CATGIRL_TOURIST",
+      "profiles": [
+        "manufacture:STR_CATGIRL_TOURIST_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_CATGIRL_VICTIM",
+      "profiles": [
+        "manufacture:STR_CATGIRL_VICTIM_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_CATGIRL_WARRIOR_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_CENOBITE_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_CENOBITE_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_CHAPLAIN_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_CHAPLAIN_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_CHARMY_DANCE_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_CHARMY_DANCE_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_CHORT_SUMMONING",
+      "profiles": [],
+      "trainings": [
+        "STR_CHORT_SUMMONING"
+      ]
+    },
+    {
+      "id": "STR_CLONING_CENTRE",
+      "profiles": [],
+      "trainings": [
+        "STR_SLEEPING_BEAUTY_REVIVAL"
+      ]
+    },
+    {
+      "id": "STR_DAMSEL_OF_WAR",
+      "profiles": [
+        "manufacture:STR_DAMSEL_OF_WAR_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_DAMSEL_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_DAMSEL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_DESTRUCTOR_OGRE_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_DESTRUCTOR_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_DREAMLINK_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_DREAMLINK_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_ELEMENTALISTA",
+      "profiles": [],
+      "trainings": [
+        "STR_ELEMENTALISTA_CEREMONY"
+      ]
+    },
+    {
+      "id": "STR_FREAK_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_FREAK_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_FUSION_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_FUSION_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_GALS_ARE_SUPERIOR",
+      "profiles": [
+        "direct:STR_SOLDIER_S"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_GLADIATOR_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_GLADIATOR_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_GLAMOUR",
+      "profiles": [
+        "manufacture:STR_REVOLUTIONARY_GIRL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_GLAMOUR_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_GLAMOUR_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_GREEN_BEAUTY",
+      "profiles": [],
+      "trainings": [
+        "STR_GREEN_BEAUTY"
+      ]
+    },
+    {
+      "id": "STR_GUN_KATA_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_GUN_KATA_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_HALF_UBER_GIRL",
+      "profiles": [
+        "manufacture:STR_HALF_UBER_GIRL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_HERBALIST_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_HERBALIST_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_HERO_GOLD_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_HERO_GOLD_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_HERO_GREEN_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_HERO_GREEN_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_HERO_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_HERO_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_HERO_RED_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_HERO_RED_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_HEROIC_FORM_AUGMENTATION",
+      "profiles": [],
+      "trainings": [
+        "STR_HEROIC_FORM_AUGMENTATION"
+      ]
+    },
+    {
+      "id": "STR_HIGH_MAGOS",
+      "profiles": [],
+      "trainings": [
+        "STR_HIGH_MAGOS_CEREMONY"
+      ]
+    },
+    {
+      "id": "STR_HOLY_WARRIORS",
+      "profiles": [],
+      "trainings": [
+        "STR_HOLY_WARRIOR_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_HONORED_WARRIOR_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_HONORED_WARRIOR_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_HUNTRESS_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_HUNTRESS_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_HYBRID_RECRUITMENT",
+      "profiles": [
+        "direct:STR_SOLDIER_HYBRID"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_JUDICAL_EDUCATION",
+      "profiles": [],
+      "trainings": [
+        "STR_JUDICAL_EDUCATION"
+      ]
+    },
+    {
+      "id": "STR_JUNGLEFIGHTER_GIRL",
+      "profiles": [
+        "manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_LAMIA_RECRUITMENT",
+      "profiles": [
+        "direct:STR_SOLDIER_LAMIA"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_LOKNAR_RECRUITMENT",
+      "profiles": [
+        "direct:STR_SOLDIER_LOKNAR"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_MAGICIENNE_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_MAGICIENNE_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_MAGOS_CEREMONY",
+      "profiles": [],
+      "trainings": [
+        "STR_MAGOS_CEREMONY"
+      ]
+    },
+    {
+      "id": "STR_MILITARY_DRILL_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_MILITARY_DRILL_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_MILITIAMAN_RECRUIT",
+      "profiles": [
+        "manufacture:STR_MILITIAMAN_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_NEKO_BODYBUILDER_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_NEKO_BODYBUILDER_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_NEPHILIM_LEGACY",
+      "profiles": [],
+      "trainings": [
+        "STR_NEPHILIM_LEGACY"
+      ]
+    },
+    {
+      "id": "STR_NIGHTSHADE_AUGMENTATION",
+      "profiles": [],
+      "trainings": [
+        "STR_NIGHTSHADE_AUGMENTATION"
+      ]
+    },
+    {
+      "id": "STR_OFFICER_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_OFFICER_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_OGRE_RECRUITMENT",
+      "profiles": [
+        "direct:STR_SOLDIER_OGRE"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_OGRE_SPY",
+      "profiles": [
+        "manufacture:STR_OGRE_SPY_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_ORTHODOX_MAGE_DAMSEL",
+      "profiles": [
+        "manufacture:STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_PARIAH_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_PARIAH_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_PEASANT_MILITIA",
+      "profiles": [],
+      "trainings": [
+        "STR_MILITIA_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_PEOPLES_ARMY_PREQ",
+      "profiles": [],
+      "trainings": [
+        "STR_RED_FANATIC"
+      ]
+    },
+    {
+      "id": "STR_PEREGRINES",
+      "profiles": [
+        "manufacture:STR_CATGIRL_TOURIST_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_PERSON_OF_CULTURE_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_PERSONAL_ATTENTION",
+      "profiles": [],
+      "trainings": [
+        "STR_PERSONAL_ATTENTION"
+      ]
+    },
+    {
+      "id": "STR_POLTERGEIST_EMBODIMENT",
+      "profiles": [
+        "manufacture:STR_POLTERGEIST_EMBODIMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_PROUD_WARRIOR",
+      "profiles": [],
+      "trainings": [
+        "STR_PROUD_WARRIOR"
+      ]
+    },
+    {
+      "id": "STR_PSI_INITIATION",
+      "profiles": [],
+      "trainings": [
+        "STR_WEIRDGAL_TRANSFORMATION"
+      ]
+    },
+    {
+      "id": "STR_PSYCHONAUT_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_PSYCHONAUT_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_PURE_MAIDEN_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_PURE_MAIDEN_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_RAIDER_FLAME_GUARD",
+      "profiles": [
+        "manufacture:STR_RAIDER_FLAME_GUARD_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_RECRUIT_PUREBLOODS",
+      "profiles": [
+        "manufacture:STR_RECRUIT_PUREBLOOD"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_RED_KNIGHT_PREQ",
+      "profiles": [],
+      "trainings": [
+        "STR_RED_KNIGHT"
+      ]
+    },
+    {
+      "id": "STR_REVOLUTIONARY_GIRL",
+      "profiles": [
+        "manufacture:STR_REVOLUTIONARY_GIRL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_REVOLUTIONARY_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_REVOLUTIONARY_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_ROGUE_CLONE",
+      "profiles": [
+        "manufacture:STR_ROGUE_CLONE_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_RUNESMITH_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_RUNESMITH_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_SADIST_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_SADIST_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_SARGEANT_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_SARGEANT_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_SCHOOL_OF_HARD_KNOCKS",
+      "profiles": [],
+      "trainings": [
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ]
+    },
+    {
+      "id": "STR_SDD_CONTROL",
+      "profiles": [
+        "manufacture:STR_RECRUIT_KILLBOT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SDD_SUMMONING",
+      "profiles": [
+        "manufacture:STR_SDD_SUMMONING"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SEER",
+      "profiles": [],
+      "trainings": [
+        "STR_SEER_CEREMONY"
+      ]
+    },
+    {
+      "id": "STR_SHADE_EMBODIMENT",
+      "profiles": [],
+      "trainings": [
+        "STR_SHADE_EMBODIMENT"
+      ]
+    },
+    {
+      "id": "STR_SHAKEUP_CEREMONY",
+      "profiles": [],
+      "trainings": [
+        "STR_SHAKEUP"
+      ]
+    },
+    {
+      "id": "STR_SIMPLETON_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_SIMPLETON_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_SISTER_VICTIM_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_SISTER_VICTIM_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SIVALINGA_RESURRECTION",
+      "profiles": [],
+      "trainings": [
+        "STR_SIVALINGA_RESURRECTION"
+      ]
+    },
+    {
+      "id": "STR_SLAVE_SOLDIERS",
+      "profiles": [
+        "manufacture:STR_SOLDIER_SLAVE_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SLEEPING_BEAUTY_PROJECT",
+      "profiles": [],
+      "trainings": [
+        "STR_ASSIGN_STASIS_POD"
+      ]
+    },
+    {
+      "id": "STR_SNIPER_GIRL",
+      "profiles": [
+        "manufacture:STR_SNIPER_GIRL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SOLDIER_M_RECRUITMENT",
+      "profiles": [
+        "direct:STR_SOLDIER_M"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SOLDIER_TYPE_GNOME",
+      "profiles": [
+        "manufacture:STR_GNOME_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SOLDIER_TYPE_SYNTH",
+      "profiles": [],
+      "trainings": [
+        "STR_SOLDIER_TYPE_SYNTH_REVIVAL"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_V_RECRUITMENT",
+      "profiles": [
+        "direct:STR_SOLDIER_V"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SOUL_DOLL_PROCUREMENT",
+      "profiles": [
+        "direct:STR_SOLDIER_DOLL"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SPECTRE_SUMMONING",
+      "profiles": [],
+      "trainings": [
+        "STR_SPECTRE_SUMMONING"
+      ]
+    },
+    {
+      "id": "STR_SPY_BADGE",
+      "profiles": [
+        "manufacture:STR_YOUNG_UBER_RECRUITMENT_SPY"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SPY_DAMSEL",
+      "profiles": [
+        "manufacture:STR_SPY_DAMSEL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_STASIS_POD_GREEN_GAL",
+      "profiles": [
+        "manufacture:STR_STASIS_POD_GREEN_GAL_EXTRACTION"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SUN_WARRIORS_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_SUN_WARRIORS_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_SURVIVOR",
+      "profiles": [
+        "manufacture:STR_SURVIVOR_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SWIFTPAW_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_SWIFTPAW_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_SYN_ACCEPTANCE_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_SYN_ACCEPTANCE_TRAINING"
+      ]
+    },
+    {
+      "id": "STR_SYNTH_EXAMINATION",
+      "profiles": [
+        "manufacture:STR_SOLDIER_TYPE_SYNTH_REPAIR"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_SYNTH_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_SYNTH_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_TENTACLEHIVE_PET_TRAINING",
+      "profiles": [],
+      "trainings": [
+        "STR_TENTACLEHIVE_PET"
+      ]
+    },
+    {
+      "id": "STR_THEBAN_ASSAULT_CATGIRLS",
+      "profiles": [
+        "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_THEBAN_ASSAULT_CLONE_LICENSE",
+      "profiles": [
+        "manufacture:STR_THEBAN_ASSAULT_CLONE"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_TIGER_TOURS",
+      "profiles": [],
+      "trainings": [
+        "STR_TIGER_TOURS"
+      ]
+    },
+    {
+      "id": "STR_TISSUE_NANO_RESTORATION",
+      "profiles": [],
+      "trainings": [
+        "STR_SLEEPING_BEAUTY_REVIVAL_PLUS"
+      ]
+    },
+    {
+      "id": "STR_TURANIAN_UBER_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_TURANIAN_UBER_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_UBERIZATION",
+      "profiles": [],
+      "trainings": [
+        "STR_UBERIZATION"
+      ]
+    },
+    {
+      "id": "STR_VOLUNTEER_SOLDIER",
+      "profiles": [
+        "manufacture:STR_VOLUNTEER_SOLDIER_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_WASTELAND_GIRL",
+      "profiles": [
+        "manufacture:STR_WASTELAND_GIRL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_WE_NEED_MALE_TOUCH",
+      "profiles": [
+        "direct:STR_SOLDIER_SLAVE"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_WILD_GIRL",
+      "profiles": [
+        "manufacture:STR_WILD_GIRL_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_WILD_GNOME",
+      "profiles": [
+        "manufacture:STR_WILD_GNOME_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_XENFORCER_REPAIR",
+      "profiles": [
+        "manufacture:STR_XENFORCER_REPAIR"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_XENOMANCER",
+      "profiles": [],
+      "trainings": [
+        "STR_XENOMANCER_CEREMONY"
+      ]
+    },
+    {
+      "id": "STR_YOUNG_UBER_RECRUITMENT",
+      "profiles": [
+        "manufacture:STR_YOUNG_UBER_RECRUITMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_ZOMBI_REVIVAL",
+      "profiles": [],
+      "trainings": [
+        "STR_ZOMBI_REVIVAL"
+      ]
+    },
+    {
+      "id": "STR_ZOMBIE_EMBODIMENT",
+      "profiles": [
+        "manufacture:STR_ZOMBIE_EMBODIMENT"
+      ],
+      "trainings": []
+    },
+    {
+      "id": "STR_ZOMBIFICATION",
+      "profiles": [],
+      "trainings": [
+        "STR_ZOMBIFICATION"
+      ]
+    },
+    {
+      "id": "STR_ZONE_STALKER",
+      "profiles": [
+        "manufacture:STR_ZONE_STALKER_RECRUITMENT"
+      ],
+      "trainings": []
+    }
+  ]
+}
