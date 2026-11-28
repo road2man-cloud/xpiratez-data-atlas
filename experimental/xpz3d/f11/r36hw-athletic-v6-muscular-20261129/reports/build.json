@@ -1,0 +1,167 @@
+{
+  "sourceBlob": "3ae3145f13f764f87b8bc0f47ddc35ae8c8fdbc3",
+  "triangles": 2096,
+  "garmentVertices": 514,
+  "changedPositionVertices": 314,
+  "changedColorVertices": 178,
+  "shapeGain": 1,
+  "minOriginalFaceNormalCos": 0.975014423463484,
+  "minTriangleArea": 0.00020924961067783632,
+  "skinJoints": 63,
+  "skinWeightsPreserved": true,
+  "topologyPreserved": true,
+  "opaqueMaterial": true,
+  "measures": [
+    {
+      "limb": "arm",
+      "ring": 0,
+      "axis": 0.25,
+      "before": [
+        0.15399999916553497,
+        0.15799999237060547
+      ],
+      "after": [
+        0.17170999906957152,
+        0.17853999137878418
+      ]
+    },
+    {
+      "limb": "arm",
+      "ring": 1,
+      "axis": 0.318,
+      "before": [
+        0.1420000046491623,
+        0.15199995040893555
+      ],
+      "after": [
+        0.1796300057694316,
+        0.17631994247436533
+      ]
+    },
+    {
+      "limb": "arm",
+      "ring": 2,
+      "axis": 0.457,
+      "before": [
+        0.09800000116229057,
+        0.10200011730194092
+      ],
+      "after": [
+        0.09751000116035763,
+        0.10047011574109388
+      ]
+    },
+    {
+      "limb": "arm",
+      "ring": 3,
+      "axis": 0.538,
+      "before": [
+        0.12400000169873238,
+        0.12199997901916504
+      ],
+      "after": [
+        0.15128000210349452,
+        0.13907997767130542
+      ]
+    },
+    {
+      "limb": "arm",
+      "ring": 4,
+      "axis": 0.622,
+      "before": [
+        0.09400000050663948,
+        0.096000075340271
+      ],
+      "after": [
+        0.1012850005451271,
+        0.1003200781345368
+      ]
+    },
+    {
+      "limb": "leg",
+      "ring": 0,
+      "axis": 0.915,
+      "before": [
+        0.17000000551342964,
+        0.18199999630451202
+      ],
+      "after": [
+        0.17935000589117409,
+        0.19291999612314004
+      ]
+    },
+    {
+      "limb": "leg",
+      "ring": 1,
+      "axis": 0.825,
+      "before": [
+        0.1699999962002039,
+        0.1680000051856041
+      ],
+      "after": [
+        0.19209999542683365,
+        0.19950000625569372
+      ]
+    },
+    {
+      "limb": "leg",
+      "ring": 2,
+      "axis": 0.63,
+      "before": [
+        0.12400000542402267,
+        0.12400000263005495
+      ],
+      "after": [
+        0.13454000613341732,
+        0.13981000306725036
+      ]
+    },
+    {
+      "limb": "leg",
+      "ring": 3,
+      "axis": 0.54,
+      "before": [
+        0.12000000104308128,
+        0.12399999937042594
+      ],
+      "after": [
+        0.1176000010315329,
+        0.1230699993671927
+      ]
+    },
+    {
+      "limb": "leg",
+      "ring": 4,
+      "axis": 0.44,
+      "before": [
+        0.15000000037252903,
+        0.1460000015795231
+      ],
+      "after": [
+        0.16912500036026662,
+        0.17483500185946466
+      ]
+    },
+    {
+      "limb": "leg",
+      "ring": 5,
+      "axis": 0.22,
+      "before": [
+        0.0820000022649765,
+        0.09200000017881393
+      ],
+      "after": [
+        0.08589500238808492,
+        0.09890000024189552
+      ]
+    }
+  ],
+  "outputBytes": 389692,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Artistic profile estimates; no native S2 visual verification.",
+    "No posed clipping or full self-intersection test.",
+    "Skin weights unchanged; joint refinement deferred."
+  ]
+}
