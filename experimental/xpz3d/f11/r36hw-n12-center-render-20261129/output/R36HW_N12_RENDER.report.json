@@ -1,0 +1,148 @@
+{
+  "version": "R36HW-N12-CPU",
+  "renderer": "pure Node CPU diagnostic rasterizer of actual N11 GLB triangles (S2-source-inspired illumination; NOT native S2)",
+  "framing": "pelvic-center ROI only; no full-body preview",
+  "sourceFile": "R36HW_N12_CENTER_ATTACHED.glb",
+  "sourceSHA256": "9dbc2e9ee158276d7080f12ae3f7a5b97298da149886d834d6609c94550536fe",
+  "totalTriangles": 2095,
+  "bodyTriangles": 1139,
+  "otherTriangles": 956,
+  "bodyMeshCount": 10,
+  "bounds": {
+    "min": [
+      -0.8640000224113464,
+      -0.18165811896324158,
+      0.036500003188848495
+    ],
+    "max": [
+      0.8640000224113464,
+      0.1605721265077591,
+      1.9795557260513306
+    ],
+    "center": [
+      0,
+      -0.010542996227741241,
+      1.0080278646200895
+    ],
+    "size": [
+      1.7280000448226929,
+      0.34223024547100067,
+      1.943055722862482
+    ]
+  },
+  "sourceShaderMath": [
+    "CalcNormal packed normalization approximation",
+    "CalcDirAmbLightDO direct + ambient"
+  ],
+  "syntheticCamera": true,
+  "syntheticLighting": true,
+  "images": [
+    {
+      "view": "front",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 2095,
+      "nondegenerateTriangles": 2017,
+      "projectedDegenerate": 78,
+      "fragmentWrites": 1553044,
+      "meanDirectionalTerm": 0.3486856577700659,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N12_CLAY_FRONT_DETAIL.png",
+      "bytes": 204600,
+      "sha256": "a684377cd20a1a0acea43dd7ae4c3cd3765c3103253c4a19b3d2802122de14d5"
+    },
+    {
+      "view": "oblique",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 2095,
+      "nondegenerateTriangles": 2095,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 1431372,
+      "meanDirectionalTerm": 0.36449579810752675,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N12_CLAY_OBLIQUE_DETAIL.png",
+      "bytes": 203343,
+      "sha256": "066325397d9aae1519488dcfdca8081accf93acf1ff444b7dffbe43ce9af8760"
+    },
+    {
+      "view": "side",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 2095,
+      "nondegenerateTriangles": 2095,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 840441,
+      "meanDirectionalTerm": 0.2993491995342643,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N12_CLAY_SIDE_DETAIL.png",
+      "bytes": 106133,
+      "sha256": "7ce64546b0cdadb2cad404e55df789f3c270032fe5acf5e2f1f9db0acd8bb15f"
+    },
+    {
+      "view": "front",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 2095,
+      "nondegenerateTriangles": 2017,
+      "projectedDegenerate": 78,
+      "fragmentWrites": 1553044,
+      "meanDirectionalTerm": 0.3486856577700659,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N12_SHADED_FRONT_DETAIL.png",
+      "bytes": 259279,
+      "sha256": "9caffa513a838b15d2fb7df67fb95f37f90e16ff5c14fed4d45d6f297c213d41"
+    },
+    {
+      "view": "oblique",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 2095,
+      "nondegenerateTriangles": 2095,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 1431372,
+      "meanDirectionalTerm": 0.36449579810752675,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N12_SHADED_OBLIQUE_DETAIL.png",
+      "bytes": 270845,
+      "sha256": "c617cc8e940634ad79070ff67fabd641514d04e6411421821ae2779430b400d1"
+    },
+    {
+      "view": "side",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 2095,
+      "nondegenerateTriangles": 2095,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 840441,
+      "meanDirectionalTerm": 0.2993491995342643,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N12_SHADED_SIDE_DETAIL.png",
+      "bytes": 133193,
+      "sha256": "39cd834ba102e7f70449807df0743dd473b75958e7e7470fb793b8213db340b7"
+    }
+  ],
+  "limitations": [
+    "static glTF bind-pose positions; no animated skinning",
+    "does not sample embedded N4 baseColor PNG, micro-normal atlas, ORM, or native S2 bump shader",
+    "not Direct3D 9 execution or screenshot"
+  ]
+}
