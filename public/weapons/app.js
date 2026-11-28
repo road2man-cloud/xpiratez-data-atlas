@@ -560,6 +560,9 @@ async function openDetail(id){
   if(rating)html+=window.XPStandardEvaluation.renderDetail(rating);
   $("#detailBody").innerHTML=html;
   if(!$("#detailDialog").open)$("#detailDialog").showModal();
+  const forwardHost=document.createElement('div');$("#detailBody").append(forwardHost);
+  const forwardSpecs=[...new Set(detailIds)].map(id=>({kind:'item',id,label:id===r.itemId?'무기':'탄약·위력 출처'}));
+  import('../campaign-forward-evidence-v1.js').then(m=>{if(forwardHost.isConnected)m.mountForwardAssetEvidence(forwardHost,forwardSpecs,{legacy:true});}).catch(e=>{if(forwardHost.isConnected)forwardHost.textContent='정방향 근거 로드 실패: '+e.message;});
 }
 // Minimal public bridge for the integrated ranking panel. Keep the original
 // weapon mode inspector, armor profiles and lazy-loaded rule details intact.
