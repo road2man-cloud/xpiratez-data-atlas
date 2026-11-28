@@ -1,0 +1,394 @@
+{
+  "schema": "TARGETED_CONDITIONAL_TRANSFORMATION_CONTINUATIONS_V1",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceGraphSha256": "43d17c8034d8850511a8d35466d670fbbc88d1cac5371b3085b1e3d1ad257d73",
+  "sourceLedgerFingerprint": "0276bc79ebb3654fa7468d3b512317cb6d79b622db43b41c02ab8f8b555d8b7c",
+  "body": "STR_SOLDIER_HERO",
+  "targets": [
+    "STR_HERO_GOLD_TRAINING"
+  ],
+  "helpers": [
+    "STR_PROUD_WARRIOR",
+    "STR_PARIAH_TRAINING",
+    "STR_HOLY_WARRIOR_TRAINING",
+    "STR_BREAD_AND_FISHES_TRAINING",
+    "STR_GREEN_BEAUTY",
+    "STR_UBERIZATION",
+    "STR_JUDICAL_EDUCATION",
+    "STR_CAPTAINS_11",
+    "STR_OFFICER_TRAINING",
+    "STR_BRIDES_TO_THE_QUEEN",
+    "STR_PERSONAL_ATTENTION",
+    "STR_SUN_WARRIORS_TRAINING",
+    "STR_BOOT_CAMP_TRAINING",
+    "STR_SCHOOL_OF_HARD_KNOCKS"
+  ],
+  "sourceRoutes": 188,
+  "candidateJobs": 188,
+  "selectedSeeds": 5,
+  "attempts": [
+    {
+      "route": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:15",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 6,
+      "status": "TARGET_TRANSFORM_REPLAYED",
+      "trials": [],
+      "active": true,
+      "gap": 6,
+      "actualGateVector": [
+        85,
+        121,
+        57,
+        150,
+        84,
+        129,
+        91,
+        63,
+        92,
+        74,
+        106,
+        201
+      ],
+      "statGain": 394
+    },
+    {
+      "route": "MISSCAR:83ea84aed068cc2de7317d0a6c3fd9cbcc30519696ccc37900ed7dab15b533d7:34",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 1,
+      "hintGap": 0,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": false,
+      "gap": 0,
+      "actualGateVector": [
+        99,
+        130,
+        69,
+        160,
+        93,
+        133,
+        95,
+        77,
+        76,
+        49,
+        115,
+        183
+      ],
+      "statGain": 404
+    },
+    {
+      "route": "MISSCAR:4fcaa320aa8e5dc157e591a833a9e641d0abc810898df7b9dd11fa9f67316d37:21",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 1,
+      "hintGap": 10,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": false,
+      "gap": 10,
+      "actualGateVector": [
+        81,
+        127,
+        65,
+        150,
+        79,
+        118,
+        91,
+        67,
+        90,
+        74,
+        102,
+        207
+      ],
+      "statGain": 380
+    },
+    {
+      "route": "MISSCAR:122bd822140048f32fd1085081f5328e33dc4dd5ec6c9beff29aad429c5ae06a:7",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 1,
+      "hintGap": 10,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": false,
+      "gap": 10,
+      "actualGateVector": [
+        80,
+        120,
+        60,
+        150,
+        83,
+        125,
+        90,
+        60,
+        85,
+        70,
+        100,
+        187
+      ],
+      "statGain": 388
+    },
+    {
+      "route": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:16",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 6,
+      "status": "TARGET_TRANSFORM_REPLAYED",
+      "trials": [],
+      "active": true,
+      "gap": 6,
+      "actualGateVector": [
+        85,
+        121,
+        57,
+        150,
+        84,
+        129,
+        91,
+        63,
+        92,
+        74,
+        106,
+        201
+      ],
+      "statGain": 394
+    }
+  ],
+  "produced": [
+    {
+      "sourceRoute": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:15",
+      "sourceGraph": "056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be",
+      "sourceNode": 15,
+      "branch": "branch-f895d2081b9effabafd34560",
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "beforeStateHash": "823b4774e12eb0c4eab8639809adfd9ea1e95e5a1951a0f96d56f9ffef94b185",
+      "afterStateHash": "057f061d974f7443cd95c1c2ca2de427af22db9d1850779d0cb3a71177167284",
+      "prefixActionHash": "084f969b86a0ea877d4b9ad4ea5cc13cd0e0a2dd6075c8224e55f67b74801af4",
+      "fullActionHash": "6644544799e158f21053d489d3d411afa3d50666f3f8eef50cc5f0634a5f0735",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "allowedDifficulties": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "before": [
+        84,
+        120,
+        59,
+        150,
+        80,
+        128,
+        90,
+        65,
+        91,
+        71,
+        105,
+        200
+      ],
+      "after": [
+        114,
+        130,
+        59,
+        150,
+        100,
+        128,
+        90,
+        65,
+        91,
+        71,
+        115,
+        200
+      ],
+      "afterCap": [
+        114,
+        130,
+        59,
+        150,
+        100,
+        128,
+        90,
+        65,
+        91,
+        71,
+        115,
+        200
+      ],
+      "medalActions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 4,
+          "statGain": 394,
+          "assumption": true
+        },
+        {
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "statGain": 394,
+          "assumption": true
+        }
+      ],
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 4,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "externalInputs",
+          "items": {
+            "STR_CRACK": 36,
+            "STR_GLAMOUR": 36
+          },
+          "functions": [],
+          "funds": 0,
+          "reason": "Conditional growth continuation STR_HERO_GOLD_TRAINING",
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_HERO_GOLD_TRAINING"
+        }
+      ],
+      "status": "TARGET_TRANSFORM_REPLAYED",
+      "remaining": [],
+      "actualGameCertified": false
+    },
+    {
+      "sourceRoute": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:16",
+      "sourceGraph": "056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be",
+      "sourceNode": 16,
+      "branch": "branch-f895d2081b9effabafd34560",
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "beforeStateHash": "297d3261cd7b6e0071494cbcde8cfccf988e7323daeb78f27a6843157ed6bcc6",
+      "afterStateHash": "6c57707fcc8b00f1e290b14331453c075e751b876701db6925faab7303df5f1c",
+      "prefixActionHash": "7747d56746c1f2ea6c7c7b9e27124eb907fb0e46554ccebb4bc7e6178d1feed6",
+      "fullActionHash": "290f4e434ba2f29f6a3e72def08fcaeee74a748203d6664a51ab12fdf902685c",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "allowedDifficulties": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "before": [
+        84,
+        120,
+        59,
+        150,
+        80,
+        128,
+        90,
+        65,
+        91,
+        71,
+        105,
+        200
+      ],
+      "after": [
+        114,
+        130,
+        59,
+        150,
+        100,
+        128,
+        90,
+        65,
+        91,
+        71,
+        115,
+        200
+      ],
+      "afterCap": [
+        114,
+        130,
+        59,
+        150,
+        100,
+        128,
+        90,
+        65,
+        91,
+        71,
+        115,
+        200
+      ],
+      "medalActions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 4,
+          "statGain": 394,
+          "assumption": true
+        },
+        {
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "statGain": 394,
+          "assumption": true
+        }
+      ],
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 4,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "externalInputs",
+          "items": {
+            "STR_CRACK": 36,
+            "STR_GLAMOUR": 36
+          },
+          "functions": [],
+          "funds": 0,
+          "reason": "Conditional growth continuation STR_HERO_GOLD_TRAINING",
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_HERO_GOLD_TRAINING"
+        }
+      ],
+      "status": "TARGET_TRANSFORM_REPLAYED",
+      "remaining": [],
+      "actualGameCertified": false
+    }
+  ],
+  "partial": [],
+  "actualGameCertified": false,
+  "registered": false,
+  "finalAdmission": false,
+  "medalGatePolicy": {
+    "id": "OXCE_871_STAT_GAIN_DEBRIEF_GATE_V1",
+    "statGainCriterion": "totalStatGain",
+    "source": "tools/headless-simulator/native/oxce-source.tar.gz",
+    "anchors": [
+      "src/Battlescape/DebriefingState.cpp: statistics delta = currentStats - initStats",
+      "src/Savegame/SoldierDiary.cpp: _statGainTotal, manageCommendations"
+    ],
+    "debriefAssumed": true,
+    "ordinaryCareerScoreAssumed": true,
+    "actualGameCertified": false
+  },
+  "planCalls": 0,
+  "elapsedMs": 39039
+}

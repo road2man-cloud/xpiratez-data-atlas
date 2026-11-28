@@ -14,6 +14,7 @@ import {createStagedResearch} from "./population-recruitment-staged-research.mjs
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 import {auditOriginCampaignContext} from "../public/soldiers/modern/origin-campaign-context.js";
 import {STAT_KEYS} from "../public/soldiers/modern/eligibility.js";
+import {createStatGainGatePreparation,statGain} from "./population-stat-gain-gate-preparation.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)??d;
 const read=p=>JSON.parse(fs.readFileSync(p));
 const decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
@@ -26,6 +27,7 @@ assert.equal(data.meta.source.metadataSha256,ledger.sourceMetadataSha256);
 assert.equal(ledger.sourceMetadataSha256,db.sourceMetadataSha256);
 assert.equal(key(ledger.graphs),ledger.sourceGraphSha256);
 const rp=createSharedCareerReplay(data,ledger.summary),materials=createResearchMaterialPolicy(data);
+const medalPrep=createStatGainGatePreparation(data,rp);
 const body=arg("body","STR_SOLDIER_HERO");
 const targets=arg("targets","STR_HERO_RED_TRAINING,STR_HERO_GREEN_TRAINING,STR_HERO_GOLD_TRAINING,STR_PARIAH_TRAINING").split(",").filter(Boolean);
 const helpers=arg("helpers","STR_PROUD_WARRIOR,STR_PARIAH_TRAINING,STR_HOLY_WARRIOR_TRAINING,STR_BREAD_AND_FISHES_TRAINING,STR_GREEN_BEAUTY,STR_UBERIZATION,STR_JUDICAL_EDUCATION,STR_CAPTAINS_11,STR_OFFICER_TRAINING,STR_BRIDES_TO_THE_QUEEN,STR_PERSONAL_ATTENTION,STR_SUN_WARRIORS_TRAINING,STR_BOOT_CAMP_TRAINING,STR_SCHOOL_OF_HARD_KNOCKS").split(",").filter(Boolean);
@@ -115,17 +117,18 @@ function propose(j,w,rule){
 const unique=new Set();
 function save(j,w,suffix,kind,rec){
   if(!suffix.length)return;
-  const actual=rp.replay(suffix,w),after=rp.finish(actual);
+  let actual=w;const medalActions=[];for(const a of suffix){if(a.type==="conditionalMedal")medalActions.push({medal:a.medal,level:a.level,statGain:statGain(member(actual).state),assumption:true});actual=rp.apply(actual,a);}assert(!actual.pendingFree);const after=rp.finish(actual);
   const allowed=valid(j.g,j.b,[...j.full,...suffix],actual,suffix,j.r.sourceNode);
   assert.equal(after.body,body,"Unexpected body change");
   const sig=key([j.id,suffix]);if(unique.has(sig))return;unique.add(sig);
-  const evidence={sourceRoute:j.id,sourceGraph:j.r.sourceGraph,sourceNode:j.r.sourceNode,branch:j.r.branch,origin:j.r.origin,beforeStateHash:exactWorld(w),afterStateHash:exactWorld(actual),prefixActionHash:j.r.fullActionHash,fullActionHash:key([...j.full,...suffix]),target:j.target,allowedDifficulties:allowed,before:rp.finish(w).permanentVector,after:after.permanentVector,afterCap:after.permanentCapVector,suffix,status:kind,remaining:rec.remaining||[],actualGameCertified:false};
+  const evidence={sourceRoute:j.id,sourceGraph:j.r.sourceGraph,sourceNode:j.r.sourceNode,branch:j.r.branch,origin:j.r.origin,beforeStateHash:exactWorld(w),afterStateHash:exactWorld(actual),prefixActionHash:j.r.fullActionHash,fullActionHash:key([...j.full,...suffix]),target:j.target,allowedDifficulties:allowed,before:rp.finish(w).permanentVector,after:after.permanentVector,afterCap:after.permanentCapVector,medalActions,suffix,status:kind,remaining:rec.remaining||[],actualGameCertified:false};
   if(kind==="TARGET_TRANSFORM_REPLAYED"){assert(hasRule(actual,j.target)&&!hasRule(w,j.target));receipt.produced.push(evidence);}
   else receipt.partial.push(evidence);
 }
 function transform(w,rule,steps=[]){
   const base={world:w,steps};const direct=rp.transform(base,rule);if(direct)return direct;
-  try{const grown=rp.grow(base);if(grown.steps.length>steps.length)return rp.transform(grown,rule);}catch{}
+  const bases=[base];try{const grown=rp.grow(base);if(grown.steps.length>steps.length){const q=rp.transform(grown,rule);if(q)return q;bases.push(grown);}}catch{}
+  for(const b of bases)for(const c of medalPrep.candidates(b,rule)){const q=rp.transform(c,rule);if(q)return q;}
   return null;
 }
 for(const j of seeds){
@@ -136,6 +139,7 @@ for(const j of seeds){
     if(hasRule(w,j.target)){rec.status="ALREADY_APPLIED";continue;}
     rec.active=ruleGoals(target).every(k=>active(w,k));
     rec.gap=vectorGap(rp.finish(w).permanentVector,target);
+    rec.actualGateVector=target.includeBonusesForMinStats?rp.finish(w).vector:rp.finish(w).raw;rec.statGain=statGain(member(w).state);
     let q=transform(w,target);
     if(q){save(j,w,q.steps,"TARGET_TRANSFORM_REPLAYED",rec);rec.status="TARGET_TRANSFORM_REPLAYED";continue;}
     // Prefer exact active support transformations; their projected improvement
@@ -174,6 +178,7 @@ for(const j of seeds){
     }
   }catch(e){rec.status="REJECTED";rec.error=String(e.message).slice(0,400);}
 }
+receipt.medalGatePolicy=medalPrep.policy;
 receipt.planCalls=plans;
 receipt.elapsedMs=Math.round(performance.now()-start);
 fs.mkdirSync(path.dirname(out),{recursive:true});
