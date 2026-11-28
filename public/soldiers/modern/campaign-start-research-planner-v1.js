@@ -4,6 +4,7 @@
 // actions; origin-witness -> campaign-proof owns all research state changes.
 import {applyOriginWitnessStep,originEventScript} from './origin-witness.js';
 import {campaignStartWorld,labVerdict,availableResearch,applyCampaignStartStep} from './campaign-start-gate-v1.js';
+import {purchaseRequirements} from './campaign-start-reachability-v1.js';
 import {facilityRules,facilityMaterials,freeFacilityPosition} from './campaign-start-construction-v1.js';
 import {eventItemRoutes} from './campaign-start-event-rules-v1.js';
 import {auditOriginCampaignContext} from './origin-campaign-context.js';
@@ -113,7 +114,7 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
     n.world=world;n.steps.push(step);return n;
   }
   // Supply is an actual sequence of manufacture actions, never a resource grant.
-  // Selected fixed event bundles, research grants and conditional construction supported; salaries and market purchase remain gaps.
+  // Research-only: source-gated purchases, facilities, fixed events and manufacturing; no monetary simulation.
   function supply(n,{items={},functions=[],funds=0},reason,budget=null,goalSet=new Set(),depth=0){
     budget ||= {attempts:0,last:null,failures:[],deadEnds:[]};
     if(depth>maxDepth)throw Error('SUPPLY_DEPTH_LIMIT');
@@ -135,16 +136,8 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
               trial=next;
             }
             if(trial.world.baseFunctions.has(f)){solved=trial;break;}
-            const pending=trial.world.baseLayout?.find(q=>q.id===id&&!q.complete);
-            if(pending){
-              append(trial,{type:'finishFacility',id,x:pending.x,y:pending.y,waitDays:Math.max(0,pending.readyDay-trial.world.elapsedBuildDays)});
-            }else{
-              supply(trial,{items:facilityMaterials(r),functions:arr(r.requiresBaseFunc),funds:r.buildCost},'facility '+id,budget,goalSet,depth+1);
-              const pos=freeFacilityPosition(trial.world,id,data);
-              if(!pos)throw Error('FACILITY_NO_POSITION:'+id);
-              append(trial,{type:'buildFacility',id,...pos});
-              append(trial,{type:'finishFacility',id,...pos,waitDays:r.buildTime});
-            }
+            supply(trial,{items:facilityMaterials(r),functions:arr(r.requiresBaseFunc)},'facility '+id,budget,goalSet,depth+1);
+            append(trial,{type:'acquireFacility',id});
             if(!trial.world.baseFunctions.has(f))throw Error('FACILITY_FUNCTION_SHORTFALL:'+f);
             solved=trial;break;
           }catch(e){budget.last=e.message;}
@@ -187,6 +180,22 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
             solved=trial;break;
           }catch(e){budget.last=e.message;}
         }
+        const purchase=purchaseRequirements(data,id);
+        if(!solved&&purchase&&++budget.attempts<=maxAttempts){
+          let trial=clone(n);
+          try{
+            for(const dep of purchase.research){
+              const next=solve(dep,trial,new Set(),depth+1,budget,goalSet);
+              if(!next)throw Error('PURCHASE_RESEARCH_UNRESOLVED:'+dep);
+              trial=next;
+            }
+            supply(trial,{functions:purchase.functions},'purchase '+id,budget,goalSet,depth+1);
+            const missing=Math.max(0,qty-Number(trial.world.items[id]||0));
+            // Do not silently advance months or bypass a monthly quantity limit.
+            if(missing)append(trial,{type:'acquirePurchase',item:id,count:missing});
+            solved=trial;
+          }catch(e){budget.last=e.message;}
+        }
         for(const recipe of solved?[]:arr(data.itemSupply?.[id]?.manufacture)){
           if(++budget.attempts>maxAttempts)break;
           const q=Number(recipe.quantity??recipe.count??1);
@@ -213,7 +222,7 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
       Object.assign(n,solved);
     }
     if(checkFunctions().length)throw Error('UNRESOLVED_FUNCTION: '+checkFunctions().join(','));
-    if(n.world.funds<funds)throw Error('UNRESOLVED_FUNDS: '+funds+' / '+n.world.funds);
+    // Monetary affordability is deliberately outside research reachability.
     // A later recipe may consume an earlier requested material.
     for(const [id,qty] of Object.entries(items))if(Number(n.world.items[id]||0)<qty)
       throw Error('JOINT_SUPPLY_SHORTFALL: '+id);
