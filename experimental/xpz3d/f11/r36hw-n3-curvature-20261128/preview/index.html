@@ -23,8 +23,8 @@ small,.hint{color:#aebdc9;font-size:12px}#status{white-space:pre-wrap;margin-top
 </head><body>
 <header><h1>R36HW-N3 · 기하 구조 개선 비교</h1><p>원본 메시를 로딩한 Three.js 진단 뷰어입니다. 네이티브 S2 화면이 아닙니다. 사진은 텍스처로 투영하지 않았습니다.</p></header>
 <main><aside>
-<label for="left">왼쪽 모델</label><select id="left"><option value="hw">R36HW 원본(의복)</option><option value="n2">R36HW N2</option><option value="n3">R36HW N3</option><option value="n4">R36HW N4 · 재질 개선</option><option value="n5">R36HW N5 · 이음매 연결</option></select>
-<label for="right">오른쪽 모델</label><select id="right"><option value="n5">R36HW N5 · 이음매 연결</option><option value="n3">R36HW N3</option><option value="n2">R36HW N2</option><option value="n4">R36HW N4 · 재질 개선</option><option value="hw">R36HW 원본(의복)</option></select>
+<label for="left">왼쪽 모델</label><select id="left"><option value="hw">R36HW 원본(의복)</option><option value="n2">R36HW N2</option><option value="n3">R36HW N3</option><option value="n4">R36HW N4 · 재질 개선</option><option value="n5">R36HW N5 · 이음매 연결</option><option value="n6">R36HW N6 · 원본 표면 재구성</option></select>
+<label for="right">오른쪽 모델</label><select id="right"><option value="n6">R36HW N6 · 원본 표면 재구성</option><option value="n5">R36HW N5 · 이음매 연결</option><option value="n3">R36HW N3</option><option value="n2">R36HW N2</option><option value="n4">R36HW N4 · 재질 개선</option><option value="hw">R36HW 원본(의복)</option></select>
 <label for="surface">표면</label><select id="surface"><option value="clay">CLAY · 텍스처 없는 메시 비교</option><option value="textured">PBR · 원본 피부·색상</option><option value="wire">WIRE · 삼각형 경계</option></select>
 <label>카메라 방향</label><div class="grid"><button type="button" data-camera="front">정면</button><button type="button" data-camera="oblique">사선 35°</button><button type="button" data-camera="side">측면</button><button type="button" data-camera="full">전신</button></div>
 <label><input type="checkbox" id="rotation"> 자동 회전</label>
@@ -44,9 +44,10 @@ const $=id=>document.getElementById(id),canvas=$('canvas'),paths={
  n2:'../../r36hw-n2-local-sculpt-20261128/output/R36HW_N2_REGION_SCULPT.glb',
  n3:'../output/R36HW_N3_CURVATURE.glb',
  n4:'../../r36hw-n4-skin-material-20261128/output/R36HW_N4_SKIN_DETAIL.glb',
- n5:'../../r36hw-n5-skin-seams-20261128/output/R36HW_N5_SEAM_LINK.glb'
+ n5:'../../r36hw-n5-skin-seams-20261128/output/R36HW_N5_SEAM_LINK.glb',
+ n6:'../../r36hw-n6-surface-rebase-20261128/output/R36HW_N6_REBASED_SURFACE.glb'
 };
-const names={hw:'R36HW 원본',n2:'R36HW N2',n3:'R36HW N3',n4:'R36HW N4',n5:'R36HW N5'};
+const names={hw:'R36HW 원본',n2:'R36HW N2',n3:'R36HW N3',n4:'R36HW N4',n5:'R36HW N5',n6:'R36HW N6'};
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
 renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
 renderer.outputColorSpace=THREE.SRGBColorSpace;
