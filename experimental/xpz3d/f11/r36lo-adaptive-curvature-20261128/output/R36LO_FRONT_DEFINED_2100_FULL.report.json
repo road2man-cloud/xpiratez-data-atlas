@@ -1,0 +1,115 @@
+{
+  "version": "R36LO",
+  "variant": "defined",
+  "sourceTopology": {
+    "vertices": 562,
+    "faces": 1120,
+    "edges": 1680,
+    "boundary": 0,
+    "nonManifold": 0
+  },
+  "outputTopology": {
+    "vertices": 568,
+    "faces": 1132,
+    "edges": 1698,
+    "boundary": 0,
+    "nonManifold": 0
+  },
+  "chosenEdges": [
+    {
+      "midpoint": [
+        -0.006701703183352947,
+        -0.1245092898607254,
+        0.9572111070156097
+      ],
+      "score": 0.09675994455622944,
+      "curvatureOffset": 0.0035,
+      "faceIds": [
+        459,
+        483
+      ]
+    },
+    {
+      "midpoint": [
+        0.0010796589776873589,
+        -0.07839346677064896,
+        0.9045731723308563
+      ],
+      "score": 0.09643866294147083,
+      "curvatureOffset": 0.0035,
+      "faceIds": [
+        897,
+        1047
+      ]
+    },
+    {
+      "midpoint": [
+        0.001083222683519125,
+        -0.030609299428761005,
+        0.8612987995147705
+      ],
+      "score": 0.0916518057538783,
+      "curvatureOffset": 0.0035,
+      "faceIds": [
+        405,
+        406
+      ]
+    },
+    {
+      "midpoint": [
+        0.018157101119868457,
+        -0.09331747516989708,
+        0.921477198600769
+      ],
+      "score": 0.08372247819055181,
+      "curvatureOffset": -0.0035,
+      "faceIds": [
+        440,
+        896
+      ]
+    },
+    {
+      "midpoint": [
+        0.0017522007692605257,
+        -0.05791913531720638,
+        0.8931559920310974
+      ],
+      "score": 0.07899250950189052,
+      "curvatureOffset": 0.0035,
+      "faceIds": [
+        1023,
+        1025
+      ]
+    },
+    {
+      "midpoint": [
+        0.024669581092894077,
+        -0.08582622557878494,
+        0.9076861143112183
+      ],
+      "score": 0.07574816146735075,
+      "curvatureOffset": -0.0035,
+      "faceIds": [
+        439,
+        1043
+      ]
+    }
+  ],
+  "addedBodyTriangles": 12,
+  "selectedSharedEdges": 6,
+  "addedRenderVertices": 12,
+  "changedGeometry": true,
+  "headUnmodified": true,
+  "materialTextureRebake": false,
+  "UVInterpolationWithinOriginalIslands": true,
+  "input": "R36LN_BALANCED_2088_FULL.glb",
+  "inputSHA256": "dba80a7521e67b2b19e351ff094bf78df1ea84fc504e1cacc26e2a76f3e584ff",
+  "output": "R36LO_FRONT_DEFINED_2100_FULL.glb",
+  "outputSHA256": "018dca2e6b59daf659449a2940d3a1fbd38015e5db2cd101a60777b133a6d629",
+  "bytes": 4123828,
+  "totalTriangles": 2100,
+  "bodyTriangles": 1132,
+  "headTriangles": 968,
+  "skeletonJoints": 63,
+  "skinMaterialNormalScale": 0.2
+}
