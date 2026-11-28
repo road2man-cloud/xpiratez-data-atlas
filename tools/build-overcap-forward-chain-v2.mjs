@@ -8,6 +8,7 @@ import {gzipSync,gunzipSync} from "node:zlib";
 import {createForwardResearch,SCHEMA} from "./atlas-overcap-forward-research-v2.mjs";
 import {exactStateHash} from "./origin-pair-exact-prefix-checkpoint.mjs";
 import {key} from "./population-research-career-core.mjs";
+import {assertForwardPurchaseGate} from "./atlas-overcap-forward-purchase-gate-v3.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)||d;
 const goalList=arg("goals","facility:STR_HYDROPONICS,STR_EXCAVATION,STR_PRIMITIVE_WEAPONS_2,STR_FLINTLOCKS_PRODUCTION,STR_STEAM_POWER").split(",").filter(Boolean);
 const label=arg("label","foundation"),baseName=arg("base","goal-str_personal_labs"),maxSteps=Number(arg("steps","24"));
@@ -70,7 +71,8 @@ assert(wanted.size<=2000,"Goal hint closure exceeds bounded policy");
 function worldAt(id){
  if(worlds.has(id))return worlds.get(id);
  const n=nodes[id],e=edges[n.parent];assert(e&&e.to===id&&e.from<id);
- const w=engine.apply(worldAt(e.from),e.action,nodes[e.from].firstRoot).world;
+ const prior=worldAt(e.from);assertForwardPurchaseGate(prior,e.action,data);
+ const w=engine.apply(prior,e.action,nodes[e.from].firstRoot).world;
  assert.equal(exactStateHash(w),n.stateHash,"State mismatch "+id);worlds.set(id,w);return w;
 }
 function insert(w,root,parent,depth,researchDepth){
@@ -85,6 +87,7 @@ function expand(n){
  const results=[];
  for(const {action,evidence} of choices){
   try{
+   assertForwardPurchaseGate(w,action,data);
    const r=engine.apply(w,action,n.firstRoot),next=r.world,id=edges.length;
    const to=insert(next,n.firstRoot,id,n.depth+1,n.researchDepth+Number(["research","repeatResearch"].includes(action.type)));
    const e={id,from:n.id,to,action,evidence,added:sort([...next.researched].filter(k=>!w.researched.has(k))),closed:sort([...next.disabled].filter(k=>!w.disabled.has(k))),reopened:sort([...w.disabled].filter(k=>!next.disabled.has(k))),notes:r.notes,conditional:r.conditional};
@@ -144,7 +147,7 @@ for(const root of roots){
  for(let i=0;i<maxSteps&&!allGoals(n);i++){
   const choices=expand(n).filter(e=>!visited.has(e.to)).map(e=>({e,score:nextPriority(n,e)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score||a.e.id-b.e.id);
   if(!choices.length){reason="NO_PROGRESS_EDGE_WITHIN_MILESTONE_HINT";break;}
-  const e=choices[0].e;selected.push(e.id);n=nodes[e.to];visited.add(n.id);
+  const e=choices[0].e;assertForwardPurchaseGate(n,e.action,data);selected.push(e.id);n=nodes[e.to];visited.add(n.id);
  }
  const reached=allGoals(n);
  if(!reached&&!reason)reason="STEP_BUDGET";
