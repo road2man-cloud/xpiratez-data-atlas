@@ -1,71 +1,74 @@
 'use strict';
 /**
- * Split projected UV paint masks into drawable connected islands.
- * Uses real R36LS atlas pixels; does not synthesize shadow or anatomy.
- * node split_uv_islands.cjs INPUT_UV_TEMPLATE_DIR
+ * R36LT drawable UV island extraction. Converts measured atlas regions into
+ * independent image-editable cropped PNGs (source, mask, actual UV wire).
+ * Never paints missing anatomy, shadows, highlights, or inferred structures.
+ * Usage: node split_uv_islands.cjs output/uv-template
  */
 const fs=require('fs'),path=require('path');
-const {decodePNG,encodePNG}=require('../../r36lp-skin-rebake-20261128/source/build_r36lp.cjs');
-const need=(v,msg)=>{if(!v)throw Error(msg)};
-function components(mask,w,h,minPixels=256) {
- const seen=new Uint8Array(w*h),q=new Int32Array(w*h),out=[];
+const {decodePNG}=require('./png_rgba.cjs');
+const {encodePNG}=require('../../r36lp-skin-rebake-20261128/source/build_r36lp.cjs');
+const need=(v,s)=>{if(!v)throw Error(s)};
+function components(rgba,w,h,minPixels=256){
+ const seen=new Uint8Array(w*h),queue=new Int32Array(w*h),list=[];
  for(let i=0;i<w*h;i++){
-  if(seen[i]||mask[i*4+3]<128)continue;
-  let head=0,tail=1;seen[i]=1;q[0]=i;
-  let x0=w,y0=h,x1=-1,y1=-1;
+  if(seen[i]||rgba[i*4+3]<128)continue;
+  let head=0,tail=1,x0=w,y0=h,x1=-1,y1=-1;
+  seen[i]=1;queue[0]=i;
   while(head<tail){
-   const id=q[head++],x=id%w,y=(id/w)|0;
-   if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
-   const visit=j=>{if(!seen[j]&&mask[j*4+3]>=128){seen[j]=1;q[tail++]=j}};
-   if(x>0)visit(id-1);if(x<w-1)visit(id+1);
-   if(y>0)visit(id-w);if(y<h-1)visit(id+w);
+   const k=queue[head++],x=k%w,y=Math.floor(k/w);
+   x0=Math.min(x,x0);x1=Math.max(x,x1);y0=Math.min(y,y0);y1=Math.max(y,y1);
+   const touch=j=>{if(!seen[j]&&rgba[j*4+3]>=128){seen[j]=1;queue[tail++]=j}};
+   if(x>0)touch(k-1);if(x<w-1)touch(k+1);
+   if(y>0)touch(k-w);if(y<h-1)touch(k+w);
   }
-  if(tail>=minPixels)out.push({pixels:tail,bbox:{x:x0,y:y0,w:x1-x0+1,h:y1-y0+1},ids:Uint32Array.from(q.subarray(0,tail))});
+  if(tail>=minPixels)list.push({pixels:tail,bbox:{x:x0,y:y0,w:x1-x0+1,h:y1-y0+1},
+    ids:Uint32Array.from(queue.subarray(0,tail))});
  }
- out.sort((a,b)=>b.pixels-a.pixels);
- return out;
+ list.sort((a,b)=>b.pixels-a.pixels);
+ return list;
 }
-function run(dir){
- const report=JSON.parse(fs.readFileSync(path.join(dir,'R36LT_UV_TEMPLATE.report.json'),'utf8'));
- const result=[];
- for(const region of report.regions){
-  if(!region.selectedPixels)continue;
-  const label=region.direction.toUpperCase();
-  const alpha=decodePNG(fs.readFileSync(path.join(dir,region.maskFile)));
-  const src=decodePNG(fs.readFileSync(path.join(dir,region.sourceCropFile)));
-  const sourceRect=region.crop;
-  need(alpha.w===2048&&alpha.h===2048,'invalid UV template mask');
-  need(src.w===sourceRect.width&&src.h===sourceRect.height,'source crop mismatch');
-  const pieces=components(alpha.pix,alpha.w,alpha.h);
-  const list=[];
-  for(let i=0;i<Math.min(pieces.length,12);i++){
-   const c=pieces[i],pad=6;
-   const bx=Math.max(0,c.bbox.x-pad),by=Math.max(0,c.bbox.y-pad);
-   const bw=Math.min(alpha.w,c.bbox.x+c.bbox.w+pad)-bx;
-   const bh=Math.min(alpha.h,c.bbox.y+c.bbox.h+pad)-by;
-   const pixels=Buffer.alloc(bw*bh*4),wire=Buffer.alloc(bw*bh*4);
-   for(const old of c.ids){
-     const x=old%alpha.w,y=(old/alpha.w)|0;
-     const sx=x-sourceRect.x,sy=y-sourceRect.y;
-     if(sx<0||sy<0||sx>=src.w||sy>=src.h)continue;
-     const target=4*((y-by)*bw+(x-bx)),source=4*(sy*src.w+sx);
-     for(let k=0;k<4;k++)pixels[target+k]=src.pix[source+k];
-     // This guide marks exact pixels only; no guessed UV coordinates.
-     wire[target]=56;wire[target+1]=233;wire[target+2]=204;wire[target+3]=255;
+function run(folder,{maxIslands=12,minPixels=256}={}){
+ need(fs.existsSync(folder),'source template directory unavailable');
+ const template=JSON.parse(fs.readFileSync(path.join(folder,'R36LT_UV_TEMPLATE.report.json'),'utf8'));
+ const out=[];
+ for(const region of template.regions){
+  if(!region.selectedPixels||!region.crop)continue;
+  const label=region.direction.toUpperCase(),mask=decodePNG(fs.readFileSync(path.join(folder,region.maskFile)));
+  const base=decodePNG(fs.readFileSync(path.join(folder,region.sourceCropFile)));
+  const wire=decodePNG(fs.readFileSync(path.join(folder,region.wireCropFile)));
+  need(mask.w===2048&&mask.h===2048,'expected full UV mask');
+  for(const im of [base,wire])need(im.w===region.crop.width&&im.h===region.crop.height,'source crop and UV wire mismatch');
+  const pieces=components(mask.pix,mask.w,mask.h,minPixels),selections=pieces.slice(0,maxIslands),islands=[];
+  for(let i=0;i<selections.length;i++){
+   const {bbox,ids,pixels}=selections[i],pad=6;
+   const bx=Math.max(0,bbox.x-pad),by=Math.max(0,bbox.y-pad);
+   const width=Math.min(mask.w,bbox.x+bbox.w+pad)-bx,height=Math.min(mask.h,bbox.y+bbox.h+pad)-by;
+   const patch=Buffer.alloc(width*height*4),wirePatch=Buffer.alloc(patch.length),alpha=Buffer.alloc(patch.length);
+   for(const j of ids){
+     const x=j%mask.w,y=Math.floor(j/mask.w),srcX=x-region.crop.x,srcY=y-region.crop.y;
+     if(srcX<0||srcY<0||srcX>=base.w||srcY>=base.h)continue;
+     const si=(srcY*base.w+srcX)*4,di=((y-by)*width+x-bx)*4;
+     for(let ch=0;ch<4;ch++){patch[di+ch]=base.pix[si+ch];wirePatch[di+ch]=wire.pix[si+ch];}
+     alpha[di]=255;alpha[di+1]=255;alpha[di+2]=255;alpha[di+3]=255;
    }
-   const name='R36LT_'+label+'_UV_ISLAND_'+String(i+1).padStart(2,'0');
-   fs.writeFileSync(path.join(dir,name+'_SOURCE.png'),encodePNG(pixels,bw,bh));
-   fs.writeFileSync(path.join(dir,name+'_MASK.png'),encodePNG(wire,bw,bh));
-   list.push({name,pixels:c.pixels,atlasBounds:{x:bx,y:by,width:bw,height:bh}});
+   const stem='R36LT_'+label+'_UV_ISLAND_'+String(i+1).padStart(2,'0');
+   for(const [name,buf] of [['SOURCE',patch],['MASK',alpha],['WIRE',wirePatch]])
+      fs.writeFileSync(path.join(folder,stem+'_'+name+'.png'),encodePNG(buf,width,height));
+   islands.push({stem,pixels,atlasBounds:{x:bx,y:by,width,height},
+     sourceFile:stem+'_SOURCE.png',maskFile:stem+'_MASK.png',wireFile:stem+'_WIRE.png'});
   }
-  result.push({side:region.direction,selectedPixels:region.selectedPixels,islandCount:pieces.length,islands:list});
+  out.push({direction:region.direction,selectedPixels:region.selectedPixels,connectedComponents:pieces.length,
+    exportedIslands:islands.length,exportedPixelCount:islands.reduce((s,i)=>s+i.pixels,0),islands});
  }
- const output={version:'R36LT-UV-ISLANDS',source:report.source,sourceSHA256:report.sourceSHA256,
-  rule:'4-connected pixel UV mask, minimum 256 pixels, export 12 largest islands per side',result};
- fs.writeFileSync(path.join(dir,'R36LT_UV_ISLANDS.report.json'),JSON.stringify(output,null,2)+'\n');
- console.log(JSON.stringify(result.map(x=>({side:x.side,islands:x.islandCount,pixels:x.selectedPixels}))));
- return output;
+ const report={version:'R36LT-UV-ISLANDS-V2',sourceSHA256:template.sourceSHA256,
+  sourceAtlas:[2048,2048],minPixels,maxIslands,output:out,origin:'measured R36LS UV texture pixels'};
+ fs.writeFileSync(path.join(folder,'R36LT_UV_ISLANDS.report.json'),JSON.stringify(report,null,2)+'\n');
+ console.log(JSON.stringify(out.map(v=>({side:v.direction,components:v.connectedComponents,
+  files:v.exportedIslands*3,pixels:v.exportedPixelCount}))));
+ return report;
 }
-if(require.main===module)try{need(process.argv.length===3,'usage: node split_uv_islands.cjs OUTPUT_UV_TEMPLATE_DIR');run(process.argv[2]);}
-catch(e){console.error(e.stack||e);process.exitCode=1}
-module.exports={run,components};
+if(require.main===module)try{
+ need(process.argv.length===3,'usage: node split_uv_islands.cjs UV_TEMPLATE_DIR');run(process.argv[2]);
+}catch(e){console.error(e.stack||e);process.exitCode=1}
+module.exports={components,run};
