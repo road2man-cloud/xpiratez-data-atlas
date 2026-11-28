@@ -1,0 +1,50 @@
+{
+  "version": "R36LS",
+  "variant": "subtle",
+  "input": "R36LR_ART_2100_FULL.glb",
+  "inputSHA256": "752a4c6b2432f3b37fbe3dea32d995903c17d10219e2308592b6ac1f5467dc0d",
+  "glb": "R36LS_SUBTLE_2100_FULL.glb",
+  "glbBytes": 18348552,
+  "glbSHA256": "fdba1b29fd611292d8bc158dd8e513ba3ad7f99d66becf6a07441e02954ebe2e",
+  "wholeTriangleCount": 2100,
+  "bodyTriangles": 1132,
+  "headHairTriangles": 968,
+  "joints": 63,
+  "maps": {
+    "color": {
+      "file": "R36LS_SUBTLE_2100_FULL_COLOR_2048.png",
+      "bytes": 1996154,
+      "sha256": "47e0ba0c7934d4f9fde4c1fecdfd90ebee7a08ca03205118118d12f28d0296ad"
+    },
+    "normal": {
+      "file": "R36LS_SUBTLE_2100_FULL_NORMAL_2048.png",
+      "bytes": 1730279,
+      "sha256": "ee4619f12501f0bf51f7998229c963851b0a5e11031f4c9e5ad77ff69c7f551d"
+    },
+    "orm": {
+      "file": "R36LS_SUBTLE_2100_FULL_ORM_2048.png",
+      "bytes": 779455,
+      "sha256": "d85eaaa120ed0fe35445d5cdcc831e7f7cafa2f7dbf4e6328b109919ca5bb1d4"
+    }
+  },
+  "painting": {
+    "version": "R36LS",
+    "variant": "subtle",
+    "paintedPixels": 1071473,
+    "normalEditedPixels": 3516,
+    "roughnessEditedPixels": 134388,
+    "meanAbsoluteColorChangeRGB8": 1.4431553571578566,
+    "maxColorDeltaRGB8": 10,
+    "artStrokeHits": 1612332,
+    "layerCoverage": {
+      "ink": 106158,
+      "light": 446470,
+      "warm": 154001,
+      "grain": 1408995
+    },
+    "sourceTriangleCount": 1132,
+    "degenerateUVFaces": 0
+  },
+  "rendererQA": "not run",
+  "S2EngineQA": "not run"
+}
