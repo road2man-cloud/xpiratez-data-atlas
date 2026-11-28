@@ -1,9 +1,10 @@
 {
   "schema": "ATLAS_OVERCAP_TRAINING_SNAPSHOT_INDEX_V1",
-  "current": "998864189fc711277dda7be76254937942076a60f006f67deee83f61435a7d52",
+  "current": "2623e7b84f9f2bf9eb3290e981d633b452610cb0fc2a72de8a41ba905a4f573a",
   "snapshots": {
     "0eba91e4612baf84468a161c81db7943fe42dcc2898047625db9878b8d924cc9": "public/data/soldier-overcap-terminal-training.json",
     "0105859fb924cd551c4d416517edda66df1b9e8b307fcc0fda75851d917fd28e": "public/data/soldier-overcap-terminal-training-merged-0105859fb924cd551c4d416517edda66df1b9e8b307fcc0fda75851d917fd28e.json.gz",
-    "998864189fc711277dda7be76254937942076a60f006f67deee83f61435a7d52": "public/data/soldier-overcap-terminal-training-merged-998864189fc711277dda7be76254937942076a60f006f67deee83f61435a7d52.json.gz"
+    "998864189fc711277dda7be76254937942076a60f006f67deee83f61435a7d52": "public/data/soldier-overcap-terminal-training-merged-998864189fc711277dda7be76254937942076a60f006f67deee83f61435a7d52.json.gz",
+    "2623e7b84f9f2bf9eb3290e981d633b452610cb0fc2a72de8a41ba905a4f573a": "public/data/soldier-overcap-terminal-training-merged-2623e7b84f9f2bf9eb3290e981d633b452610cb0fc2a72de8a41ba905a4f573a.json.gz"
   }
 }

@@ -12,6 +12,7 @@ import {createBranchContextResearchPlanner} from '../public/soldiers/modern/foun
 import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
 import {buildTrainingResumeQueue} from './overcap-training-resume-core.mjs';
 import {readTrainingLedger} from './overcap-training-ledger-store.mjs';
+import {STAT_KEYS} from '../public/soldiers/modern/eligibility.js';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const arg=(k,d)=>process.argv.find(x=>x.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const num=(k,d,min,max)=>{const n=Number(arg(k,d));assert(Number.isSafeInteger(n)&&n>=min&&n<=max,k);return n;};
@@ -108,13 +109,17 @@ function importStagedWaves(paths){
     for(const k of ['body','rank','raw','effective','capRaw','cap','traits','history','activeResearch','disabledResearch'])assert.deepEqual(end[k],r[k],k);
     assert.equal(r.capGain,sum(end.cap)-sum(before.cap));assert(end.body===before.body);
     const afterTraits=new Map(end.traits),afterHistory=new Map(end.history),beforeHistory=new Map(before.history);
-    assert(before.traits.every(([k,n])=>(afterTraits.get(k)||0)>=n));assert(end.cap.every((n,i)=>n>=before.cap[i]));
+    assert(before.traits.every(([k,n])=>(afterTraits.get(k)||0)>=n));
+    const delta=Object.fromEntries(STAT_KEYS.map((k,i)=>[k,end.cap[i]-before.cap[i]])),rawDelta=Object.fromEntries(STAT_KEYS.map((k,i)=>[k,end.raw[i]-before.raw[i]]));
+    const losses=STAT_KEYS.filter(k=>delta[k]<0),gains=STAT_KEYS.filter(k=>delta[k]>0);
+    if(losses.length){assert.equal(report.batch.allowTradeoffs,true);assert.equal(r.status,'CONDITIONAL_STAGED_TRADEOFF_TRANSFORMATION');assert.deepEqual(r.transition,{policy:'EXPLICIT_CONDITIONAL_TRADEOFF_V1',delta,rawDelta,gains,losses,historyAdded:true,capGain:sum(end.cap)-sum(before.cap)});}
+    else assert(!r.transition,'unexpected tradeoff metadata');
     assert((afterHistory.get(r.goal)||0)>(beforeHistory.get(r.goal)||0),'training history not increased');
     const ctx=auditOriginCampaignContext(actions,data),m=budget(base,[...job.suffix,...tail]);assert(ctx.kind==='compatible'&&ctx.allowedDifficulties.includes(job.difficulty)&&m.ok);
     const id='OVERCAP-END-NEXT:'+hash([job.id,tail]),prior=new Map(s.traits),inv=inventory(v,b);
     const item={id,sourceTerminalId:job.id,sourceRecordId:child.id,parentRecordId:parent.id,origin:job.origin,body:job.body,branch:b.id,difficulty:job.difficulty,target:t.id,sourceActionHash:job.fullActionHash,suffix:tail,suffixHash:hash(tail),fullActionHash:hash(actions),order:actions.filter(a=>a.type==='transform').map(a=>a.transform),...end,total:sum(end.effective),capTotal:sum(end.cap),capGain:sum(end.cap)-sum(s.cap),addedTraits:end.traits.filter(([k,n])=>n>(prior.get(k)||0)),firstSuccessorInventory:inv,material:m,conditionalReplayVerified:true,actualGameCertified:false,materialBudgetVerified:false,finalAdmission:false,commendationStatsIncluded:false,status:'TERMINAL_RESEARCH_RETAINED_PRODUCTIVE_SUCCESSOR'};
     if(seen.has(id)){assert.deepEqual(seen.get(id),item);counts.duplicates++;continue;}
-    seen.set(id,item);imported.push(item);receipt.produced.push(id);receipt.attempted.push({id:r.goal,sourceStagedId:r.id,result:'STAGED_TRANSFORMATION_IMPORTED'});
+    seen.set(id,item);imported.push(item);receipt.produced.push(id);receipt.attempted.push({id:r.goal,sourceStagedId:r.id,result:losses.length?'STAGED_TRADEOFF_IMPORTED':'STAGED_TRANSFORMATION_IMPORTED',...(losses.length?{transition:r.transition}:{})});
    }catch(e){counts.errors++;receipt.attempted.push({id:r.id,reason:'STAGED_INTAKE_BLOCKED',detail:e.message});}
   }
  }
