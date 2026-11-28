@@ -1,0 +1,104 @@
+{
+  "schema": "ATLAS_FORWARD_SCORE_ACTIVE_V3",
+  "inputs": {
+    "persuasionIndexSha256": "002d45ad8e3494ac9e31154b4a6106da17bbccb9afdbffb40f4728a3c4942761",
+    "scoreSourceSha256": "6976aabfb78951eb1c9c0101e3f207a3911c59d7eb9af912b00c2c68d1962861",
+    "producers": {
+      "tools/build-overcap-forward-score-v3.mjs": "21edd9a7b9728191c3beaef38483ab0ce6bcb5f94495c995d88444633980fbaf",
+      "tools/build-overcap-forward-score-sources-v3.mjs": "f8a1d045578902b18d024917362949873ed4900d977216170ed1b2cefabed025",
+      "tools/atlas-overcap-forward-score-v3.mjs": "43b5791650ac388d7bca7a989415d558c9b25990fc683e2593825790956fc803"
+    }
+  },
+  "ledger": {
+    "path": "tools/data/overcap-forward-score-ledgers-v3.json.gz",
+    "sha256": "6d6faeaf923116da93392845b3e854646ad8cd02d4ac7fa246c2f9915056407b",
+    "scenarios": 10,
+    "unresolvedEntries": 40
+  },
+  "scenarios": [
+    {
+      "scenario": "baseline",
+      "root": "STR_INSPECT_MACHINERY",
+      "award": "STR_BEASTMEN",
+      "path": "tools/data/overcap-forward-score-v3-baseline-str_inspect_machinery-str_beastmen.json.gz",
+      "summary": "tools/data/overcap-forward-score-v3-baseline-str_inspect_machinery-str_beastmen-summary.json",
+      "sha256": "ea52cd46637f0dd937dfebdfa161a44a281854f1dd1c5f9c86c69e0a455c8c6d",
+      "stateHash": "732aa018454e9cb675122026685cc8b15fb2f451131ad16b102076fa0f2f0ee1",
+      "newSteps": 65,
+      "newResearch": 96,
+      "researchCount": 348,
+      "priorWindow": {
+        "month": 11,
+        "research": 360,
+        "event": 0,
+        "manufacture": 0,
+        "unknown": [],
+        "awards": 7,
+        "missionOutcomes": 0,
+        "boundary": 12,
+        "bonus": 400,
+        "knownModelContributions": 360,
+        "modeledSubtotal": 760,
+        "nativeScore": null,
+        "unresolvedNetActivity": true,
+        "scope": "Projected subtotal of observed model actions; not an exact native score or lower bound."
+      },
+      "scoreWindow": {
+        "month": 11,
+        "research": 2938,
+        "event": 0,
+        "manufacture": 0,
+        "unknown": [],
+        "awards": 103,
+        "missionOutcomes": 0,
+        "boundary": 12,
+        "bonus": 400,
+        "knownModelContributions": 2938,
+        "modeledSubtotal": 3338,
+        "nativeScore": null,
+        "unresolvedNetActivity": true,
+        "scope": "Projected subtotal of observed model actions; not an exact native score or lower bound."
+      },
+      "rankRequirements": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "minimumScore": 2000,
+          "earliestMonth": 1,
+          "nextBoundary": 12,
+          "alreadyCompleted": false,
+          "missingResearch": [],
+          "forbiddenResearch": [],
+          "modeledSubtotal": 3338,
+          "unmodeledNetRequired": -1338,
+          "actualScore": null,
+          "scoreKnown": false,
+          "eligible": false,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "constraint": "native monthly score must meet threshold at month start; symbolic residual is not an activity award."
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "minimumScore": 3000,
+          "earliestMonth": 2,
+          "nextBoundary": 12,
+          "alreadyCompleted": false,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "forbiddenResearch": [],
+          "modeledSubtotal": 3338,
+          "unmodeledNetRequired": -338,
+          "actualScore": null,
+          "scoreKnown": false,
+          "eligible": false,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "constraint": "native monthly score must meet threshold at month start; symbolic residual is not an activity award."
+        }
+      ],
+      "deferredOptions": 4462,
+      "stop": "STEP_LIMIT"
+    }
+  ],
+  "normalizationComplete": false,
+  "actualGameCertified": false
+}

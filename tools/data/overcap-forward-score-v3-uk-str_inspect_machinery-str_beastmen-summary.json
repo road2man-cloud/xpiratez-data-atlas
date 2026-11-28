@@ -1,0 +1,3652 @@
+{
+  "schema": "ATLAS_FORWARD_SCORE_PRODUCTION_V3",
+  "scenario": "uk",
+  "root": "STR_INSPECT_MACHINERY",
+  "award": "STR_BEASTMEN",
+  "inputs": {
+    "persuasionIndexSha256": "002d45ad8e3494ac9e31154b4a6106da17bbccb9afdbffb40f4728a3c4942761",
+    "scoreSourceSha256": "6976aabfb78951eb1c9c0101e3f207a3911c59d7eb9af912b00c2c68d1962861",
+    "producers": {
+      "tools/build-overcap-forward-score-v3.mjs": "21edd9a7b9728191c3beaef38483ab0ce6bcb5f94495c995d88444633980fbaf",
+      "tools/build-overcap-forward-score-sources-v3.mjs": "f8a1d045578902b18d024917362949873ed4900d977216170ed1b2cefabed025",
+      "tools/atlas-overcap-forward-score-v3.mjs": "43b5791650ac388d7bca7a989415d558c9b25990fc683e2593825790956fc803"
+    }
+  },
+  "prefix": {
+    "path": "tools/data/overcap-forward-persuasion-v3-uk-str_inspect_machinery-str_beastmen.json.gz",
+    "sha256": "1b58fba40a8683136ce75bc0b55bde9276b78ca5a6499cbb0be84a82943c7018",
+    "stateHash": "790012605b9d509e4270cc1456c1cb489bbd5182ced55d6916691a71ad1022bb",
+    "steps": 165
+  },
+  "steps": [
+    {
+      "index": 166,
+      "action": {
+        "type": "research",
+        "id": "STR_EXPEDITION_REPORTS"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_EXPEDITION_REPORTS"
+      },
+      "beforeHash": "790012605b9d509e4270cc1456c1cb489bbd5182ced55d6916691a71ad1022bb",
+      "afterHash": "42c227120b9b171747bdff18ccce7adabfa51980ceaeb123744afc72b0da9d0d",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_GERMANY, STR_NCR, STR_CHINA, STR_USA, STR_BRAZIL, STR_AUSTRALIA, STR_RUSSIA, STR_FRANCE, STR_JAPAN, STR_INDIA, STR_NIGERIA, STR_INDONESIA, STR_CANADA, STR_LATIN_EMPIRE, STR_SPAIN, STR_VENEZUELA, STR_SOUTH_AFRICA, STR_ITALY, STR_CHILE, STR_TECHNOCRACY, STR_EGYPT, STR_TURAN"
+      ]
+    },
+    {
+      "index": 167,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_EXPEDITION_REPORTS",
+        "research": "STR_GERMANY",
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_EXPEDITION_REPORTS",
+        "choices": [
+          "STR_GERMANY",
+          "STR_NCR",
+          "STR_CHINA",
+          "STR_USA",
+          "STR_BRAZIL",
+          "STR_AUSTRALIA",
+          "STR_RUSSIA",
+          "STR_FRANCE",
+          "STR_JAPAN",
+          "STR_INDIA",
+          "STR_NIGERIA",
+          "STR_INDONESIA",
+          "STR_CANADA",
+          "STR_LATIN_EMPIRE",
+          "STR_SPAIN",
+          "STR_VENEZUELA",
+          "STR_SOUTH_AFRICA",
+          "STR_ITALY",
+          "STR_CHILE",
+          "STR_TECHNOCRACY",
+          "STR_EGYPT",
+          "STR_TURAN"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "42c227120b9b171747bdff18ccce7adabfa51980ceaeb123744afc72b0da9d0d",
+      "afterHash": "72884cd48c5c6e70c12f95f06bd90ad921bbe082590ca8022511346eab804765",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_EXPEDITION_REPORTS",
+        "STR_GERMANY"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "무료 연구 무작위 선택 STR_GERMANY을 가정"
+      ]
+    },
+    {
+      "index": 168,
+      "action": {
+        "type": "research",
+        "id": "STR_COINS"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_COINS"
+      },
+      "beforeHash": "72884cd48c5c6e70c12f95f06bd90ad921bbe082590ca8022511346eab804765",
+      "afterHash": "357895dc7a1bf625a9cc1d85b8adb020232b80436c0cd75eb8d2586c06d91ce6",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_COINS"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 169,
+      "action": {
+        "type": "research",
+        "id": "STR_DOLLAR_BRIEFCASE"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_DOLLAR_BRIEFCASE"
+      },
+      "beforeHash": "357895dc7a1bf625a9cc1d85b8adb020232b80436c0cd75eb8d2586c06d91ce6",
+      "afterHash": "16c73b3b8f75f22016fc0e596263b9b1a298dbe78136d45f2c45a3f2a7d0ff49",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_DOLLAR_BRIEFCASE"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 170,
+      "action": {
+        "type": "research",
+        "id": "STR_BOOT"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_BOOT"
+      },
+      "beforeHash": "16c73b3b8f75f22016fc0e596263b9b1a298dbe78136d45f2c45a3f2a7d0ff49",
+      "afterHash": "61dab74aca0a4376f54c566fd64024da1efdea478f61d0bbbb80d1181623469a",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BOOT"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 171,
+      "action": {
+        "type": "research",
+        "id": "STR_RING"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_RING"
+      },
+      "beforeHash": "61dab74aca0a4376f54c566fd64024da1efdea478f61d0bbbb80d1181623469a",
+      "afterHash": "3d7cd354d71fc46991d134d5349e26ba807ba8bd6f0a66394e55ba7ff18c199c",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_RING"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 172,
+      "action": {
+        "type": "research",
+        "id": "STR_SMGS_SUMMARY"
+      },
+      "evidence": {
+        "kind": "EXPLICIT_UNLOCK",
+        "requires": [
+          "STR_CONTACT_GENERAL_SUPPLIES"
+        ]
+      },
+      "beforeHash": "3d7cd354d71fc46991d134d5349e26ba807ba8bd6f0a66394e55ba7ff18c199c",
+      "afterHash": "b56c502a2668b13311d0e13843b29d9d72e64d91fc3b6ee292bb029a9be0dff8",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_FIREARMS_SUMMARY",
+        "STR_SMGS_SUMMARY"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_FIREARMS_SUMMARY ← STR_SMGS_SUMMARY"
+      ]
+    },
+    {
+      "index": 173,
+      "action": {
+        "type": "research",
+        "id": "STR_MEDALLION"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_MEDALLION"
+      },
+      "beforeHash": "b56c502a2668b13311d0e13843b29d9d72e64d91fc3b6ee292bb029a9be0dff8",
+      "afterHash": "e8dca95bc85fcd3852e817e0c380a70f73a51d1885a8521068d7dcd7ea43990a",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_MEDALLION"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 174,
+      "action": {
+        "type": "research",
+        "id": "STR_TIGER_TOURS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CONTACT_TIGER_TRANSPORT",
+          "STR_LOOT_DISTRIBUTION",
+          "STR_PIRATE_STYLE"
+        ]
+      },
+      "beforeHash": "e8dca95bc85fcd3852e817e0c380a70f73a51d1885a8521068d7dcd7ea43990a",
+      "afterHash": "9e4b4b74f9cede876170938819ab4a050f7af9b2f1d3779c5901545478108665",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_TIGER_TOURS"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 175,
+      "action": {
+        "type": "research",
+        "id": "STR_SEA_TRANSPORT"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_ALIEN_ORIGINS",
+          "STR_CONTACT_GENERAL_SUPPLIES"
+        ]
+      },
+      "beforeHash": "9e4b4b74f9cede876170938819ab4a050f7af9b2f1d3779c5901545478108665",
+      "afterHash": "3181ee9372214f5a4eee49f7c316d0cef51b84132df93e96aeb58ec45971f5f6",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_ANCHOR",
+        "STR_SEA_TRANSPORT"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_ANCHOR ← STR_SEA_TRANSPORT"
+      ]
+    },
+    {
+      "index": 176,
+      "action": {
+        "type": "research",
+        "id": "STR_CHROMATIC_PSYCHOLOGY"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CAPTAIN_GRAY",
+          "STR_CAPTAIN_PERSONALITY_TEST"
+        ]
+      },
+      "beforeHash": "3181ee9372214f5a4eee49f7c316d0cef51b84132df93e96aeb58ec45971f5f6",
+      "afterHash": "a8517e9b452b63e6e0ac562c4544bd484d284ac2088c142e42c06ffc90635ac7",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_CHROMATIC_PSYCHOLOGY"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 177,
+      "action": {
+        "type": "research",
+        "id": "STR_TAKE_ME_TO_YOUR_DEALER"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_JACKSTOWN_SCOUTING",
+          "STR_SECTOWEED"
+        ]
+      },
+      "beforeHash": "a8517e9b452b63e6e0ac562c4544bd484d284ac2088c142e42c06ffc90635ac7",
+      "afterHash": "02cde83305255678b9392b9d4f8c1d6cccd50120c6ea9a31460628b155d39d66",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 CIVILIAN_MUT_3"
+      ]
+    },
+    {
+      "index": 178,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_TAKE_ME_TO_YOUR_DEALER",
+        "research": "CIVILIAN_MUT_3",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_TAKE_ME_TO_YOUR_DEALER",
+        "choices": [
+          "CIVILIAN_MUT_3"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "02cde83305255678b9392b9d4f8c1d6cccd50120c6ea9a31460628b155d39d66",
+      "afterHash": "7098e1fea25c8cf170fb193fe66ca509f3d89fcaca545c2e4b28b2e504adf6fc",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "CIVILIAN_MUT_3",
+        "CIV_ARMOR_MUT_3",
+        "STR_TAKE_ME_TO_YOUR_DEALER"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): CIV_ARMOR_MUT_3 ← CIVILIAN_MUT_3"
+      ]
+    },
+    {
+      "index": 179,
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_TAKE_ME_TO_YOUR_DEALER",
+        "item": "STR_SECTOWEED",
+        "count": 1,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "DIRECT_LAB_SPAWNED_ITEM_TRANSFER",
+        "source": "STR_TAKE_ME_TO_YOUR_DEALER",
+        "item": "STR_SECTOWEED",
+        "count": 1,
+        "transferHours": 1
+      },
+      "beforeHash": "7098e1fea25c8cf170fb193fe66ca509f3d89fcaca545c2e4b28b2e504adf6fc",
+      "afterHash": "367d368f9fbdb7b5c1332aa716abaa2da0fac65d9de13ac137aa47771a386a7b",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "OXCE direct lab spawned item; one-hour transfer completion assumed."
+      ]
+    },
+    {
+      "index": 180,
+      "action": {
+        "type": "research",
+        "id": "STR_TREASURE_HUNTING"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CAPTAIN_JACKASS",
+          "STR_EXPEDITIONS",
+          "STR_KULTUR"
+        ]
+      },
+      "beforeHash": "367d368f9fbdb7b5c1332aa716abaa2da0fac65d9de13ac137aa47771a386a7b",
+      "afterHash": "dbfbb786e4a97d8de0c2a78925c5483d93c7e8171a60ce3c2107f84598c7ed30",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_LOOTBOX_SCAVENGING",
+        "STR_TREASURE_HUNTING"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_LOOTBOX_SCAVENGING ← STR_TREASURE_HUNTING"
+      ]
+    },
+    {
+      "index": 181,
+      "action": {
+        "type": "research",
+        "id": "STR_PROTECTIVE_GEAR"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_SURVIVAL"
+        ]
+      },
+      "beforeHash": "dbfbb786e4a97d8de0c2a78925c5483d93c7e8171a60ce3c2107f84598c7ed30",
+      "afterHash": "f45b7530156b949ced7c3f0ad258b2566f2e4df231f0e9b6ffc6d9b141a401df",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_DUST_MASK",
+        "STR_PROTECTIVE_GEAR",
+        "STR_SHAWL"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_DUST_MASK ← STR_PROTECTIVE_GEAR",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_SHAWL ← STR_PROTECTIVE_GEAR"
+      ]
+    },
+    {
+      "index": 182,
+      "action": {
+        "type": "research",
+        "id": "STR_PSI_LAB"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_PSI_LAB_PREQ",
+          "STR_WEIRDNESS"
+        ]
+      },
+      "beforeHash": "f45b7530156b949ced7c3f0ad258b2566f2e4df231f0e9b6ffc6d9b141a401df",
+      "afterHash": "9d3d5b3bc6636593e92d7e4895cc1c64edfe432dc54cf522fe32e96aa79940c5",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_PSI_LAB"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 183,
+      "action": {
+        "type": "research",
+        "id": "STR_TACTICS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CONTACT_GENERAL_SUPPLIES",
+          "STR_FIREARMS_SUMMARY",
+          "STR_PRIMITIVE_WEAPONS",
+          "STR_SCHOOLING_1"
+        ]
+      },
+      "beforeHash": "9d3d5b3bc6636593e92d7e4895cc1c64edfe432dc54cf522fe32e96aa79940c5",
+      "afterHash": "bd7323a8abb25cf8db5632cf61e649341832968b1884d9ab1004454abc84e02f",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_TACTICS",
+        "STR_TACTICS_ZZZ"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_TACTICS_ZZZ ← STR_TACTICS"
+      ]
+    },
+    {
+      "index": 184,
+      "action": {
+        "type": "research",
+        "id": "STR_PEASANT_MILITIA"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_FARMING",
+          "STR_RECRUIT_PEASANTS",
+          "STR_SMITHING",
+          "STR_TACTICS"
+        ]
+      },
+      "beforeHash": "bd7323a8abb25cf8db5632cf61e649341832968b1884d9ab1004454abc84e02f",
+      "afterHash": "50e4e207a98d3931cc5ce476cdeefa15e1ee1d013bfa8eb81a4c971fd1861fc0",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_PEASANT_ARMOR_MILITIA",
+        "STR_PEASANT_MILITIA",
+        "STR_QUARTERSTAFF",
+        "STR_TANKP_PREQ"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PEASANT_ARMOR_MILITIA ← STR_PEASANT_MILITIA",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_QUARTERSTAFF ← STR_PEASANT_MILITIA",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_TANKP_PREQ ← STR_PEASANT_MILITIA"
+      ]
+    },
+    {
+      "index": 185,
+      "action": {
+        "type": "research",
+        "id": "STR_LOGISTICS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_COMMUNICATIONS",
+          "STR_CONTACT_GENERAL_SUPPLIES",
+          "STR_EXPEDITIONS",
+          "STR_SCI_REP",
+          "STR_SEA_TRANSPORT"
+        ]
+      },
+      "beforeHash": "50e4e207a98d3931cc5ce476cdeefa15e1ee1d013bfa8eb81a4c971fd1861fc0",
+      "afterHash": "1e33a10e4504986fba96bb4621eba9654540c81e6156220d3e2d466470f60c46",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_LOGISTICS",
+        "STR_ROTOGUN"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_ROTOGUN ← STR_LOGISTICS"
+      ]
+    },
+    {
+      "index": 186,
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_LOGISTICS",
+        "item": "STR_SCAVENGER_OUTFIT",
+        "count": 1,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "DIRECT_LAB_SPAWNED_ITEM_TRANSFER",
+        "source": "STR_LOGISTICS",
+        "item": "STR_SCAVENGER_OUTFIT",
+        "count": 1,
+        "transferHours": 1
+      },
+      "beforeHash": "1e33a10e4504986fba96bb4621eba9654540c81e6156220d3e2d466470f60c46",
+      "afterHash": "0ebec6cada5dd6d54aa8da6561a1b3b7ab3b226cc486ea5e8312b61fc9178062",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "OXCE direct lab spawned item; one-hour transfer completion assumed."
+      ]
+    },
+    {
+      "index": 187,
+      "action": {
+        "type": "research",
+        "id": "STR_BIKES"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_EXPEDITIONS",
+          "STR_INSPECT_MACHINERY",
+          "STR_KULTUR"
+        ]
+      },
+      "beforeHash": "0ebec6cada5dd6d54aa8da6561a1b3b7ab3b226cc486ea5e8312b61fc9178062",
+      "afterHash": "dfdd2d2b4ae9e14dcd1920401499859187c08febd7c3e5d45cf397c013a02527",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BIKES"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 188,
+      "action": {
+        "type": "research",
+        "id": "STR_GENERAL_STORES_LARGE"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_EXCAVATION"
+        ]
+      },
+      "beforeHash": "dfdd2d2b4ae9e14dcd1920401499859187c08febd7c3e5d45cf397c013a02527",
+      "afterHash": "880ca6fb90bca61c32436615c9fe0e1274d1302c84b3077331063e7e36861842",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_GENERAL_STORES_LARGE"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 189,
+      "action": {
+        "type": "research",
+        "id": "STR_SOULSENSE"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_MUTANT_ABILITIES",
+          "STR_PSI_LAB"
+        ]
+      },
+      "beforeHash": "880ca6fb90bca61c32436615c9fe0e1274d1302c84b3077331063e7e36861842",
+      "afterHash": "0ceb5e3db3c118961d5c2f516bfee7a82029c6a2521370b7499e34f6aead75ad",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_SOULSENSE"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 190,
+      "action": {
+        "type": "research",
+        "id": "STR_SKINNING"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_SURVIVAL"
+        ]
+      },
+      "beforeHash": "0ceb5e3db3c118961d5c2f516bfee7a82029c6a2521370b7499e34f6aead75ad",
+      "afterHash": "b326ca2501fe3fda56f53ffb07a257902c59c7f0623c2c89304e6b0a484f4b1a",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_SKINNING"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 191,
+      "action": {
+        "type": "research",
+        "id": "STR_MONSTER_HUNT"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_SKINNING"
+        ]
+      },
+      "beforeHash": "b326ca2501fe3fda56f53ffb07a257902c59c7f0623c2c89304e6b0a484f4b1a",
+      "afterHash": "7c1f2a204203750aa3574cfe6232a7fae615a39b9bfc9522088fb16dd0ce3f32",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_MEGASCORPION_CORPSE",
+        "STR_MEGASCORPION_STING",
+        "STR_MONSTER_HUNT"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_MEGASCORPION_CORPSE ← STR_MONSTER_HUNT",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_MEGASCORPION_STING ← STR_MONSTER_HUNT"
+      ]
+    },
+    {
+      "index": 192,
+      "action": {
+        "type": "research",
+        "id": "STR_BASIC_ARMOR"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CONTACT_GENERAL_SUPPLIES",
+          "STR_MELEE_SUMMARY",
+          "STR_SMITHING"
+        ]
+      },
+      "beforeHash": "7c1f2a204203750aa3574cfe6232a7fae615a39b9bfc9522088fb16dd0ce3f32",
+      "afterHash": "7bb7eecbf77981e4dc26c6e3b90d60d4b1dbdecca4539ecc0f92ae304deebcc5",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BASIC_ARMOR",
+        "STR_PERSONAL_ARMOR_PREQ"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PERSONAL_ARMOR_PREQ ← STR_BASIC_ARMOR"
+      ]
+    },
+    {
+      "index": 193,
+      "action": {
+        "type": "research",
+        "id": "STR_DURATHREAD_BACKPACK"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_GUILD_CORPSE",
+          "STR_PRIMITIVE_WEAPONS",
+          "STR_SURVIVAL",
+          "STR_WASTELANDER_BACKPACK"
+        ]
+      },
+      "beforeHash": "7bb7eecbf77981e4dc26c6e3b90d60d4b1dbdecca4539ecc0f92ae304deebcc5",
+      "afterHash": "adda9ebc555f44ce478a72c9695abe3154c1bfc9258c4f6255ddf2e6eded1de0",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_DURATHREAD_BACKPACK"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 194,
+      "action": {
+        "type": "research",
+        "id": "STR_BARBED_STOCKINGS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_LINGERIE",
+          "STR_PROTECTIVE_GEAR"
+        ]
+      },
+      "beforeHash": "adda9ebc555f44ce478a72c9695abe3154c1bfc9258c4f6255ddf2e6eded1de0",
+      "afterHash": "b043b8126d26e0c8a8ad75d417d8e29167f76e9507f489f5e71e1579a17de1f3",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BARBED_STOCKINGS"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 195,
+      "action": {
+        "type": "research",
+        "id": "STR_ARMORED_CORSET"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_PROTECTIVE_GEAR",
+          "STR_SKINNING",
+          "STR_SMITHING"
+        ]
+      },
+      "beforeHash": "b043b8126d26e0c8a8ad75d417d8e29167f76e9507f489f5e71e1579a17de1f3",
+      "afterHash": "72535d520e5be4d67b8e42bfac298339f4377d121c556bc2eee29050d9015b15",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_ARMORED_CORSET"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 196,
+      "action": {
+        "type": "research",
+        "id": "STR_UNDERGROUND_MISSIONS"
+      },
+      "evidence": {
+        "kind": "EXPLICIT_UNLOCK",
+        "requires": [
+          "STR_LOC_TAVERN_CELLAR_DONE"
+        ]
+      },
+      "beforeHash": "72535d520e5be4d67b8e42bfac298339f4377d121c556bc2eee29050d9015b15",
+      "afterHash": "d1edf8039488967c8e3d430a7479503f74fc83e62b978d0f518fb5292a890b97",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_UNDERGROUND_ANOMALY"
+      ]
+    },
+    {
+      "index": 197,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_UNDERGROUND_MISSIONS",
+        "research": "STR_UNDERGROUND_ANOMALY",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_UNDERGROUND_MISSIONS",
+        "choices": [
+          "STR_UNDERGROUND_ANOMALY"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "d1edf8039488967c8e3d430a7479503f74fc83e62b978d0f518fb5292a890b97",
+      "afterHash": "c509135b9554e8876cc9aa7de9eaa948c921a24f5ee78b7c834b817d3d64b915",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_UNDERGROUND_ANOMALY",
+        "STR_UNDERGROUND_MISSIONS"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 198,
+      "action": {
+        "type": "research",
+        "id": "STR_QUESTION_OF_DRILL"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_WAT_DO"
+        ]
+      },
+      "beforeHash": "c509135b9554e8876cc9aa7de9eaa948c921a24f5ee78b7c834b817d3d64b915",
+      "afterHash": "0a214c915f57d844a19638c8b475c4dfb81dbbeb5fbe9b6b53c87a3e551d2d62",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_QUESTION_OF_DRILL"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 199,
+      "action": {
+        "type": "research",
+        "id": "STR_REJECT_THE_POWER"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_QUESTION_OF_DRILL"
+        ]
+      },
+      "beforeHash": "0a214c915f57d844a19638c8b475c4dfb81dbbeb5fbe9b6b53c87a3e551d2d62",
+      "afterHash": "64ef10cd903008bae3c0a9921ec971a700ecd420da158a23e591c1f90969fc07",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_CINDERELLA_PROJECT_PREQ",
+        "STR_REJECT_THE_POWER"
+      ],
+      "closed": [
+        "STR_EMBRACE_THE_POWER",
+        "STR_TINY_DRILL_INVESTIGATION"
+      ],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_CINDERELLA_PROJECT_PREQ ← STR_REJECT_THE_POWER"
+      ]
+    },
+    {
+      "index": 200,
+      "action": {
+        "type": "research",
+        "id": "STR_CIGAR"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_SECTOWEED",
+          "STR_SOCIALIZING"
+        ]
+      },
+      "beforeHash": "64ef10cd903008bae3c0a9921ec971a700ecd420da158a23e591c1f90969fc07",
+      "afterHash": "0385f2eeaa0e5df3a91696cd60f620b79a1e9f7faa5d16935a6c7571bd28180e",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_CIGAR"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 201,
+      "action": {
+        "type": "research",
+        "id": "STR_DUNGEON_MASTER"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CAPTAIN_JACKASS",
+          "STR_CONTACT_BUILDERS",
+          "STR_EXPLORE_TUNNELS",
+          "STR_SALVAGE",
+          "STR_VIOLENCE",
+          "STR_WEIRDNESS"
+        ]
+      },
+      "beforeHash": "0385f2eeaa0e5df3a91696cd60f620b79a1e9f7faa5d16935a6c7571bd28180e",
+      "afterHash": "fc048fb60e25dcc283e811fd3d018ee660623f7984cd4dd68f3e9256bb2c2233",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_DUNGEON"
+      ]
+    },
+    {
+      "index": 202,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_DUNGEON_MASTER",
+        "research": "STR_DUNGEON",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_DUNGEON_MASTER",
+        "choices": [
+          "STR_DUNGEON"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "fc048fb60e25dcc283e811fd3d018ee660623f7984cd4dd68f3e9256bb2c2233",
+      "afterHash": "1a06344ecf1e0a51d98ff23aa3db28fd37efea2088a6e0d189cfc6336821e096",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_DUNGEON",
+        "STR_DUNGEON_MASTER",
+        "STR_SLAVE_HALFWIT"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_SLAVE_HALFWIT ← STR_DUNGEON_MASTER"
+      ]
+    },
+    {
+      "index": 203,
+      "action": {
+        "type": "research",
+        "id": "STR_ANUS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_PEASANT_MILITIA"
+        ]
+      },
+      "beforeHash": "1a06344ecf1e0a51d98ff23aa3db28fd37efea2088a6e0d189cfc6336821e096",
+      "afterHash": "d93918a5e06c76d03e93b2aa127f61ce39116eba959591062d0f773861f8cb96",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_ANUS"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 204,
+      "action": {
+        "type": "research",
+        "id": "STR_ENGINE_NITRO"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CADILLAC",
+          "STR_CRAFT_AUXILARY_SYSTEMS"
+        ]
+      },
+      "beforeHash": "d93918a5e06c76d03e93b2aa127f61ce39116eba959591062d0f773861f8cb96",
+      "afterHash": "4cc69c280c9809f22323f5e23865484a9f6ac41b802b4149c8b018b20345a5b0",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_ENGINE_NITRO"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 205,
+      "action": {
+        "type": "research",
+        "id": "STR_POLAR_OUTFIT"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CONTACT_GENERAL_SUPPLIES",
+          "STR_RECRUIT_PEASANTS",
+          "STR_SURVIVAL"
+        ]
+      },
+      "beforeHash": "4cc69c280c9809f22323f5e23865484a9f6ac41b802b4149c8b018b20345a5b0",
+      "afterHash": "fb83ea2efc6779318677fc9a908f85e35b7570695d0963d33b47ddb703c6a431",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_POLAR_OUTFIT"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 206,
+      "action": {
+        "type": "research",
+        "id": "STR_GYMNASTICS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_MELEE_SUMMARY",
+          "STR_MUTANT_ABILITIES"
+        ]
+      },
+      "beforeHash": "fb83ea2efc6779318677fc9a908f85e35b7570695d0963d33b47ddb703c6a431",
+      "afterHash": "85f00ad42b44166f22d1003c9c3b8f3acc59fdc060558fbe157d62e60eb7db41",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_GYM_OUTFIT"
+      ]
+    },
+    {
+      "index": 207,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_GYMNASTICS",
+        "research": "STR_GYM_OUTFIT",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_GYMNASTICS",
+        "choices": [
+          "STR_GYM_OUTFIT"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "85f00ad42b44166f22d1003c9c3b8f3acc59fdc060558fbe157d62e60eb7db41",
+      "afterHash": "b836c0b2e482f0e54076731cbfde51a6de976b51919fad296d1ccdc624552bab",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_GYMNASTICS",
+        "STR_GYM_OUTFIT",
+        "STR_KUNG_FU"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_KUNG_FU ← STR_GYMNASTICS"
+      ]
+    },
+    {
+      "index": 208,
+      "action": {
+        "type": "research",
+        "id": "STR_PARTY_DRESS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_DURATHREAD_WORKING",
+          "STR_GLAMOUR",
+          "STR_GYMNASTICS",
+          "STR_MEDALLION",
+          "STR_MOST_COMMON_POWER",
+          "STR_SOCIALIZING"
+        ]
+      },
+      "beforeHash": "b836c0b2e482f0e54076731cbfde51a6de976b51919fad296d1ccdc624552bab",
+      "afterHash": "ca4eb0092509701bdae436b4047d8ad3501c8ed6812ed9240f81864e6cce2d44",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_PARTY_DRESS"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 209,
+      "action": {
+        "type": "research",
+        "id": "STR_CHAPLAIN_TRAINING"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_BOOK_OF_SERMONS",
+          "STR_GLAMOUR",
+          "STR_GYMNASTICS",
+          "STR_PEASANT_MILITIA"
+        ]
+      },
+      "beforeHash": "ca4eb0092509701bdae436b4047d8ad3501c8ed6812ed9240f81864e6cce2d44",
+      "afterHash": "59fa040e261aced561e4fc6a85141dbdcb15a26427fdce13316bfb8d3f34270b",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_CHAPLAIN_TRAINING"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 210,
+      "action": {
+        "type": "research",
+        "id": "STR_BALLISTICS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_VIOLENCE",
+          "STR_WEIRDNESS"
+        ]
+      },
+      "beforeHash": "59fa040e261aced561e4fc6a85141dbdcb15a26427fdce13316bfb8d3f34270b",
+      "afterHash": "1486a70bcec8f71f6ccb23191b9280c2aed72a3afb1dfebac4d1f8a883b6ed02",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BALLISTICS",
+        "STR_BALLISTICS_ZZZ"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_BALLISTICS_ZZZ ← STR_BALLISTICS"
+      ]
+    },
+    {
+      "index": 211,
+      "action": {
+        "type": "research",
+        "id": "STR_CAMOUFLAGE"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_SURVIVAL"
+        ]
+      },
+      "beforeHash": "1486a70bcec8f71f6ccb23191b9280c2aed72a3afb1dfebac4d1f8a883b6ed02",
+      "afterHash": "33600ddce596a46944e1f34c9a64c0e3f668c6e4596b43d2b66f0c247e91fd41",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_CAMO_PAINT"
+      ]
+    },
+    {
+      "index": 212,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_CAMOUFLAGE",
+        "research": "STR_CAMO_PAINT",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_CAMOUFLAGE",
+        "choices": [
+          "STR_CAMO_PAINT"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "33600ddce596a46944e1f34c9a64c0e3f668c6e4596b43d2b66f0c247e91fd41",
+      "afterHash": "495c81f4bbf2e1cf7ad73730b1f59732f2f8d6b2836688d9516e05f9224d7ae8",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_CAMOUFLAGE",
+        "STR_CAMO_PAINT",
+        "STR_PEASANT_CAMO_UC"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PEASANT_CAMO_UC ← STR_CAMO_PAINT"
+      ]
+    },
+    {
+      "index": 213,
+      "action": {
+        "type": "research",
+        "id": "STR_TRAP_ROOM"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_EXCAVATION"
+        ]
+      },
+      "beforeHash": "495c81f4bbf2e1cf7ad73730b1f59732f2f8d6b2836688d9516e05f9224d7ae8",
+      "afterHash": "1c8052d7fdac377e9a5e0fa1c65e899fc5f5958b0ee6e8f39b145f42e335780a",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_TRAP_ROOM"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 214,
+      "action": {
+        "type": "research",
+        "id": "STR_MISSION_GUILD_OUTPOST"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_ALIEN_ORIGINS",
+          "STR_KULTUR"
+        ]
+      },
+      "beforeHash": "1c8052d7fdac377e9a5e0fa1c65e899fc5f5958b0ee6e8f39b145f42e335780a",
+      "afterHash": "b30228e66b1e6d34a9c3e9d2b99881f3c86c938f1f9726926d649f82c7a9cf33",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_MISSION_GUILD_OUTPOST"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 215,
+      "action": {
+        "type": "research",
+        "id": "STR_SPITFIRE_INTERCEPTOR"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CRAFT_WEAPONS_SUMMARY",
+          "STR_NECROPLANE_PARTS_RECYCLING",
+          "STR_PRIMITIVE_WEAPONS_2",
+          "STR_UK"
+        ]
+      },
+      "beforeHash": "b30228e66b1e6d34a9c3e9d2b99881f3c86c938f1f9726926d649f82c7a9cf33",
+      "afterHash": "59e36883f8854d2f99f3ad867ab7cc9775901e3f59711c4b8f80f0b6184ca703",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_OLD_AIRCRAFT_REPAIRED",
+        "STR_SPITFIRE_INTERCEPTOR"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_OLD_AIRCRAFT_REPAIRED ← STR_SPITFIRE_INTERCEPTOR"
+      ]
+    },
+    {
+      "index": 216,
+      "action": {
+        "type": "research",
+        "id": "STR_LEATHER_ARMOR"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_GUILD_CORPSE",
+          "STR_SURVIVAL"
+        ]
+      },
+      "beforeHash": "59e36883f8854d2f99f3ad867ab7cc9775901e3f59711c4b8f80f0b6184ca703",
+      "afterHash": "e44f98a2b431e8090d4f63d9372c34b81036eebf0c9e98180af32964d57f1a74",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_LEATHER_ARMOR"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 217,
+      "action": {
+        "type": "research",
+        "id": "STR_ESTABLISHING_HIDEOUTS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CONTACT_TIGER_TRANSPORT",
+          "STR_INSPECT_MACHINERY",
+          "STR_WAT_DO"
+        ]
+      },
+      "beforeHash": "e44f98a2b431e8090d4f63d9372c34b81036eebf0c9e98180af32964d57f1a74",
+      "afterHash": "9e61634cbac8003708f4d29dfca20f0211d34d973bfbc0530acf65fdf2485dc8",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_ESTABLISHING_HIDEOUTS"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 218,
+      "action": {
+        "type": "research",
+        "id": "STR_FIRST_AID_KIT_SMALL"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_SURVIVAL"
+        ]
+      },
+      "beforeHash": "9e61634cbac8003708f4d29dfca20f0211d34d973bfbc0530acf65fdf2485dc8",
+      "afterHash": "03a3cd7a5e95ded2b810b6401494bcc01589e15e5f88b89321173e834e55deaa",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_FIRST_AID_KIT_SMALL"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 219,
+      "action": {
+        "type": "research",
+        "id": "STR_BLACKMAIL"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_COMMUNICATIONS",
+          "STR_GOVT_CORPSE",
+          "STR_HUMANS",
+          "STR_PADD",
+          "STR_PORN",
+          "STR_SALVAGE",
+          "STR_SAVVYNESS"
+        ]
+      },
+      "beforeHash": "03a3cd7a5e95ded2b810b6401494bcc01589e15e5f88b89321173e834e55deaa",
+      "afterHash": "3ddb0a86b5829f35de466fa4f749ccdbb71c8e054d2e2f0e2f60f1cec2100aa6",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BLACKMAIL"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 220,
+      "action": {
+        "type": "research",
+        "id": "STR_LAMIA_RECRUITMENT"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_EXPLORE_TUNNELS",
+          "STR_LAMIA_RECRUITMENT_PREQ",
+          "STR_MUTANT_BLESSINGS",
+          "STR_RECRUITMENT",
+          "STR_RECRUIT_PEASANTS",
+          "STR_SURVIVAL"
+        ]
+      },
+      "beforeHash": "3ddb0a86b5829f35de466fa4f749ccdbb71c8e054d2e2f0e2f60f1cec2100aa6",
+      "afterHash": "089e9d74a94478b125e27608d7d9f89963172fb0229e7473d2825ff403a75106",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 CIVILIAN_MUT_4"
+      ]
+    },
+    {
+      "index": 221,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_LAMIA_RECRUITMENT",
+        "research": "CIVILIAN_MUT_4",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_LAMIA_RECRUITMENT",
+        "choices": [
+          "CIVILIAN_MUT_4"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "089e9d74a94478b125e27608d7d9f89963172fb0229e7473d2825ff403a75106",
+      "afterHash": "3fa7f1d9326d7287c3e99267e5f349888172b1b7a182ec6f599c00e19a7d3f48",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "CIVILIAN_MUT_4",
+        "CIV_ARMOR_MUT_4",
+        "STR_LAMIA_RECRUITMENT",
+        "STR_LAMIA_RECRUITMENT_ZZZ"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): CIV_ARMOR_MUT_4 ← CIVILIAN_MUT_4",
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_LAMIA_RECRUITMENT_ZZZ ← STR_LAMIA_RECRUITMENT"
+      ]
+    },
+    {
+      "index": 222,
+      "action": {
+        "type": "research",
+        "id": "STR_LAMIA_ENCLAVES"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_EXPEDITIONS",
+          "STR_LAMIA_RECRUITMENT"
+        ]
+      },
+      "beforeHash": "3fa7f1d9326d7287c3e99267e5f349888172b1b7a182ec6f599c00e19a7d3f48",
+      "afterHash": "6badc7833fd1cf2a41e78d84e96997c90a6674ee69bcd4e1eda928f5f47a9f91",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_LAMIA_ENCLAVES"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 223,
+      "action": {
+        "type": "research",
+        "id": "STR_MISSION_SEA_ADVENTURE"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_EXPEDITIONS",
+          "STR_VIOLENCE",
+          "STR_WEIRDNESS"
+        ]
+      },
+      "beforeHash": "6badc7833fd1cf2a41e78d84e96997c90a6674ee69bcd4e1eda928f5f47a9f91",
+      "afterHash": "bfb55db50e3f5b78069c733fdd9465033b48920e63bcbcfc9f9337a368d5f4f4",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_UNDERWATER_MODE"
+      ]
+    },
+    {
+      "index": 224,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_MISSION_SEA_ADVENTURE",
+        "research": "STR_UNDERWATER_MODE",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_MISSION_SEA_ADVENTURE",
+        "choices": [
+          "STR_UNDERWATER_MODE"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "bfb55db50e3f5b78069c733fdd9465033b48920e63bcbcfc9f9337a368d5f4f4",
+      "afterHash": "7806f97c799335306d86fd5b7744dcd3b471bdeba7bf8b1b7a480e02c48aad95",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BRAINER_OUTFIT_SEA_UC",
+        "STR_LAMIA_NUDE_SEA_UC",
+        "STR_MISSION_SEA_ADVENTURE",
+        "STR_MISSION_SEA_ADVENTURE_ZZZ",
+        "STR_PEASANT_NUDE_SEA_UC",
+        "STR_UNDERWATER_MODE"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_BRAINER_OUTFIT_SEA_UC ← STR_MISSION_SEA_ADVENTURE",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_LAMIA_NUDE_SEA_UC ← STR_MISSION_SEA_ADVENTURE",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_MISSION_SEA_ADVENTURE_ZZZ ← STR_MISSION_SEA_ADVENTURE",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PEASANT_NUDE_SEA_UC ← STR_MISSION_SEA_ADVENTURE"
+      ]
+    },
+    {
+      "index": 225,
+      "action": {
+        "type": "research",
+        "id": "STR_NIGHT_OPS_ARMOR"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_BASIC_ELECTRONICS",
+          "STR_CAMOUFLAGE",
+          "STR_MUTANT_ABILITIES",
+          "STR_PRIMITIVE_WEAPONS_2",
+          "STR_TACTICS"
+        ]
+      },
+      "beforeHash": "7806f97c799335306d86fd5b7744dcd3b471bdeba7bf8b1b7a480e02c48aad95",
+      "afterHash": "020c9f9cb89d1df49fca96811ffc1492d01452fb4d20e36e2734fe9c145ed147",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_NIGHT_OPS_ARMOR"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 226,
+      "action": {
+        "type": "research",
+        "id": "STR_LIVING_QUARTERS_SMALL"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_COMMUNICATIONS",
+          "STR_ESTABLISHING_HIDEOUTS"
+        ]
+      },
+      "beforeHash": "020c9f9cb89d1df49fca96811ffc1492d01452fb4d20e36e2734fe9c145ed147",
+      "afterHash": "882c4e762258de6f77cab1d6d0beef7d357ffd84a4a88594fe6f1cb12ac61961",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_LIVING_QUARTERS_SMALL"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 227,
+      "action": {
+        "type": "research",
+        "id": "STR_UNDERGROUND_HUNTING"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_EXPLORE_TUNNELS",
+          "STR_SKINNING"
+        ]
+      },
+      "beforeHash": "882c4e762258de6f77cab1d6d0beef7d357ffd84a4a88594fe6f1cb12ac61961",
+      "afterHash": "f1cceff12b421f490df1b2da8e5b3ff0c6bc4ae15062347dc4ee0da8acfb08d7",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_UNDERGROUND_HUNTING"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 228,
+      "action": {
+        "type": "research",
+        "id": "STR_RAIDER_CORPSE"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_INSPECT_MACHINERY",
+          "STR_THE_PHARMACIST"
+        ]
+      },
+      "beforeHash": "f1cceff12b421f490df1b2da8e5b3ff0c6bc4ae15062347dc4ee0da8acfb08d7",
+      "afterHash": "96b274fa84b44627b9814e55eb6d18d2c99f44392bf9c010f5eca7d2b468183b",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_RAIDER_CORPSE"
+      ],
+      "closed": [],
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 229,
+      "action": {
+        "type": "research",
+        "id": "STR_GLAMOUR_RECRUITMENT"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CADILLAC",
+          "STR_CUNNING",
+          "STR_GLAMOUR",
+          "STR_RECRUITMENT"
+        ]
+      },
+      "beforeHash": "96b274fa84b44627b9814e55eb6d18d2c99f44392bf9c010f5eca7d2b468183b",
+      "afterHash": "73f18cdd6595abb9814953c1168554f2736be5de040e0c59a8f0c249783b5717",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_RAIDER_BOSS_ARMOR"
+      ]
+    },
+    {
+      "index": 230,
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_GLAMOUR_RECRUITMENT",
+        "research": "STR_RAIDER_BOSS_ARMOR",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_GLAMOUR_RECRUITMENT",
+        "choices": [
+          "STR_RAIDER_BOSS_ARMOR"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "73f18cdd6595abb9814953c1168554f2736be5de040e0c59a8f0c249783b5717",
+      "afterHash": "48e7e4614134e1c8a6e3465e98858f2e7be4697260db366709827f526feba075",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_GLAMOUROUS_TRAIT",
+        "STR_GLAMOUR_RECRUITMENT",
+        "STR_RAIDER_BOSS_ARMOR"
+      ],
+      "closed": [],
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_GLAMOUROUS_TRAIT ← STR_GLAMOUR_RECRUITMENT"
+      ]
+    }
+  ],
+  "failures": [],
+  "stop": "STEP_LIMIT",
+  "priorWindow": {
+    "month": 11,
+    "research": 810,
+    "event": 0,
+    "manufacture": 0,
+    "unknown": [],
+    "awards": 17,
+    "missionOutcomes": 0,
+    "boundary": 12,
+    "bonus": 400,
+    "knownModelContributions": 810,
+    "modeledSubtotal": 1210,
+    "nativeScore": null,
+    "unresolvedNetActivity": true,
+    "scope": "Projected subtotal of observed model actions; not an exact native score or lower bound."
+  },
+  "scoreWindow": {
+    "month": 11,
+    "research": 3958,
+    "event": 0,
+    "manufacture": 0,
+    "unknown": [],
+    "awards": 107,
+    "missionOutcomes": 0,
+    "boundary": 12,
+    "bonus": 400,
+    "knownModelContributions": 3958,
+    "modeledSubtotal": 4358,
+    "nativeScore": null,
+    "unresolvedNetActivity": true,
+    "scope": "Projected subtotal of observed model actions; not an exact native score or lower bound."
+  },
+  "newLedgerEntries": [
+    {
+      "step": 167,
+      "month": 11,
+      "category": "research",
+      "id": "STR_EXPEDITION_REPORTS",
+      "points": 100,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 169668,
+        "endLine": 169696,
+        "blockSha256": "9928b5c2090eb0f05ed14b86fc0bda196556827de685bc43a40dd2b0f56c0567"
+      }
+    },
+    {
+      "step": 167,
+      "month": 11,
+      "category": "research",
+      "id": "STR_GERMANY",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 166532,
+        "endLine": 166534,
+        "blockSha256": "741619460f3886682626e27dfe4ced6cce994bf1d00e1f6a98c7eab1081f6c94"
+      }
+    },
+    {
+      "step": 168,
+      "month": 11,
+      "category": "research",
+      "id": "STR_COINS",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 171862,
+        "endLine": 171866,
+        "blockSha256": "d787a7424e09cacfa5af6946482423c33eb6f9c4051c288caf54a5af99a482c7"
+      }
+    },
+    {
+      "step": 169,
+      "month": 11,
+      "category": "research",
+      "id": "STR_DOLLAR_BRIEFCASE",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 171867,
+        "endLine": 171871,
+        "blockSha256": "7eef6b4383ccb806915023e808cfcf519a983ab5a72df7b2d5aae28d23333abb"
+      }
+    },
+    {
+      "step": 170,
+      "month": 11,
+      "category": "research",
+      "id": "STR_BOOT",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 172692,
+        "endLine": 172695,
+        "blockSha256": "e7570892fa3ed6e156c132a738d4dcd0f4ceaa486cb60d883487c2582e239c75"
+      }
+    },
+    {
+      "step": 171,
+      "month": 11,
+      "category": "research",
+      "id": "STR_RING",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 172545,
+        "endLine": 172548,
+        "blockSha256": "c76d405bfff47379629fa7e42ebd17f075b18e6892b8eb9dd9d3185b04ea0428"
+      }
+    },
+    {
+      "step": 172,
+      "month": 11,
+      "category": "research",
+      "id": "STR_FIREARMS_SUMMARY",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 133794,
+        "endLine": 133799,
+        "blockSha256": "5c80466d229d8007e4fd9fc3e00f31234acd39c139362cbb201bd99d23e42e0e"
+      }
+    },
+    {
+      "step": 172,
+      "month": 11,
+      "category": "research",
+      "id": "STR_SMGS_SUMMARY",
+      "points": 100,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 133841,
+        "endLine": 133855,
+        "blockSha256": "811af5c3a29c0ab2d645953148d672098f31fea868fea176f04c5083706b9145"
+      }
+    },
+    {
+      "step": 173,
+      "month": 11,
+      "category": "research",
+      "id": "STR_MEDALLION",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 171857,
+        "endLine": 171861,
+        "blockSha256": "f89d7cb231d65fd6e71fb0a241a6e85936e50b8838b9b61e8d757a923cf5b7ae"
+      }
+    },
+    {
+      "step": 174,
+      "month": 11,
+      "category": "research",
+      "id": "STR_TIGER_TOURS",
+      "points": 33,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132469,
+        "endLine": 132475,
+        "blockSha256": "2482174d2b43da94466058e645edf65b2e23b76010a46303774467d9194590d2"
+      }
+    },
+    {
+      "step": 175,
+      "month": 11,
+      "category": "research",
+      "id": "STR_ANCHOR",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 143444,
+        "endLine": 143447,
+        "blockSha256": "8d725b94ef75d40f03e9eb303397dc283a479a920a3a1f717a001c3125f925a7"
+      }
+    },
+    {
+      "step": 175,
+      "month": 11,
+      "category": "research",
+      "id": "STR_SEA_TRANSPORT",
+      "points": 100,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 138128,
+        "endLine": 138133,
+        "blockSha256": "4d46b2aa96e08d0dcedf9e958bb1da0e4e62b80fd92d024515d216b9e92c2739"
+      }
+    },
+    {
+      "step": 176,
+      "month": 11,
+      "category": "research",
+      "id": "STR_CHROMATIC_PSYCHOLOGY",
+      "points": 10,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 135578,
+        "endLine": 135583,
+        "blockSha256": "00a8d0bfb9ca3e6fbbd2fc680e66c820f959ca23a4d130415c4276036d282ddc"
+      }
+    },
+    {
+      "step": 178,
+      "month": 11,
+      "category": "research",
+      "id": "CIVILIAN_MUT_3",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 149479,
+        "endLine": 149481,
+        "blockSha256": "59b492a54ad815f27ded34383887df789451a487f400c4b85765e34d24c60464"
+      }
+    },
+    {
+      "step": 178,
+      "month": 11,
+      "category": "research",
+      "id": "CIV_ARMOR_MUT_3",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 149505,
+        "endLine": 149507,
+        "blockSha256": "5e985fb74147526947b33ce0905d13da0977f7eaa487f63443e0769806afdfe3"
+      }
+    },
+    {
+      "step": 178,
+      "month": 11,
+      "category": "research",
+      "id": "STR_TAKE_ME_TO_YOUR_DEALER",
+      "points": 40,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 140333,
+        "endLine": 140399,
+        "blockSha256": "f23f1f8581c8691b3e586b91e9351f419f4669383d9e5ad8aef0864c5a70dd78"
+      }
+    },
+    {
+      "step": 180,
+      "month": 11,
+      "category": "research",
+      "id": "STR_LOOTBOX_SCAVENGING",
+      "points": 15,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132804,
+        "endLine": 132808,
+        "blockSha256": "aad09ad230820705fbb88d58af7336daf8c7803d97246a62e4a65e24642807ce"
+      }
+    },
+    {
+      "step": 180,
+      "month": 11,
+      "category": "research",
+      "id": "STR_TREASURE_HUNTING",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132795,
+        "endLine": 132803,
+        "blockSha256": "fe2dece113d169ca6bb3de6e9a31453254e9405c2366e88890d5904d4fdc2ca6"
+      }
+    },
+    {
+      "step": 181,
+      "month": 11,
+      "category": "research",
+      "id": "STR_DUST_MASK",
+      "points": 10,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132214,
+        "endLine": 132217,
+        "blockSha256": "1261550405b7b6284656318434d55240cf7bbb25ba31730e93c5069349bee449"
+      }
+    },
+    {
+      "step": 181,
+      "month": 11,
+      "category": "research",
+      "id": "STR_PROTECTIVE_GEAR",
+      "points": 30,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134013,
+        "endLine": 134017,
+        "blockSha256": "49b57520841786a676e06bd84534e65b1a0d5aa3ca8892f8fda8e32507163731"
+      }
+    },
+    {
+      "step": 181,
+      "month": 11,
+      "category": "research",
+      "id": "STR_SHAWL",
+      "points": 10,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132210,
+        "endLine": 132213,
+        "blockSha256": "686ed2394832a32d58bacf7efa37ffc8714806c53ec1e8db3ac7579e1a493a52"
+      }
+    },
+    {
+      "step": 182,
+      "month": 11,
+      "category": "research",
+      "id": "STR_PSI_LAB",
+      "points": 150,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 148230,
+        "endLine": 148235,
+        "blockSha256": "3368363a0bc6cf81f03134b1ef8d5cb463213ee8e4520ba5068a999eeca5845d"
+      }
+    },
+    {
+      "step": 183,
+      "month": 11,
+      "category": "research",
+      "id": "STR_TACTICS",
+      "points": 75,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134055,
+        "endLine": 134062,
+        "blockSha256": "19f8522a6aaae41429380230307844ece62e3e3b5a23ab08e141e003a778c506"
+      }
+    },
+    {
+      "step": 183,
+      "month": 11,
+      "category": "research",
+      "id": "STR_TACTICS_ZZZ",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134063,
+        "endLine": 134065,
+        "blockSha256": "e103816796203fecc505112756170a8a0418d8b152f808da4d840889cda0e125"
+      }
+    },
+    {
+      "step": 184,
+      "month": 11,
+      "category": "research",
+      "id": "STR_PEASANT_ARMOR_MILITIA",
+      "points": 10,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 145986,
+        "endLine": 145989,
+        "blockSha256": "8005c4abf07ae8e547e0f9f91f2b531b6899c2c858a5068eebf8f174653f5e20"
+      }
+    },
+    {
+      "step": 184,
+      "month": 11,
+      "category": "research",
+      "id": "STR_PEASANT_MILITIA",
+      "points": 125,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 145593,
+        "endLine": 145604,
+        "blockSha256": "290b5c493e152cd7e4c59be9911c360db24f30da6e145657a078418f96226c2c"
+      }
+    },
+    {
+      "step": 184,
+      "month": 11,
+      "category": "research",
+      "id": "STR_QUARTERSTAFF",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 131153,
+        "endLine": 131155,
+        "blockSha256": "e7712069401d96af57aecddf667abf80da9f83c04d172e9b92bff956890896e1"
+      }
+    },
+    {
+      "step": 184,
+      "month": 11,
+      "category": "research",
+      "id": "STR_TANKP_PREQ",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 147305,
+        "endLine": 147310,
+        "blockSha256": "a749584c0fdb24a0eaa36d3ada350f8c719ef83f5d1a8da017a667f0dbefa87f"
+      }
+    },
+    {
+      "step": 185,
+      "month": 11,
+      "category": "research",
+      "id": "STR_LOGISTICS",
+      "points": 75,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134066,
+        "endLine": 134077,
+        "blockSha256": "2aa781de21acae54b04338e4df7d3546e180d2c43ebf687b784f25f1f2d473ed"
+      }
+    },
+    {
+      "step": 185,
+      "month": 11,
+      "category": "research",
+      "id": "STR_ROTOGUN",
+      "points": 10,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 141360,
+        "endLine": 141364,
+        "blockSha256": "4a286f4230720e31904b68d8b845fffb55a376aae4a0f9f696f1453680c43a0d"
+      }
+    },
+    {
+      "step": 187,
+      "month": 11,
+      "category": "research",
+      "id": "STR_BIKES",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132938,
+        "endLine": 132944,
+        "blockSha256": "2b34fd6ee77bf56de3d1cf71f3ea195c5710331935f056d9d1b2a505eaeca9b0"
+      }
+    },
+    {
+      "step": 188,
+      "month": 11,
+      "category": "research",
+      "id": "STR_GENERAL_STORES_LARGE",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134806,
+        "endLine": 134810,
+        "blockSha256": "00ea5f482a260edb96b5cfd107b147e570f1c4738b7b75f544c3a5ff2075762c"
+      }
+    },
+    {
+      "step": 189,
+      "month": 11,
+      "category": "research",
+      "id": "STR_SOULSENSE",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 136360,
+        "endLine": 136365,
+        "blockSha256": "4c0aa7b6fdffa6d0193b34c179e0d144e957806ed9f14120c21c63180a44f3e5"
+      }
+    },
+    {
+      "step": 190,
+      "month": 11,
+      "category": "research",
+      "id": "STR_SKINNING",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 137935,
+        "endLine": 137939,
+        "blockSha256": "fabc17b5cec008f7835566bc60cbdc69fdbe4ea82b95677112a5cc76ac378dd7"
+      }
+    },
+    {
+      "step": 191,
+      "month": 11,
+      "category": "research",
+      "id": "STR_MEGASCORPION_CORPSE",
+      "points": 30,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132315,
+        "endLine": 132318,
+        "blockSha256": "ce55ee37b3c10a09025d5f6baa22d70c2396c1c89b650baa92eadcd2a075ae37"
+      }
+    },
+    {
+      "step": 191,
+      "month": 11,
+      "category": "research",
+      "id": "STR_MEGASCORPION_STING",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132319,
+        "endLine": 132321,
+        "blockSha256": "271eaa67f4c3f73a471a78178bef9a17ff4527bc7e73ac905f73a7a104a43fa0"
+      }
+    },
+    {
+      "step": 191,
+      "month": 11,
+      "category": "research",
+      "id": "STR_MONSTER_HUNT",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134892,
+        "endLine": 134896,
+        "blockSha256": "b2d61835c2e8cd8915b9b860cce3ae98c9fd0eaad8d7f72a72edd46dfb7bfab6"
+      }
+    },
+    {
+      "step": 192,
+      "month": 11,
+      "category": "research",
+      "id": "STR_BASIC_ARMOR",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 145756,
+        "endLine": 145764,
+        "blockSha256": "b746981b050307b78e0aeadc349f911d7ac28eb6b710d02cbabbb74a97291220"
+      }
+    },
+    {
+      "step": 192,
+      "month": 11,
+      "category": "research",
+      "id": "STR_PERSONAL_ARMOR_PREQ",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132132,
+        "endLine": 132135,
+        "blockSha256": "4ee55e9b3a0ae6353e474e9a96daad877eacbac873d388a1ccaa4281f223303b"
+      }
+    },
+    {
+      "step": 193,
+      "month": 11,
+      "category": "research",
+      "id": "STR_DURATHREAD_BACKPACK",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134955,
+        "endLine": 134962,
+        "blockSha256": "8f2e2165c7ef4123ccc474b0eb6edd5066438b6f23d8ce567f9f5da31bcb94bc"
+      }
+    },
+    {
+      "step": 194,
+      "month": 11,
+      "category": "research",
+      "id": "STR_BARBED_STOCKINGS",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 147767,
+        "endLine": 147772,
+        "blockSha256": "6bcfca94267f487894efdb4daeb201fcaabbb2b9c8e12d93049edaba519d3ac2"
+      }
+    },
+    {
+      "step": 195,
+      "month": 11,
+      "category": "research",
+      "id": "STR_ARMORED_CORSET",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 147773,
+        "endLine": 147779,
+        "blockSha256": "ce883dfd06b82454a7ed69bc7f739a5f284935defa2ef02d2f24758bbc7950ae"
+      }
+    },
+    {
+      "step": 197,
+      "month": 11,
+      "category": "research",
+      "id": "STR_UNDERGROUND_ANOMALY",
+      "points": 30,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 140887,
+        "endLine": 140890,
+        "blockSha256": "b731c36af7b921abde94908cbadc076226d731fbc7487355d6509726ed22343c"
+      }
+    },
+    {
+      "step": 197,
+      "month": 11,
+      "category": "research",
+      "id": "STR_UNDERGROUND_MISSIONS",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 140891,
+        "endLine": 140902,
+        "blockSha256": "43dce58f76bb6b662aee811cbee701bab81e9b9c0013dc6b2db1f9a2dc63e437"
+      }
+    },
+    {
+      "step": 198,
+      "month": 11,
+      "category": "research",
+      "id": "STR_QUESTION_OF_DRILL",
+      "points": 5,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 135112,
+        "endLine": 135116,
+        "blockSha256": "2abf3f3608480ace239bc388723b7e176b59d73b525d8e47c765940a2ce07817"
+      }
+    },
+    {
+      "step": 199,
+      "month": 11,
+      "category": "research",
+      "id": "STR_CINDERELLA_PROJECT_PREQ",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 139826,
+        "endLine": 139833,
+        "blockSha256": "8e667910edf300b611c2b4197e44c079729f864369a08cb9fd63e9564e13d173"
+      }
+    },
+    {
+      "step": 199,
+      "month": 11,
+      "category": "research",
+      "id": "STR_REJECT_THE_POWER",
+      "points": 200,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 135124,
+        "endLine": 135133,
+        "blockSha256": "2f74fdb095bf052ea0c6a3352390964a0394eaf1a0c7963033785fd6e965dd0e"
+      }
+    },
+    {
+      "step": 200,
+      "month": 11,
+      "category": "research",
+      "id": "STR_CIGAR",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 144250,
+        "endLine": 144255,
+        "blockSha256": "011cf0ca203018281cb214451172607111cb33796eb8a8fde1bc23bc03c1acbd"
+      }
+    },
+    {
+      "step": 202,
+      "month": 11,
+      "category": "research",
+      "id": "STR_DUNGEON",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 136671,
+        "endLine": 136673,
+        "blockSha256": "5fbb725c38f329f027a4b7a41b75708134d8c99063a978c3c3dd17d82be702c2"
+      }
+    },
+    {
+      "step": 202,
+      "month": 11,
+      "category": "research",
+      "id": "STR_DUNGEON_MASTER",
+      "points": 75,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 137222,
+        "endLine": 137233,
+        "blockSha256": "3661108772b091a9c670d1d8b6f28070f496532cceec5aa4303f6b2327a00d9a"
+      }
+    },
+    {
+      "step": 202,
+      "month": 11,
+      "category": "research",
+      "id": "STR_SLAVE_HALFWIT",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 144770,
+        "endLine": 144772,
+        "blockSha256": "61216a3335ff6eaffad7c2763c2b934eeaab0ab602592fe6b1ba97b634375e8c"
+      }
+    },
+    {
+      "step": 203,
+      "month": 11,
+      "category": "research",
+      "id": "STR_ANUS",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 143674,
+        "endLine": 143678,
+        "blockSha256": "fb4b888a62911c49569c79540ed5ff2129a8f2f97de6891906faffe60ac7a4a3"
+      }
+    },
+    {
+      "step": 204,
+      "month": 11,
+      "category": "research",
+      "id": "STR_ENGINE_NITRO",
+      "points": 20,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 138322,
+        "endLine": 138327,
+        "blockSha256": "11d460d016b5995f18efaead3dd0f1fda528e02110207555187850e44ca4237a"
+      }
+    },
+    {
+      "step": 205,
+      "month": 11,
+      "category": "research",
+      "id": "STR_POLAR_OUTFIT",
+      "points": 20,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 146688,
+        "endLine": 146694,
+        "blockSha256": "997df812ba1625c0f9d61c43d895ce726a753963ff39da0a8e6575fe9e6e4768"
+      }
+    },
+    {
+      "step": 207,
+      "month": 11,
+      "category": "research",
+      "id": "STR_GYMNASTICS",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 145623,
+        "endLine": 145629,
+        "blockSha256": "54204ac445677aae24e31d724999d948e914526eaa59589182762d620fad020f"
+      }
+    },
+    {
+      "step": 207,
+      "month": 11,
+      "category": "research",
+      "id": "STR_GYM_OUTFIT",
+      "points": 30,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132153,
+        "endLine": 132156,
+        "blockSha256": "3ea86d56c7e06d32c7450e0c073c48eb4ab88cb147e824495c26d27ee6888cf3"
+      }
+    },
+    {
+      "step": 207,
+      "month": 11,
+      "category": "research",
+      "id": "STR_KUNG_FU",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 131178,
+        "endLine": 131180,
+        "blockSha256": "a98950015a4c59b6d06d967b91748fc488d0d255d89a491ef755f8bcfdb07ea7"
+      }
+    },
+    {
+      "step": 208,
+      "month": 11,
+      "category": "research",
+      "id": "STR_PARTY_DRESS",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 147728,
+        "endLine": 147737,
+        "blockSha256": "c3935adeb52cc3e623ddc25c98b062d5939947199f27ceab6aaf7331b44fb0de"
+      }
+    },
+    {
+      "step": 209,
+      "month": 11,
+      "category": "research",
+      "id": "STR_CHAPLAIN_TRAINING",
+      "points": 40,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 145230,
+        "endLine": 145237,
+        "blockSha256": "ea0d424f2d01b9d67ad4384b01fe48d304c946ea0b1c45ce190ba45da703ef33"
+      }
+    },
+    {
+      "step": 210,
+      "month": 11,
+      "category": "research",
+      "id": "STR_BALLISTICS",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134037,
+        "endLine": 134042,
+        "blockSha256": "bb2d811fe7f509f150103a58cd90e8abec17d09e47c5f1619061705864834097"
+      }
+    },
+    {
+      "step": 210,
+      "month": 11,
+      "category": "research",
+      "id": "STR_BALLISTICS_ZZZ",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132309,
+        "endLine": 132311,
+        "blockSha256": "f5724e04d73b1fe8b6a4480f29f1a66bc74bffe45c19797b14fce24b33dc0dfa"
+      }
+    },
+    {
+      "step": 212,
+      "month": 11,
+      "category": "research",
+      "id": "STR_CAMOUFLAGE",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 136338,
+        "endLine": 136344,
+        "blockSha256": "e14c266a601b38108d6d20933a6b5b4831d51bc8715778fe305ce3ac9b87ffd8"
+      }
+    },
+    {
+      "step": 212,
+      "month": 11,
+      "category": "research",
+      "id": "STR_CAMO_PAINT",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 136345,
+        "endLine": 136347,
+        "blockSha256": "40ca81c367aefd9749daa85c2a60cf04085e1759213f8a9cb38af5e4e53e917c"
+      }
+    },
+    {
+      "step": 212,
+      "month": 11,
+      "category": "research",
+      "id": "STR_PEASANT_CAMO_UC",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 130996,
+        "endLine": 130999,
+        "blockSha256": "5e276671fea0a546e975a0fed4880b99792a8b8bc006f8415bf50876a425f577"
+      }
+    },
+    {
+      "step": 213,
+      "month": 11,
+      "category": "research",
+      "id": "STR_TRAP_ROOM",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 136743,
+        "endLine": 136747,
+        "blockSha256": "17c5ef29891c64b9158a043b91a714afa11a8827d9f113d92049c51d223219a7"
+      }
+    },
+    {
+      "step": 214,
+      "month": 11,
+      "category": "research",
+      "id": "STR_MISSION_GUILD_OUTPOST",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 140758,
+        "endLine": 140764,
+        "blockSha256": "2e3a402e3fd5259e0f1d06c8e124b97cf0b9d846055fc42368627ee18307697d"
+      }
+    },
+    {
+      "step": 215,
+      "month": 11,
+      "category": "research",
+      "id": "STR_OLD_AIRCRAFT_REPAIRED",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 143821,
+        "endLine": 143826,
+        "blockSha256": "344cd2e08efd8daf46db98b95c9722887a35ebe9e37e4219fa59d8ab7059c208"
+      }
+    },
+    {
+      "step": 215,
+      "month": 11,
+      "category": "research",
+      "id": "STR_SPITFIRE_INTERCEPTOR",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 143898,
+        "endLine": 143907,
+        "blockSha256": "3f32a0ce82d96719c85cd06e119d7e619b8c8c686e5618bb1157d193ea107b38"
+      }
+    },
+    {
+      "step": 216,
+      "month": 11,
+      "category": "research",
+      "id": "STR_LEATHER_ARMOR",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 145692,
+        "endLine": 145697,
+        "blockSha256": "c2ca35a57307c25da5928e3602bc19335faf38362532730d055a059ba907e99f"
+      }
+    },
+    {
+      "step": 217,
+      "month": 11,
+      "category": "research",
+      "id": "STR_ESTABLISHING_HIDEOUTS",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132744,
+        "endLine": 132750,
+        "blockSha256": "7f5565f2cffc066a2007c70cf8dd0224c4f21492f822b7a1fa17efac29c844c5"
+      }
+    },
+    {
+      "step": 218,
+      "month": 11,
+      "category": "research",
+      "id": "STR_FIRST_AID_KIT_SMALL",
+      "points": 20,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132238,
+        "endLine": 132242,
+        "blockSha256": "734b84ebc349aa3d14b4862d722f681daeb1d2a2c1c3eeb52f90fa9b6bb4cc23"
+      }
+    },
+    {
+      "step": 219,
+      "month": 11,
+      "category": "research",
+      "id": "STR_BLACKMAIL",
+      "points": 20,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 137629,
+        "endLine": 137639,
+        "blockSha256": "ffecbf20da11b984bc20c01a641c0d6a86958a574d9975fabfd0ba1f446417b2"
+      }
+    },
+    {
+      "step": 221,
+      "month": 11,
+      "category": "research",
+      "id": "CIVILIAN_MUT_4",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 149482,
+        "endLine": 149484,
+        "blockSha256": "ac6115083beaceff01f20998b844ee29ddcdcf5abd8c6edf02ec8d1ea42de4cf"
+      }
+    },
+    {
+      "step": 221,
+      "month": 11,
+      "category": "research",
+      "id": "CIV_ARMOR_MUT_4",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 149508,
+        "endLine": 149510,
+        "blockSha256": "62b2cb88d8e0c81e2546aead3f68c7364ebe93ee47fdc490344579ed19309eaa"
+      }
+    },
+    {
+      "step": 221,
+      "month": 11,
+      "category": "research",
+      "id": "STR_LAMIA_RECRUITMENT",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134541,
+        "endLine": 134554,
+        "blockSha256": "4fd444c2f53ba11fbb6c390bf02474f3cf0b6b07b46fab9602e1d47109b327fe"
+      }
+    },
+    {
+      "step": 221,
+      "month": 11,
+      "category": "research",
+      "id": "STR_LAMIA_RECRUITMENT_ZZZ",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 134538,
+        "endLine": 134540,
+        "blockSha256": "8c4a8c7d615855e2e7308ae998e9651e4a3bd8b1fd4b97857a0db84039ba3206"
+      }
+    },
+    {
+      "step": 222,
+      "month": 11,
+      "category": "research",
+      "id": "STR_LAMIA_ENCLAVES",
+      "points": 150,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 132265,
+        "endLine": 132271,
+        "blockSha256": "69d4e42bbadc2737ce7da38624f524921f74f57174f168d4bc898921bb528b59"
+      }
+    },
+    {
+      "step": 224,
+      "month": 11,
+      "category": "research",
+      "id": "STR_BRAINER_OUTFIT_SEA_UC",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 130480,
+        "endLine": 130483,
+        "blockSha256": "d37e8c44afc46ba22ca917715e513e4c0ccbfa53e6b4729b559d59a020df77e9"
+      }
+    },
+    {
+      "step": 224,
+      "month": 11,
+      "category": "research",
+      "id": "STR_LAMIA_NUDE_SEA_UC",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 130484,
+        "endLine": 130487,
+        "blockSha256": "66d50a069f71f9a7cc496d6471018cbf68cbe6e936e0c1af301f466389606319"
+      }
+    },
+    {
+      "step": 224,
+      "month": 11,
+      "category": "research",
+      "id": "STR_MISSION_SEA_ADVENTURE",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 140848,
+        "endLine": 140856,
+        "blockSha256": "f15b813f59a6415cd84a3ac1048cfe634fdf091bef6ffe2f77a0401194939a9e"
+      }
+    },
+    {
+      "step": 224,
+      "month": 11,
+      "category": "research",
+      "id": "STR_MISSION_SEA_ADVENTURE_ZZZ",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 130452,
+        "endLine": 130454,
+        "blockSha256": "b3d282057558560d1d5f99acaffa75bb732849c0e2b708edbd4efe6c7ca005b0"
+      }
+    },
+    {
+      "step": 224,
+      "month": 11,
+      "category": "research",
+      "id": "STR_PEASANT_NUDE_SEA_UC",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 130738,
+        "endLine": 130741,
+        "blockSha256": "0b995cbfda282c9d900ce922564f089ed76d5c64237d25cbbf012c9d04370120"
+      }
+    },
+    {
+      "step": 224,
+      "month": 11,
+      "category": "research",
+      "id": "STR_UNDERWATER_MODE",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 136366,
+        "endLine": 136370,
+        "blockSha256": "cdc981fc585bf02275868479e790253b931dec421878c630a434eb6c5e5341ea"
+      }
+    },
+    {
+      "step": 225,
+      "month": 11,
+      "category": "research",
+      "id": "STR_NIGHT_OPS_ARMOR",
+      "points": 50,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 146628,
+        "endLine": 146636,
+        "blockSha256": "36d1343f7c1189cfc0edb96abdc28d372a9d89ec39d67c47332e8853acd99360"
+      }
+    },
+    {
+      "step": 226,
+      "month": 11,
+      "category": "research",
+      "id": "STR_LIVING_QUARTERS_SMALL",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 136613,
+        "endLine": 136618,
+        "blockSha256": "f9e77e39daec40eecb3a4a180eaef2ac74921ca8cc4825cda3bb4d48837c0bd3"
+      }
+    },
+    {
+      "step": 227,
+      "month": 11,
+      "category": "research",
+      "id": "STR_UNDERGROUND_HUNTING",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 137950,
+        "endLine": 137957,
+        "blockSha256": "6b260d39e29d73bd6d699b07940d8b44840e0b649e9830b0ebf1db30c7331c58"
+      }
+    },
+    {
+      "step": 228,
+      "month": 11,
+      "category": "research",
+      "id": "STR_RAIDER_CORPSE",
+      "points": 25,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 166050,
+        "endLine": 166055,
+        "blockSha256": "da9c31425226688c52d917451a6259a2897d3bfba158fcf0392746c819334626"
+      }
+    },
+    {
+      "step": 230,
+      "month": 11,
+      "category": "research",
+      "id": "STR_GLAMOUROUS_TRAIT",
+      "points": 0,
+      "sourceStatus": "NATIVE_DEFAULT_ZERO",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 137656,
+        "endLine": 137658,
+        "blockSha256": "78f3ae6a20f7ee40f44766694a1485b5ad4160b089cc4a5a480229b4717b1bc6"
+      }
+    },
+    {
+      "step": 230,
+      "month": 11,
+      "category": "research",
+      "id": "STR_GLAMOUR_RECRUITMENT",
+      "points": 30,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 137659,
+        "endLine": 137669,
+        "blockSha256": "0eb53d9f5ade81bf852d68dcb6837847a31922e4877b13ffb994a91efeeabb7c"
+      }
+    },
+    {
+      "step": 230,
+      "month": 11,
+      "category": "research",
+      "id": "STR_RAIDER_BOSS_ARMOR",
+      "points": 10,
+      "sourceStatus": "EXPLICIT",
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 150224,
+        "endLine": 150228,
+        "blockSha256": "8284ea8bd78278989740fcbf3817b0e75a04d96401d76b8a178011fe7f85b9ad"
+      }
+    }
+  ],
+  "final": {
+    "stateHash": "48e7e4614134e1c8a6e3465e98858f2e7be4697260db366709827f526feba075",
+    "month": 11,
+    "researched": [
+      "AUX_BAD_TOUCH",
+      "AUX_GOOD_TOUCH",
+      "AUX_IDENT",
+      "CIVILIAN_MUT_3",
+      "CIVILIAN_MUT_4",
+      "CIVILIAN_YOUNG_UBER",
+      "CIV_ARMOR_LOKNAR_1",
+      "CIV_ARMOR_MUT_3",
+      "CIV_ARMOR_MUT_4",
+      "SECTOID_ARMOR_P1",
+      "SECTOID_ARMOR_P11",
+      "SECTOID_ARMOR_P3",
+      "SECTOID_ARMOR_P4",
+      "STR_ACADEMY_CORPSE",
+      "STR_ACADEMY_NURSE",
+      "STR_ALIEN_ORIGINS",
+      "STR_ALIEN_TERROR",
+      "STR_ANCHOR",
+      "STR_ANUS",
+      "STR_ARMORED_CORSET",
+      "STR_BALLISTICS",
+      "STR_BALLISTICS_ZZZ",
+      "STR_BARBED_STOCKINGS",
+      "STR_BASIC_ARMOR",
+      "STR_BASIC_ELECTRONICS",
+      "STR_BASIC_INCENDIARIES",
+      "STR_BASIC_INCENDIARIES_ZZZ",
+      "STR_BEASTMEN",
+      "STR_BEER",
+      "STR_BIG_BIRD",
+      "STR_BIKES",
+      "STR_BLACKMAIL",
+      "STR_BOOK_OF_SERMONS",
+      "STR_BOOT",
+      "STR_BOWS_SUMMARY",
+      "STR_BOW_H",
+      "STR_BRAINER_OUTFIT",
+      "STR_BRAINER_OUTFIT_SEA_UC",
+      "STR_BURA",
+      "STR_CADILLAC",
+      "STR_CAMOUFLAGE",
+      "STR_CAMO_PAINT",
+      "STR_CAPTAIN_DOUBLEGRAY",
+      "STR_CAPTAIN_GOLD",
+      "STR_CAPTAIN_GRAY",
+      "STR_CAPTAIN_JACKASS",
+      "STR_CAPTAIN_JACKDUMB",
+      "STR_CAPTAIN_JACKLAZY",
+      "STR_CAPTAIN_JACKSORE",
+      "STR_CAPTAIN_PERSONALITY_TEST",
+      "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+      "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+      "STR_CAPTAIN_RED",
+      "STR_CAPTAIN_YESGOLD_NOGREEN",
+      "STR_CAPTAIN_YESRED_NOGREEN",
+      "STR_CEREMONY_DEP",
+      "STR_CHAPLAIN_TRAINING",
+      "STR_CHROMATIC_PSYCHOLOGY",
+      "STR_CIGAR",
+      "STR_CINDERELLA_PROJECT_PREQ",
+      "STR_CLOTHING_UC",
+      "STR_COINS",
+      "STR_COMMUNICATIONS",
+      "STR_CONTACT_BUILDERS",
+      "STR_CONTACT_GENERAL_SUPPLIES",
+      "STR_CONTACT_GENERAL_SUPPLIES_ZZZ",
+      "STR_CONTACT_SHIP_JUNKYARD",
+      "STR_CONTACT_SHIP_JUNKYARD_ZZZ",
+      "STR_CONTACT_TIGER_TRANSPORT",
+      "STR_CRAFT_AUXILARY_SYSTEMS",
+      "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE",
+      "STR_CRAFT_BATTERY_PACK",
+      "STR_CRAFT_PIR_CANNON_UC",
+      "STR_CRAFT_WEAPONS_SUMMARY",
+      "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+      "STR_CREATIVITY",
+      "STR_CUNNING",
+      "STR_DATA_DISK_B",
+      "STR_DATA_MINING",
+      "STR_DIVERGING_PATHS",
+      "STR_DOLLAR_BRIEFCASE",
+      "STR_DUNGEON",
+      "STR_DUNGEON_MASTER",
+      "STR_DURATHREAD_BACKPACK",
+      "STR_DURATHREAD_WORKING",
+      "STR_DUST_MASK",
+      "STR_ELERIUM_115",
+      "STR_ENGINE_NITRO",
+      "STR_ESTABLISHING_HIDEOUTS",
+      "STR_EXCAVATION",
+      "STR_EXPEDITION",
+      "STR_EXPEDITIONS",
+      "STR_EXPEDITION_REPORTS",
+      "STR_EXPEDITION_RESEARCH",
+      "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+      "STR_EXPLORE_TUNNELS",
+      "STR_FARMING",
+      "STR_FIREARMS_SUMMARY",
+      "STR_FIRST_AID_KIT",
+      "STR_FIRST_AID_KIT_SMALL",
+      "STR_FLINTLOCKS_PRODUCTION",
+      "STR_FLINTLOCKS_PRODUCTION_ZZZ",
+      "STR_GALS_ARE_SUPERIOR",
+      "STR_GALS_ARE_SUPERIOR_PREQ",
+      "STR_GDX_000",
+      "STR_GDX_001",
+      "STR_GDX_002",
+      "STR_GDX_190_PREQ",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_GENERAL_STORES_LARGE",
+      "STR_GENTLE_PUSH",
+      "STR_GERMANY",
+      "STR_GLAMOUR",
+      "STR_GLAMOUROUS_TRAIT",
+      "STR_GLAMOUR_RECRUITMENT",
+      "STR_GL_VV_UC",
+      "STR_GOVT_AUTOPSY",
+      "STR_GOVT_CORPSE",
+      "STR_GROG_BARREL",
+      "STR_GUILD_AUTOPSY",
+      "STR_GUILD_CORPSE",
+      "STR_GUN_SHOPPING",
+      "STR_GYMNASTICS",
+      "STR_GYM_ADVANCE_PREQ",
+      "STR_GYM_OUTFIT",
+      "STR_HARDWARE_SHOPPING",
+      "STR_HEALER_PLUS",
+      "STR_HIDEOUT_DETECTOR",
+      "STR_HISTORY_001",
+      "STR_HMG_VV_UC",
+      "STR_HONOR",
+      "STR_HUEY",
+      "STR_HUMANS",
+      "STR_HUMVEE",
+      "STR_HYDROPONICS",
+      "STR_INSPECT_MACHINERY",
+      "STR_JACKSTOWN_SCOUTING",
+      "STR_JACKSTOWN_ZZZ",
+      "STR_JUNK_PILE",
+      "STR_JUSTICE",
+      "STR_KNUCKLES_SPIKED",
+      "STR_KULTUR",
+      "STR_KUNG_FU",
+      "STR_LABORATORY",
+      "STR_LAMIA_ENCLAVES",
+      "STR_LAMIA_NUDE_SEA_UC",
+      "STR_LAMIA_RECRUITMENT",
+      "STR_LAMIA_RECRUITMENT_PREQ",
+      "STR_LAMIA_RECRUITMENT_ZZZ",
+      "STR_LARGE_RADAR_SYSTEM",
+      "STR_LEADER_PLUS",
+      "STR_LEATHER_ARMOR",
+      "STR_LINGERIE",
+      "STR_LINGERIE_DEP",
+      "STR_LIVING_QUARTERS_SMALL",
+      "STR_LMG_VV_UC",
+      "STR_LOC_TAVERN_CELLAR_DONE",
+      "STR_LOGISTICS",
+      "STR_LOOTBOX_SCAVENGING",
+      "STR_LOOT_DISTRIBUTION",
+      "STR_MEDALLION",
+      "STR_MEGASCORPION_CORPSE",
+      "STR_MEGASCORPION_STING",
+      "STR_MELEE_SUMMARY",
+      "STR_MESS_HALL",
+      "STR_MIND_PROBE",
+      "STR_MINIGUN_VV_UC",
+      "STR_MISSION_GUILD_OUTPOST",
+      "STR_MISSION_SEA_ADVENTURE",
+      "STR_MISSION_SEA_ADVENTURE_ZZZ",
+      "STR_MONSTER_HUNT",
+      "STR_MOST_COMMON_POWER",
+      "STR_MUTANT_ABILITIES",
+      "STR_MUTANT_ALLIANCE_LORE",
+      "STR_MUTANT_BLESSINGS",
+      "STR_MUTANT_ORIGINS",
+      "STR_NECROPLANE_PARTS",
+      "STR_NECROPLANE_PARTS_RECYCLING",
+      "STR_NEPOTISM",
+      "STR_NIGHT_OPS_ARMOR",
+      "STR_NUNITY",
+      "STR_OFFICER_PLUS",
+      "STR_OLD_AIRCRAFT_REPAIRED",
+      "STR_OLD_BOOKS",
+      "STR_OLD_EARTH_VOODOO",
+      "STR_PADD",
+      "STR_PARTY",
+      "STR_PARTY_DEP",
+      "STR_PARTY_DRESS",
+      "STR_PEASANTS_ZZZ",
+      "STR_PEASANT_ARMOR_JUMPSUIT_UC",
+      "STR_PEASANT_ARMOR_MILITIA",
+      "STR_PEASANT_CAMO_UC",
+      "STR_PEASANT_MILITIA",
+      "STR_PEASANT_NUDE_SEA_UC",
+      "STR_PEPPER_PISTOL",
+      "STR_PERSONAL_ARMOR_PREQ",
+      "STR_PERSONAL_LABS",
+      "STR_PERSONAL_LABS_EXIST",
+      "STR_PERSUASION",
+      "STR_PICKAXE",
+      "STR_PINUP_001",
+      "STR_PIRATE_FLAG",
+      "STR_PIRATE_LIFE",
+      "STR_PIRATE_STYLE",
+      "STR_POLAR_OUTFIT",
+      "STR_PORN",
+      "STR_PRIMITIVE_WEAPONS",
+      "STR_PRIMITIVE_WEAPONS_2",
+      "STR_PRIMITIVE_WEAPONS_2_ZZZ",
+      "STR_PRIMITIVE_WEAPONS_ZZZ",
+      "STR_PROTECTIVE_GEAR",
+      "STR_PSI_LAB",
+      "STR_PSI_LAB_PREQ",
+      "STR_QUARTERSTAFF",
+      "STR_QUESTION_OF_DRILL",
+      "STR_RAIDER_BOSS_ARMOR",
+      "STR_RAIDER_CORPSE",
+      "STR_RECRUITMENT",
+      "STR_RECRUIT_PEASANTS",
+      "STR_REJECT_THE_POWER",
+      "STR_REPROBATE",
+      "STR_RIBBON",
+      "STR_RING",
+      "STR_ROTOGUN",
+      "STR_ROTOGUN_VV_UC",
+      "STR_RPG_VV_UC",
+      "STR_RUNT_OUTFIT",
+      "STR_SAILOR_UNIFORM",
+      "STR_SALVAGE",
+      "STR_SAVVYNESS",
+      "STR_SCHOOLING_1",
+      "STR_SCI_REP",
+      "STR_SC_WIRE",
+      "STR_SEA_TRANSPORT",
+      "STR_SECTOID",
+      "STR_SECTOID_AUTOPSY",
+      "STR_SECTOID_LEADER",
+      "STR_SECTOID_MEDIC",
+      "STR_SECTOID_SOLDIER",
+      "STR_SECTOWEED",
+      "STR_SHAKEUP_CEREMONY",
+      "STR_SHAWL",
+      "STR_SIDEWINDER_REPORT",
+      "STR_SKINNING",
+      "STR_SLAVE_HALFWIT",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_SMGS_SUMMARY",
+      "STR_SMITHING",
+      "STR_SMITHING_ZZZ",
+      "STR_SOCIALIZING",
+      "STR_SOULSENSE",
+      "STR_SPITFIRE_INTERCEPTOR",
+      "STR_STEAM_POWER",
+      "STR_STUN_BATON",
+      "STR_SUPER_STAPLER",
+      "STR_SURVIVAL",
+      "STR_SURVIVAL_ZZZ",
+      "STR_TACTICS",
+      "STR_TACTICS_ZZZ",
+      "STR_TAC_VEST_PEASANT_UC",
+      "STR_TAKE_ME_TO_YOUR_DEALER",
+      "STR_TANKP_PREQ",
+      "STR_THE_PHARMACIST",
+      "STR_TIGER_TOURS",
+      "STR_TRAININGS",
+      "STR_TRAP_ROOM",
+      "STR_TREASURE_HUNTING",
+      "STR_UBER_WHEAT",
+      "STR_UK",
+      "STR_UNARMED_GAUNTLET",
+      "STR_UNARMED_WRESTLING",
+      "STR_UNDERGROUND_ANOMALY",
+      "STR_UNDERGROUND_HUNTING",
+      "STR_UNDERGROUND_MISSIONS",
+      "STR_UNDERWATER_MODE",
+      "STR_VESSEL_AMBULANCE",
+      "STR_VESSEL_CRASHPLANE",
+      "STR_VESSEL_RUSTFIGHTER3",
+      "STR_VIOLENCE",
+      "STR_VIOLENCE_ZZZ",
+      "STR_VODKA",
+      "STR_WARRIOR_CULTURE_PREQ",
+      "STR_WASTELANDER_BACKPACK",
+      "STR_WAT_DO",
+      "STR_WEIRDNESS",
+      "STR_WEIRDNESS_ZZZ",
+      "STR_WELL",
+      "STR_WENCH_OUTFIT",
+      "STR_WORKSHOP",
+      "STR_WORLDLY_MORALITY",
+      "STR_WRENCH",
+      "STR_YOUNG_UBER_RECRUITMENT"
+    ],
+    "disabled": [
+      "STR_BULK_EXCAVATION",
+      "STR_CAPSULE_QUARTERS",
+      "STR_CAPTAIN_DUMBASS",
+      "STR_CAPTAIN_LAZYASS",
+      "STR_CAPTAIN_PUSSY",
+      "STR_CAPTAIN_SOREASS",
+      "STR_CAT_PATH",
+      "STR_CAT_PATH_PREQ",
+      "STR_EMBRACE_THE_POWER",
+      "STR_GENERAL_STORES_XLARGE",
+      "STR_HOTEL",
+      "STR_HYBRID_PATH",
+      "STR_HYBRID_PATH_PREQ",
+      "STR_JAIL_DOUBLE",
+      "STR_NEKOMIMI_NETWORK",
+      "STR_NONPROFIT_LAB",
+      "STR_PEASANT_REVOLUTION",
+      "STR_PEASANT_REVOLUTION_PREQ",
+      "STR_SCAMMING",
+      "STR_TACTICAL_CENTER",
+      "STR_TINY_DRILL_INVESTIGATION",
+      "STR_WE_NEED_MALE_TOUCH",
+      "STR_WE_NEED_MALE_TOUCH_PREQ"
+    ],
+    "items": {
+      "STR_RAYGUN": 1,
+      "STR_RAYGUN_CLIP": 3,
+      "STR_SHIV": 5,
+      "STR_NOOSE": 3,
+      "STR_FLINTLOCK_BALLS": 30,
+      "STR_SHOTGUN_G_SHELLS": 5,
+      "STR_PIR_CANNONBALL": 20,
+      "STR_MOLOTOV": 4,
+      "STR_ANARCHY_BOMB": 2,
+      "STR_TINY_DRILL": 1,
+      "STR_ELERIUM_115": 4,
+      "STR_JUNK_PILE": 21,
+      "STR_BIG_ROCK": 169,
+      "STR_SCRAP_METAL": 197,
+      "STR_MENACING_HULL": 1,
+      "STR_RAIDER_CORPSE": 6,
+      "STR_MUTANT_MEAT": 6,
+      "STR_LAND_DEED": 1,
+      "STR_CIGS": 1,
+      "STR_NECROPLANE_PARTS": 29,
+      "STR_CHEMICALS": 80,
+      "STR_DATA_DISK": 0,
+      "STR_DATA_DISK_B": 0,
+      "STR_SC_WIRE": 5,
+      "STR_WRENCH": 0,
+      "STR_GUILD_CORPSE": 2,
+      "STR_PADD": 0,
+      "STR_WASTELANDER_BACKPACK": 0,
+      "STR_ACADEMY_CORPSE": 0,
+      "STR_GOVT_CORPSE": 0,
+      "STR_BANDAGE": 1,
+      "STR_KNOIF_BANDIT": 1,
+      "STR_STUN_BATON": 0,
+      "STR_CS_GAS": 1,
+      "STR_CREDIT_CHIP_M": 1,
+      "STR_SECTOID_SOLDIER": 0,
+      "STR_BEER": 0,
+      "STR_SECTOID_MEDIC": 0,
+      "STR_ACADEMY_NURSE": 0,
+      "STR_SECTOID_LEADER": 0,
+      "STR_VODKA": 1,
+      "STR_MEDALLION": 4,
+      "STR_MUTANT_BLESSINGS": 1,
+      "STR_CREDIT_CHIP_D": 75,
+      "STR_RING": 1,
+      "STR_LINGERIE": 2,
+      "STR_GLAMOUR": 3,
+      "STR_OLD_BOOKS": 0,
+      "STR_EXPEDITION_RESEARCH": 0,
+      "STR_EXPEDITION_REPORTS": 0,
+      "STR_LOOTBOX_EXPEDITION": 0,
+      "STR_COINS": 2,
+      "STR_BOOK_OF_SERMONS": 0,
+      "STR_DOLLAR_BRIEFCASE": 0,
+      "STR_BOOT": 1,
+      "STR_PORN": 2,
+      "STR_SECTOWEED": 1,
+      "STR_SCAVENGER_OUTFIT": 1
+    },
+    "baseFunctions": [
+      "ALKO",
+      "CPU",
+      "CULT",
+      "GAMB",
+      "LAB",
+      "SHOP",
+      "STUDY",
+      "WELL",
+      "WORKS"
+    ],
+    "facilities": [
+      "STR_ACCESS_LIFT",
+      "STR_BURROW",
+      "STR_CORRIDOR",
+      "STR_GENERAL_STORES",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_HANGAR",
+      "STR_JAIL",
+      "STR_LABORATORY",
+      "STR_LIVING_QUARTERS",
+      "STR_MESS_HALL",
+      "STR_PERSONAL_LABS",
+      "STR_RUBBLE",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_STILL",
+      "STR_WELL",
+      "STR_WORKSHOP"
+    ],
+    "rankRequirements": [
+      {
+        "id": "STR_CAPTAINS_RANK_01",
+        "minimumScore": 2000,
+        "earliestMonth": 1,
+        "nextBoundary": 12,
+        "alreadyCompleted": false,
+        "missingResearch": [],
+        "forbiddenResearch": [],
+        "modeledSubtotal": 4358,
+        "unmodeledNetRequired": -2358,
+        "actualScore": null,
+        "scoreKnown": false,
+        "eligible": false,
+        "status": "OPEN_NATIVE_SCORE_REQUIRED",
+        "constraint": "native monthly score must meet threshold at month start; symbolic residual is not an activity award."
+      },
+      {
+        "id": "STR_CAPTAINS_RANK_02",
+        "minimumScore": 3000,
+        "earliestMonth": 2,
+        "nextBoundary": 12,
+        "alreadyCompleted": false,
+        "missingResearch": [
+          "STR_CAPTAINS_RANK_01"
+        ],
+        "forbiddenResearch": [],
+        "modeledSubtotal": 4358,
+        "unmodeledNetRequired": -1358,
+        "actualScore": null,
+        "scoreKnown": false,
+        "eligible": false,
+        "status": "OPEN_NATIVE_SCORE_REQUIRED",
+        "constraint": "native monthly score must meet threshold at month start; symbolic residual is not an activity award."
+      }
+    ],
+    "rank01": false,
+    "rank02": false
+  },
+  "gdx": {
+    "state": "OPEN",
+    "mission": "STR_LOC_GDX_PRISON",
+    "required": [
+      "STR_GDX_004"
+    ],
+    "missing": [
+      "STR_GDX_004"
+    ],
+    "startingConstraints": {
+      "id": "STR_STARCON_PRISON",
+      "allowedCraft": [
+        "STR_AIRBUS",
+        "STR_AIRBUS_STANDARD",
+        "STR_AIRVAN",
+        "STR_GDXCAR",
+        "STR_BALOON",
+        "STR_RAIL_POD"
+      ],
+      "allowedSoldierTypes": [
+        "STR_SOLDIER",
+        "STR_SOLDIER_S",
+        "STR_SOLDIER_M",
+        "STR_SOLDIER_V",
+        "STR_SOLDIER_X",
+        "STR_SOLDIER_R",
+        "STR_SOLDIER_W"
+      ],
+      "allowedArmors": [
+        "BOXX_ARMOR"
+      ],
+      "allowedItems": [
+        "STR_SHIV"
+      ],
+      "anchor": {
+        "file": "Piratez_Globals.rul",
+        "sha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+        "startLine": 4809,
+        "endLine": 4866,
+        "blockSha256": "7cf6b4e93c4c8bcf68c93982f18e04d7db597f2251da597a9f9e30ad2ce41771"
+      }
+    },
+    "sample": "STR_GDX_005",
+    "sampleCount": 1,
+    "missionReward": "STR_LOC_GDX_PRISON_DONE",
+    "admitted": false
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "scope": "Additional research selected by source points/cost, not native elapsed research time. Native score and region activity remain unknown; no rank is granted. Prior active flags preserved.",
+  "artifact": "tools/data/overcap-forward-score-v3-uk-str_inspect_machinery-str_beastmen.json.gz",
+  "artifactSha256": "ac1cd366240d2ca51962c2fbfb3ed87c8bed6fefa1fe1ca9be1675933be8f140",
+  "newSteps": 65,
+  "newResearch": 90,
+  "researchCount": 293,
+  "deferredOptions": 4866
+}
