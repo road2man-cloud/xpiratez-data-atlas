@@ -1,0 +1,271 @@
+{
+  "schema": "ATLAS_FORWARD_SCENARIO_REGISTRY_V3",
+  "baselineGraph": {
+    "path": "tools/data/overcap-forward-research-v3-frontier.json.gz",
+    "summary": "tools/data/overcap-forward-research-v3-frontier-summary.json",
+    "witnesses": "tools/data/overcap-forward-research-v3-frontier-witnesses.json",
+    "sha256": "0fbda103b9d524143d3c9195bae49aa3fd19deef0e95bbdda3b75f2fafbdab98"
+  },
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "scenarios": [
+    {
+      "scenario": "baseline",
+      "root": "STR_INSPECT_MACHINERY",
+      "path": "tools/data/overcap-forward-shipyard-v3-baseline-str_inspect_machinery.json.gz",
+      "summary": "tools/data/overcap-forward-shipyard-v3-baseline-str_inspect_machinery-summary.json",
+      "sha256": "8c46476c29f29dd757c0688f5afda45f58e190015308d592e86a6150107ca0a1",
+      "stateHash": "ee0bf6c5c0c0cfab3aa6b2054c66b76773b47d605509326b7767bcb7f37af042",
+      "steps": 135,
+      "labDepth": 88,
+      "researchCount": 180,
+      "month": 2,
+      "targets": [
+        {
+          "kind": "research",
+          "id": "STR_VESSEL_RUSTFIGHTER3",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        }
+      ],
+      "necroParts": 0,
+      "deferredOptions": 568,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED"
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_INSPECT_MACHINERY",
+      "path": "tools/data/overcap-forward-shipyard-v3-uk-str_inspect_machinery.json.gz",
+      "summary": "tools/data/overcap-forward-shipyard-v3-uk-str_inspect_machinery-summary.json",
+      "sha256": "46b2480435ab2b67a8a1930f2e6e43f06497fc72f0033ba7b91616d0a9b9b9d4",
+      "stateHash": "0bd7c90e6756716e70749e01b11632081a9d739de291556aa888ee2739e09807",
+      "steps": 72,
+      "labDepth": 49,
+      "researchCount": 100,
+      "month": 2,
+      "targets": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "research",
+          "id": "STR_CONTACT_SHIP_JUNKYARD",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        }
+      ],
+      "necroParts": 29,
+      "deferredOptions": 9697,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED"
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "path": "tools/data/overcap-forward-shipyard-v3-uk-str_jackstown_scouting.json.gz",
+      "summary": "tools/data/overcap-forward-shipyard-v3-uk-str_jackstown_scouting-summary.json",
+      "sha256": "52e5ace0178239624ee8f4e3eff4b7389653657bc98f3acb10210431dce2091c",
+      "stateHash": "30a4141b093b415bc4a6ee36eeaf3aaa480b95c85823b17b7f9fd16244caf91e",
+      "steps": 72,
+      "labDepth": 49,
+      "researchCount": 100,
+      "month": 2,
+      "targets": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "research",
+          "id": "STR_CONTACT_SHIP_JUNKYARD",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        }
+      ],
+      "necroParts": 29,
+      "deferredOptions": 9702,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED"
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_RECRUIT_PEASANTS",
+      "path": "tools/data/overcap-forward-shipyard-v3-uk-str_recruit_peasants.json.gz",
+      "summary": "tools/data/overcap-forward-shipyard-v3-uk-str_recruit_peasants-summary.json",
+      "sha256": "6b3334b8f9bfb2f4d5677ff18919682780f253b940d13b5a4e2745b13726545b",
+      "stateHash": "9f6fac4bde3b4b1d534f2d320ae88558ee08399f6576c3641f38aa84aeeaab7d",
+      "steps": 72,
+      "labDepth": 49,
+      "researchCount": 100,
+      "month": 2,
+      "targets": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "research",
+          "id": "STR_CONTACT_SHIP_JUNKYARD",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        }
+      ],
+      "necroParts": 29,
+      "deferredOptions": 9690,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED"
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_WAT_DO",
+      "path": "tools/data/overcap-forward-shipyard-v3-uk-str_wat_do.json.gz",
+      "summary": "tools/data/overcap-forward-shipyard-v3-uk-str_wat_do-summary.json",
+      "sha256": "89925100fdddfcdc14796531aa8746dbf67da6f02a65bbe1f0d7f80ff2c677c4",
+      "stateHash": "ba0803205348bee0edd540e6aac9914f4224edabff2136304d9d5339521c6e82",
+      "steps": 72,
+      "labDepth": 49,
+      "researchCount": 100,
+      "month": 2,
+      "targets": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        },
+        {
+          "kind": "research",
+          "id": "STR_CONTACT_SHIP_JUNKYARD",
+          "reached": true,
+          "missingDependencies": [],
+          "missingFunctions": []
+        }
+      ],
+      "necroParts": 29,
+      "deferredOptions": 9696,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED"
+    }
+  ],
+  "missionSourceIndex": {
+    "path": "tools/data/overcap-forward-map-source-index-v3.json.gz",
+    "sha256": "cc892d726fc52593c0a693b0a306a29c184a36d026bc6669497b4c14b793b5f3",
+    "items": 155,
+    "routes": 4755,
+    "scriptOverrideRoutes": 2888,
+    "overrideWithoutSimpleCommand": 1341,
+    "withActualCommand": 3008,
+    "OPEN_SOURCE_TASK": 4160,
+    "FIXED_SOURCE_CANDIDATE": 595
+  },
+  "missionQueue": {
+    "path": "tools/data/overcap-forward-mission-acquisition-queue-v3.json",
+    "sha256": "a7b46b2c2fadccb68749fd1e661dfc9542c2f0b57f8f3dd714dfacd574102232",
+    "queues": [
+      {
+        "scenario": "baseline",
+        "root": "STR_INSPECT_MACHINERY",
+        "stateHash": "ee0bf6c5c0c0cfab3aa6b2054c66b76773b47d605509326b7767bcb7f37af042",
+        "taskCount": 204,
+        "readyForRecoveryWitness": 8
+      },
+      {
+        "scenario": "uk",
+        "root": "STR_INSPECT_MACHINERY",
+        "stateHash": "0bd7c90e6756716e70749e01b11632081a9d739de291556aa888ee2739e09807",
+        "taskCount": 204,
+        "readyForRecoveryWitness": 8
+      },
+      {
+        "scenario": "uk",
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "stateHash": "30a4141b093b415bc4a6ee36eeaf3aaa480b95c85823b17b7f9fd16244caf91e",
+        "taskCount": 204,
+        "readyForRecoveryWitness": 8
+      },
+      {
+        "scenario": "uk",
+        "root": "STR_RECRUIT_PEASANTS",
+        "stateHash": "9f6fac4bde3b4b1d534f2d320ae88558ee08399f6576c3641f38aa84aeeaab7d",
+        "taskCount": 204,
+        "readyForRecoveryWitness": 8
+      },
+      {
+        "scenario": "uk",
+        "root": "STR_WAT_DO",
+        "stateHash": "ba0803205348bee0edd540e6aac9914f4224edabff2136304d9d5339521c6e82",
+        "taskCount": 204,
+        "readyForRecoveryWitness": 8
+      }
+    ]
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "scope": "Separate conditional starting-country scenarios. No state merge across geography or baseline; no production admission to final careers."
+}

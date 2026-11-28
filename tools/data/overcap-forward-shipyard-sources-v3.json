@@ -1,0 +1,55 @@
+{
+  "schema": "ATLAS_FORWARD_SHIPYARD_SOURCE_ANCHORS_V3",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "rows": [
+    {
+      "id": "STR_START_COUNTRY_UK_EVENT",
+      "research": "STR_UK",
+      "country": "STR_UK",
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "items": {
+        "STR_JUNK_PILE": 8,
+        "STR_NECROPLANE_PARTS": 30,
+        "STR_CHEMICALS": 50,
+        "STR_SCRAP_METAL": 50
+      },
+      "eventAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 225,
+        "endLine": 236,
+        "blockSha256": "dbbd36cfef913e90f647af5ec402fc2bbd39d23e817551889e0b5b8ec703f12f"
+      },
+      "scriptAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 6794,
+        "endLine": 6802,
+        "blockSha256": "8dfebabb8ba45fc59c7661f033a7bea515ac6b752c0112b8ad7c2c9fdc200cd9"
+      }
+    },
+    {
+      "id": "STR_AIR_BANDITS_EVENT",
+      "research": "STR_VESSEL_RUSTFIGHTER3",
+      "firstMonth": 2,
+      "lastMonth": null,
+      "items": {},
+      "eventAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 746,
+        "endLine": 751,
+        "blockSha256": "bf71f3c8720a4114325976347bae605d627408eb358f39b3e8b18ae0df11485b"
+      },
+      "scriptAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7420,
+        "endLine": 7426,
+        "blockSha256": "3196bddbfca944f580ac197ac11c69856124dde41ebe4d867fd4d9500b657526"
+      }
+    }
+  ],
+  "scope": "Raw-source matched country event and delayed vessel event. UK is a separate assumed campaign start, not a modification of an existing campaign. Actual event timing remains conditional."
+}
