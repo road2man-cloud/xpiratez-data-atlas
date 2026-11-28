@@ -50,7 +50,9 @@
       "careerCertified": 0
     },
     "missingResearchTopics": 140,
-    "gameCertified": 0
+    "gameCertified": 0,
+    "ordinaryExpansionTopics": 139,
+    "specialGateTopics": 1
   },
   "runtimeSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
   "profiles": [
@@ -4482,15 +4484,6 @@
   ],
   "priorities": [
     {
-      "id": "STR_UNAVAILABLE",
-      "profiles": [],
-      "trainings": [
-        "STR_CAREER_SOLDIER",
-        "STR_THEBAN_ASSAULT_CLONE",
-        "STR_LONE_WOLF"
-      ]
-    },
-    {
       "id": "STR_CATGIRL_RECRUITMENT",
       "profiles": [
         "manufacture:STR_CATGIRL_RECRUITMENT",
@@ -5465,6 +5458,18 @@
         "manufacture:STR_ZONE_STALKER_RECRUITMENT"
       ],
       "trainings": []
+    }
+  ],
+  "specialGates": [
+    {
+      "id": "STR_UNAVAILABLE",
+      "profiles": [],
+      "trainings": [
+        "STR_CAREER_SOLDIER",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_LONE_WOLF"
+      ],
+      "reason": "zero-cost self-sample gate; ordinary expansion excluded"
     }
   ]
 }
