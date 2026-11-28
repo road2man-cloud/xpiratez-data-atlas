@@ -1,0 +1,454 @@
+{
+  "format": "XPZC v2",
+  "sourceBlob": "285a8539e2687d47f7ca65a034605b0eeec93ead",
+  "sourceBytes": 254904,
+  "bytes": 76016,
+  "triangles": 2100,
+  "groups": 24,
+  "sourceJoints": 63,
+  "packetJoints": 0,
+  "exactCoordinates": 18900,
+  "bounds": {
+    "min": [
+      -0.8640000224113464,
+      -0.14854860305786133,
+      0.04482201486825943
+    ],
+    "max": [
+      0.8640000224113464,
+      0.1605721265077591,
+      1.9795557260513306
+    ]
+  },
+  "textures": [
+    {
+      "texture": 1,
+      "name": "F11 swept hair strand atlas",
+      "width": 256,
+      "height": 256,
+      "channels": 3,
+      "pngCrcAndAdlerChecked": true
+    },
+    {
+      "texture": 2,
+      "name": "F11 continuous deep-set eye atlas",
+      "width": 192,
+      "height": 96,
+      "channels": 3,
+      "pngCrcAndAdlerChecked": true
+    }
+  ],
+  "textureSamples": 1248,
+  "materialAudit": [
+    {
+      "material": 0,
+      "name": "face",
+      "triangles": 644,
+      "textureSampled": false,
+      "oldMeanRgb": [
+        139,
+        90,
+        47
+      ],
+      "newMeanRgb": [
+        139,
+        90,
+        47
+      ],
+      "oldRms": 0.009005273972439855,
+      "newRms": 0.009005273972439855
+    },
+    {
+      "material": 1,
+      "name": "hair",
+      "triangles": 294,
+      "textureSampled": true,
+      "oldMeanRgb": [
+        255,
+        255,
+        255
+      ],
+      "newMeanRgb": [
+        7,
+        25,
+        1
+      ],
+      "oldRms": 0.9582051953491112,
+      "newRms": 0.010030460263581262
+    },
+    {
+      "material": 8,
+      "name": "skin",
+      "triangles": 112,
+      "textureSampled": false,
+      "oldMeanRgb": [
+        143,
+        94,
+        48
+      ],
+      "newMeanRgb": [
+        143,
+        94,
+        48
+      ],
+      "oldRms": 0.0013678725187226198,
+      "newRms": 0.0013678725187226198
+    },
+    {
+      "material": 11,
+      "name": "eye_white",
+      "triangles": 14,
+      "textureSampled": true,
+      "oldMeanRgb": [
+        255,
+        255,
+        255
+      ],
+      "newMeanRgb": [
+        60,
+        50,
+        37
+      ],
+      "oldRms": 0.8174607883737792,
+      "newRms": 0.035953341455045036
+    },
+    {
+      "material": 12,
+      "name": "eye",
+      "triangles": 4,
+      "textureSampled": true,
+      "oldMeanRgb": [
+        255,
+        255,
+        255
+      ],
+      "newMeanRgb": [
+        29,
+        21,
+        14
+      ],
+      "oldRms": 0.9167905076705295,
+      "newRms": 0.0010393878004244007
+    },
+    {
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "triangles": 1032,
+      "textureSampled": false,
+      "oldMeanRgb": [
+        63,
+        44,
+        19
+      ],
+      "newMeanRgb": [
+        63,
+        44,
+        19
+      ],
+      "oldRms": 0.021077141871844937,
+      "newRms": 0.021077141871844937
+    }
+  ],
+  "palette": [
+    {
+      "kind": 2,
+      "material": 0,
+      "name": "face",
+      "q": 0,
+      "rgb": [
+        133,
+        83,
+        43
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "name": "face",
+      "q": 1,
+      "rgb": [
+        140,
+        91,
+        47
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "name": "face",
+      "q": 2,
+      "rgb": [
+        142,
+        94,
+        48
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "name": "face",
+      "q": 3,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "name": "hair",
+      "q": 0,
+      "rgb": [
+        4,
+        12,
+        1
+      ],
+      "triangles": 73
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "name": "hair",
+      "q": 1,
+      "rgb": [
+        5,
+        17,
+        1
+      ],
+      "triangles": 74
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "name": "hair",
+      "q": 2,
+      "rgb": [
+        8,
+        27,
+        2
+      ],
+      "triangles": 73
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "name": "hair",
+      "q": 3,
+      "rgb": [
+        11,
+        42,
+        2
+      ],
+      "triangles": 74
+    },
+    {
+      "kind": 0,
+      "material": 8,
+      "name": "skin",
+      "q": 0,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 28
+    },
+    {
+      "kind": 0,
+      "material": 8,
+      "name": "skin",
+      "q": 1,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 28
+    },
+    {
+      "kind": 0,
+      "material": 8,
+      "name": "skin",
+      "q": 2,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 28
+    },
+    {
+      "kind": 0,
+      "material": 8,
+      "name": "skin",
+      "q": 3,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 28
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "name": "eye_white",
+      "q": 0,
+      "rgb": [
+        19,
+        13,
+        5
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "name": "eye_white",
+      "q": 1,
+      "rgb": [
+        39,
+        32,
+        22
+      ],
+      "triangles": 4
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "name": "eye_white",
+      "q": 2,
+      "rgb": [
+        81,
+        70,
+        54
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "name": "eye_white",
+      "q": 3,
+      "rgb": [
+        94,
+        80,
+        62
+      ],
+      "triangles": 4
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "name": "eye",
+      "q": 0,
+      "rgb": [
+        25,
+        17,
+        11
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "name": "eye",
+      "q": 1,
+      "rgb": [
+        25,
+        17,
+        11
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "name": "eye",
+      "q": 2,
+      "rgb": [
+        34,
+        26,
+        16
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "name": "eye",
+      "q": 3,
+      "rgb": [
+        34,
+        26,
+        16
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 5,
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "q": 0,
+      "rgb": [
+        31,
+        24,
+        12
+      ],
+      "triangles": 258
+    },
+    {
+      "kind": 5,
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "q": 1,
+      "rgb": [
+        70,
+        48,
+        21
+      ],
+      "triangles": 258
+    },
+    {
+      "kind": 5,
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "q": 2,
+      "rgb": [
+        75,
+        52,
+        22
+      ],
+      "triangles": 258
+    },
+    {
+      "kind": 5,
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "q": 3,
+      "rgb": [
+        76,
+        53,
+        23
+      ],
+      "triangles": 258
+    }
+  ],
+  "linearColorRmsAgainstTextureSamples": {
+    "v22Recomputed": 0.36720729940086533,
+    "v23": 0.016309173461879257
+  },
+  "sampling": "Four barycentric points, glTF top-left UV, bilinear interpolation in linear color, material and vertex RGB multiplied; packed linear RGB convention not independently engine-calibrated",
+  "limitations": [
+    "Static bind pose",
+    "Texture colors approximated by 4 flat groups per primitive; no native UV mapping",
+    "No normal maps, alpha blending or skinning",
+    "Native runtime not executed"
+  ],
+  "nativeRun": false
+}
