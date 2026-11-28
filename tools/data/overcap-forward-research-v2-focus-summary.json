@@ -1,0 +1,855 @@
+{
+  "schema": "ATLAS_FORWARD_CAMPAIGN_RESEARCH_V2",
+  "artifact": "tools/data/overcap-forward-research-v2-focus.json.gz",
+  "artifactSha256": "1f75b402aff273a6444e1f6873cff8084009bc1bdee83b5fe27f40a3862f81b3",
+  "inputs": {
+    "rulesSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+    "supplySha256": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+    "engineFiles": {
+      "tools/atlas-overcap-forward-research-v2.mjs": "533dfbc273ae31b46115257fe2fa5ea149a63b93da47602652760400ecc0bc58",
+      "tools/atlas-overcap-forward-supply-v2.mjs": "bfd3344156f3c82b5f5062f76a9d2eacf6235602c4c2c95c25df85e702885bad",
+      "tools/build-overcap-forward-supply-catalog-v2.mjs": "9798cdbaa7b637e16a60faafb810dcf2fd3a05423d4bbc205c2bfc6d802d67ca",
+      "tools/atlas-overcap-rooted-early-research.mjs": "995671628f388f76d3473cd8fedfabd2824733f904299576d72420a94005bfc2",
+      "tools/origin-pair-exact-prefix-checkpoint.mjs": "a569fa2651f658c573417f60370349933aecd1e036fc87cf5dae91c18366a113",
+      "tools/population-research-career-core.mjs": "4a2adc75ddcf74974479c44e4bd22ec46320f97e1735d77e7c8478422b39e373",
+      "public/soldiers/modern/origin-witness.js": "d5b87f0d91d9f3b285f291187bdf1b5aff616180b0ddb5886df7ba33dcdc0af1",
+      "public/soldiers/modern/campaign-proof.js": "add07136ecb621d4ce2c085a60b0da73848e66f4144db1bf0e7486b740b383d7",
+      "public/soldiers/modern/event-chronology.js": "2af4c9d106f85ab0ecfa5726b1b887922715fd186581ce1edca065dec79e7d0f",
+      "public/soldiers/modern/auto-zero-cascade.js": "827f213c024e1580801469533920ba24d93244eb7d6025b0cd3e6222b6ea6ade",
+      "public/soldiers/modern/eligibility.js": "518d0f2b129d4fe431cc18b5499a5edad3fcc945eddab1277313568bdb697612",
+      "public/soldiers/modern/origin-campaign-context.js": "0cadb7a741d4000e36a87c2e04704dcd1e9633f313f567907bfc77a71d90cd71"
+    },
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+  },
+  "focus": {
+    "baseSha256": "d6acc3d4b6345365b45f1739fa5822ce007a431c414ea04f7cb9d3a03a104df7",
+    "schedulerSha256": "cc7bad80633e780d51d37fb3bc2ceef22809d6292ae1b9269dc1b0061c4e441c",
+    "baseCounts": {
+      "nodes": 4640,
+      "edges": 10545,
+      "expanded": 285
+    },
+    "expansions": [
+      {
+        "node": 4635,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 128,
+        "focused": [
+          10558
+        ]
+      },
+      {
+        "node": 4656,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "manufacture",
+        "hints": [
+          "STR_ELERIUM_115_XXX"
+        ],
+        "edges": 128,
+        "focused": [
+          10686,
+          10689
+        ]
+      },
+      {
+        "node": 4463,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "settle",
+        "hints": [
+          "FREE:STR_NEPOTISM"
+        ],
+        "edges": 1,
+        "focused": [
+          10801
+        ]
+      },
+      {
+        "node": 4663,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          10802
+        ]
+      },
+      {
+        "node": 4634,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 129,
+        "focused": [
+          10817
+        ]
+      },
+      {
+        "node": 3994,
+        "root": "STR_WAT_DO",
+        "mode": "facility",
+        "hints": [
+          "STR_WELL"
+        ],
+        "edges": 136,
+        "focused": [
+          10951
+        ]
+      },
+      {
+        "node": 4754,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "research",
+        "hints": [],
+        "edges": 130,
+        "focused": []
+      },
+      {
+        "node": 4778,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          11198
+        ]
+      },
+      {
+        "node": 4633,
+        "root": "STR_WAT_DO",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 127,
+        "focused": [
+          11211
+        ]
+      },
+      {
+        "node": 4832,
+        "root": "STR_WAT_DO",
+        "mode": "manufacture",
+        "hints": [
+          "STR_ELERIUM_115_XXX"
+        ],
+        "edges": 136,
+        "focused": [
+          11345
+        ]
+      },
+      {
+        "node": 4875,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "settle",
+        "hints": [
+          "FREE:STR_INSPECT_MACHINERY"
+        ],
+        "edges": 1,
+        "focused": [
+          11462
+        ]
+      },
+      {
+        "node": 4720,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          11463
+        ]
+      },
+      {
+        "node": 4632,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 129,
+        "focused": [
+          11478
+        ]
+      },
+      {
+        "node": 4292,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "facility",
+        "hints": [
+          "STR_WELL"
+        ],
+        "edges": 134,
+        "focused": [
+          11610
+        ]
+      },
+      {
+        "node": 4759,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "research",
+        "hints": [],
+        "edges": 128,
+        "focused": [
+          11740
+        ]
+      },
+      {
+        "node": 4840,
+        "root": "STR_WAT_DO",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          11855
+        ]
+      },
+      {
+        "node": 4631,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "sample",
+        "hints": [
+          "STR_SCAVENGER_OUTFIT"
+        ],
+        "edges": 134,
+        "focused": [
+          11859
+        ]
+      },
+      {
+        "node": 5125,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "manufacture",
+        "hints": [
+          "STR_ELERIUM_115_XXX"
+        ],
+        "edges": 134,
+        "focused": [
+          12007
+        ]
+      },
+      {
+        "node": 4876,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "settle",
+        "hints": [
+          "FREE:STR_RECRUITMENT"
+        ],
+        "edges": 1,
+        "focused": [
+          12124
+        ]
+      },
+      {
+        "node": 4952,
+        "root": "STR_WAT_DO",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          12125
+        ]
+      },
+      {
+        "node": 4641,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 127,
+        "focused": [
+          12138
+        ]
+      },
+      {
+        "node": 4290,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "facility",
+        "hints": [
+          "STR_WELL"
+        ],
+        "edges": 134,
+        "focused": [
+          12270
+        ]
+      },
+      {
+        "node": 5171,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "research",
+        "hints": [],
+        "edges": 128,
+        "focused": [
+          12400
+        ]
+      },
+      {
+        "node": 5014,
+        "root": "STR_WAT_DO",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          12515
+        ]
+      },
+      {
+        "node": 5349,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 130,
+        "focused": [
+          12531
+        ]
+      },
+      {
+        "node": 5420,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "manufacture",
+        "hints": [
+          "STR_ELERIUM_115_XXX"
+        ],
+        "edges": 134,
+        "focused": [
+          12663
+        ]
+      },
+      {
+        "node": 5463,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "settle",
+        "hints": [
+          "FREE:STR_INSPECT_MACHINERY"
+        ],
+        "edges": 1,
+        "focused": [
+          12780
+        ]
+      },
+      {
+        "node": 5545,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          12781
+        ]
+      },
+      {
+        "node": 4933,
+        "root": "STR_WAT_DO",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 128,
+        "focused": [
+          12795
+        ]
+      },
+      {
+        "node": 5108,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "facility",
+        "hints": [
+          "STR_WELL"
+        ],
+        "edges": 133,
+        "focused": [
+          12926
+        ]
+      },
+      {
+        "node": 4877,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "research",
+        "hints": [],
+        "edges": 129,
+        "focused": []
+      },
+      {
+        "node": 5662,
+        "root": "STR_WAT_DO",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          13172
+        ]
+      },
+      {
+        "node": 5520,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 129,
+        "focused": [
+          13187
+        ]
+      },
+      {
+        "node": 5286,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "manufacture",
+        "hints": [
+          "STR_ELERIUM_115_XXX"
+        ],
+        "edges": 133,
+        "focused": [
+          13318
+        ]
+      },
+      {
+        "node": 5755,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "settle",
+        "hints": [
+          "FREE:STR_INSPECT_MACHINERY"
+        ],
+        "edges": 1,
+        "focused": [
+          13435
+        ]
+      },
+      {
+        "node": 5835,
+        "root": "STR_INSPECT_MACHINERY",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          13436
+        ]
+      },
+      {
+        "node": 5644,
+        "root": "STR_WAT_DO",
+        "mode": "sample",
+        "hints": [
+          "STR_SLAVE"
+        ],
+        "edges": 130,
+        "focused": [
+          13452
+        ]
+      },
+      {
+        "node": 5697,
+        "root": "STR_RECRUIT_PEASANTS",
+        "mode": "facility",
+        "hints": [
+          "STR_WELL"
+        ],
+        "edges": 134,
+        "focused": [
+          13584
+        ]
+      },
+      {
+        "node": 5757,
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "mode": "research",
+        "hints": [],
+        "edges": 129,
+        "focused": []
+      },
+      {
+        "node": 5953,
+        "root": "STR_WAT_DO",
+        "mode": "settle",
+        "hints": [
+          "DELIVERY:STR_HUMAN_SHARP_GUY",
+          "DELIVERY:STR_HUMAN_SHARP_GIRL",
+          "DELIVERY:STR_UFO_POWER_SOURCE_SMALL"
+        ],
+        "edges": 1,
+        "focused": [
+          13830
+        ]
+      }
+    ],
+    "produced": [
+      {
+        "edge": 10558,
+        "kind": "sample",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_SLAVE",
+        "to": 4653
+      },
+      {
+        "edge": 10686,
+        "kind": "sample",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_SLAVE",
+        "to": 4710
+      },
+      {
+        "edge": 10689,
+        "kind": "manufacture",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_ELERIUM_115_XXX",
+        "to": 4713
+      },
+      {
+        "edge": 10801,
+        "kind": "settle",
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "id": "STR_TRAININGS",
+        "to": 4754
+      },
+      {
+        "edge": 10802,
+        "kind": "settle",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 4755
+      },
+      {
+        "edge": 10817,
+        "kind": "sample",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_SLAVE",
+        "to": 4770
+      },
+      {
+        "edge": 10951,
+        "kind": "facility",
+        "root": "STR_WAT_DO",
+        "id": "STR_WELL",
+        "to": 4832
+      },
+      {
+        "edge": 11198,
+        "kind": "settle",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 4931
+      },
+      {
+        "edge": 11211,
+        "kind": "sample",
+        "root": "STR_WAT_DO",
+        "id": "STR_SLAVE",
+        "to": 4944
+      },
+      {
+        "edge": 11345,
+        "kind": "manufacture",
+        "root": "STR_WAT_DO",
+        "id": "STR_ELERIUM_115_XXX",
+        "to": 5006
+      },
+      {
+        "edge": 11462,
+        "kind": "settle",
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "id": "STR_WELL",
+        "to": 5049
+      },
+      {
+        "edge": 11463,
+        "kind": "settle",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 5050
+      },
+      {
+        "edge": 11478,
+        "kind": "sample",
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "id": "STR_SLAVE",
+        "to": 5065
+      },
+      {
+        "edge": 11610,
+        "kind": "facility",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_WELL",
+        "to": 5125
+      },
+      {
+        "edge": 11740,
+        "kind": "sample",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_SLAVE",
+        "to": 5181
+      },
+      {
+        "edge": 11855,
+        "kind": "settle",
+        "root": "STR_WAT_DO",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 5224
+      },
+      {
+        "edge": 11859,
+        "kind": "sample",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_SCAVENGER_OUTFIT",
+        "to": 5228
+      },
+      {
+        "edge": 12007,
+        "kind": "manufacture",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_ELERIUM_115_XXX",
+        "to": 5303
+      },
+      {
+        "edge": 12124,
+        "kind": "settle",
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "id": "STR_DIVERGING_PATHS",
+        "to": 5346
+      },
+      {
+        "edge": 12125,
+        "kind": "settle",
+        "root": "STR_WAT_DO",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 5347
+      },
+      {
+        "edge": 12138,
+        "kind": "sample",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_SLAVE",
+        "to": 5360
+      },
+      {
+        "edge": 12270,
+        "kind": "facility",
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "id": "STR_WELL",
+        "to": 5420
+      },
+      {
+        "edge": 12400,
+        "kind": "sample",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_SLAVE",
+        "to": 5476
+      },
+      {
+        "edge": 12515,
+        "kind": "settle",
+        "root": "STR_WAT_DO",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 5519
+      },
+      {
+        "edge": 12531,
+        "kind": "sample",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_SLAVE",
+        "to": 5535
+      },
+      {
+        "edge": 12663,
+        "kind": "manufacture",
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "id": "STR_ELERIUM_115_XXX",
+        "to": 5596
+      },
+      {
+        "edge": 12780,
+        "kind": "settle",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_WELL",
+        "to": 5639
+      },
+      {
+        "edge": 12781,
+        "kind": "settle",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 5640
+      },
+      {
+        "edge": 12795,
+        "kind": "sample",
+        "root": "STR_WAT_DO",
+        "id": "STR_SLAVE",
+        "to": 5654
+      },
+      {
+        "edge": 12926,
+        "kind": "facility",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_WELL",
+        "to": 5286
+      },
+      {
+        "edge": 13172,
+        "kind": "settle",
+        "root": "STR_WAT_DO",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 5810
+      },
+      {
+        "edge": 13187,
+        "kind": "sample",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_SLAVE",
+        "to": 5825
+      },
+      {
+        "edge": 13318,
+        "kind": "manufacture",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_ELERIUM_115_XXX",
+        "to": 5885
+      },
+      {
+        "edge": 13435,
+        "kind": "settle",
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "id": "STR_WELL",
+        "to": 5928
+      },
+      {
+        "edge": 13436,
+        "kind": "settle",
+        "root": "STR_INSPECT_MACHINERY",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 5929
+      },
+      {
+        "edge": 13452,
+        "kind": "sample",
+        "root": "STR_WAT_DO",
+        "id": "STR_SLAVE",
+        "to": 5945
+      },
+      {
+        "edge": 13584,
+        "kind": "facility",
+        "root": "STR_RECRUIT_PEASANTS",
+        "id": "STR_WELL",
+        "to": 5869
+      },
+      {
+        "edge": 13830,
+        "kind": "settle",
+        "root": "STR_WAT_DO",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "to": 6102
+      }
+    ]
+  },
+  "previous": {
+    "nodes": 5520,
+    "edges": 12516,
+    "expanded": 309
+  },
+  "nodes": 6103,
+  "edges": 13831,
+  "expanded": 325,
+  "openUnexpanded": 5778,
+  "openNoSupportedSuccessor": 0,
+  "distinctResearch": 135,
+  "byRoot": {
+    "STR_JACKSTOWN_SCOUTING": {
+      "states": 1378,
+      "expanded": 81,
+      "open": 1297,
+      "maxLabDepth": 21,
+      "distinctResearch": 107
+    },
+    "STR_WAT_DO": {
+      "states": 1226,
+      "expanded": 81,
+      "open": 1145,
+      "maxLabDepth": 17,
+      "distinctResearch": 103
+    },
+    "STR_RECRUIT_PEASANTS": {
+      "states": 1494,
+      "expanded": 81,
+      "open": 1413,
+      "maxLabDepth": 20,
+      "distinctResearch": 103
+    },
+    "STR_INSPECT_MACHINERY": {
+      "states": 2004,
+      "expanded": 81,
+      "open": 1923,
+      "maxLabDepth": 29,
+      "distinctResearch": 135
+    }
+  },
+  "byAction": {
+    "research": 1480,
+    "freeResearch": 101,
+    "sourceEventItems": 3622,
+    "eventResearch": 7982,
+    "missionResearch": 380,
+    "advanceMonth": 105,
+    "sourceResearchDelivery": 118,
+    "sourceBuildFacility": 38,
+    "sourceManufactureItem": 5
+  },
+  "failed": 0,
+  "sampleResearchEdges": 13,
+  "sampleResearchIds": [
+    "STR_SCAVENGER_OUTFIT",
+    "STR_SLAVE"
+  ],
+  "focusModes": {
+    "sample": 10,
+    "manufacture": 5,
+    "settle": 15,
+    "facility": 5,
+    "research": 5
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false
+}
