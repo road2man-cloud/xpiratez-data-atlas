@@ -1,0 +1,97 @@
+name: XPZ3D R36LZ sculpt cage OBJ roundtrip into skinned GLBs
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36lz-cage-roundtrip-20261128/source/**'
+      - '.github/workflows/xpz3d-r36lz-cage-roundtrip.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36lz-cage-roundtrip
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+            experimental/xpz3d/f11/r36lx-polygon-texture-20261128
+            experimental/xpz3d/f11/r36ly-curvature-20261128
+            experimental/xpz3d/f11/r36lz-cage-roundtrip-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fair OBJ vertex cages and reimport into rigged full GLBs
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          INPUT=$BASE/r36ly-curvature-20261128/output
+          ROOT=$BASE/r36lz-cage-roundtrip-20261128
+          REFINE=$ROOT/source/refine_cage.cjs
+          IMPORT=$ROOT/source/import_cage_glb.cjs
+          COMPACT=$BASE/r36ls-illustrated-skin-20261128/source/compact_glb.cjs
+          node --check "$REFINE"
+          node --check "$IMPORT"
+          rm -rf "$ROOT/output"
+          mkdir -p "$ROOT/output/compact"
+          for V in ART SUBTLE; do
+            for S in FLOW GUARDED; do
+              MODE=$(echo "$S" | tr '[:upper:]' '[:lower:]')
+              NAME="${V}_${S}"
+              GLB="$INPUT/models/R36LY_${NAME}_2100_FULL.glb"
+              LEDGER="$INPUT/cage/$NAME/R36LY_${NAME}_EDIT_CAGE.json"
+              OBJ="$INPUT/cage/$NAME/R36LY_${NAME}_CENTER_CAGE.obj"
+              EDIT="$ROOT/output/$NAME/cage"
+              OUT="$ROOT/output/$NAME/glb"
+              node "$REFINE" "$GLB" "$OBJ" "$LEDGER" "$EDIT" "$MODE"
+              node "$IMPORT" "$GLB" "$LEDGER" "$EDIT/R36LZ_${NAME}_REFINED_CAGE.obj" "$OUT" "$NAME"
+              node "$COMPACT" "$OUT/R36LZ_${NAME}_2100_FULL.glb" "$ROOT/output/compact/R36LZ_${NAME}_2100_COMPACT_FULL.glb"
+            done
+          done
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root=process.argv[2];
+          for(const v of ['ART','SUBTLE'])for(const s of ['FLOW','GUARDED']){
+            const name=v+'_'+s,dir=path.join(root,name);
+            const a=JSON.parse(fs.readFileSync(path.join(dir,'cage','R36LZ_'+name+'_FAIR.report.json')));
+            const b=JSON.parse(fs.readFileSync(path.join(dir,'glb','R36LZ_'+name+'.report.json')));
+            const p=path.join(root,'compact','R36LZ_'+name+'_2100_COMPACT_FULL.glb');
+            const glb=fs.readFileSync(p);
+            if(!a.changedOBJVertices||a.relativeEnergyReduction<=0||b.wholeModelTriangles!==2100||b.skinJoints!==63||b.minTriangleAreaRatio<=.72||glb.toString('ascii',0,4)!=='glTF'||glb.readUInt32LE(8)!==glb.length)throw Error('R36LZ incomplete '+name);
+            console.log(name,'vertices',b.modifiedVertexEntries,'energy saved',a.relativeEnergyReduction,'GLB bytes',glb.length);
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36LZ-refined-obj-and-rigged-full-glbs
+          path: experimental/xpz3d/f11/r36lz-cage-roundtrip-20261128/output/
+          retention-days: 90
+      - name: Publish compact GLBs, edited OBJ cages and JSON reports without force
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36lz-cage-roundtrip-20261128/output
+          rm -f "$ROOT"/ART_FLOW/glb/*.glb "$ROOT"/ART_GUARDED/glb/*.glb
+          rm -f "$ROOT"/SUBTLE_FLOW/glb/*.glb "$ROOT"/SUBTLE_GUARDED/glb/*.glb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$ROOT"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36LZ OBJ fairing and skinned full-character roundtrip"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
