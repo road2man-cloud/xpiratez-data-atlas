@@ -1,0 +1,21 @@
+{
+  "version": "R36LS-COMPACT",
+  "input": "R36LU_UVGUTTER_2100_FULL.glb",
+  "inputBytes": 9610332,
+  "output": "R36LU_SUBTLE_UVGUTTER_2100_COMPACT_FULL.glb",
+  "outputBytes": 5103852,
+  "sourceSHA256": "b82f56728b35f14354207fd1cbd104a17c2c8be33eb2fd2c2af731cc1f386128",
+  "outputSHA256": "b64f8b5e99660156693d3a921be9299d3b18207a022e0e365bc05956c75ec037",
+  "reducedBytes": 4506480,
+  "ratio": 0.53108,
+  "textureObjectsBefore": 9,
+  "textureObjectsAfter": 6,
+  "imageObjectsBefore": 9,
+  "imageObjectsAfter": 6,
+  "bufferViewsBefore": 130,
+  "bufferViewsAfter": 127,
+  "geometryAccessorValuesLossless": true,
+  "skinAccessorsUnchanged": true,
+  "embeddedPngBytesLossless": true,
+  "caveat": "GPU image look unchanged intended; browser visual test still required"
+}
