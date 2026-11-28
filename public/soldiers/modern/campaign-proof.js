@@ -161,6 +161,34 @@ function grantResearch(world,id,data,method="research",options={}){
   return {kind:"applied",assumed:autoAssumed,notes:[...autoNotes,...(freeCandidates.length?
     ["이벤트·임무 원천·lookup 완료 후 무료 연구 후보 "+freeCandidates.join(", ")]:[])]};
 }
+function repeatResearch(world,step,data){
+  const rule=data.researchRules?.[step.id];
+  if(step.assumeAvailability!==true)return fail('conditional','반복 연구실 실행을 명시적으로 가정해야 함');
+  if(!rule||!world.researched.has(step.id)||world.disabled.has(step.id))
+    return fail('blocked','반복할 원천 연구가 미완료 또는 폐쇄됨: '+step.id);
+  if(!(rule.cost>0)||arr(rule.requires).length)
+    return fail('blocked','일반 연구실에서 반복 가능한 양수 연구량의 원천이 아님');
+  if(!(world.activeResearch instanceof Set)||world.activeResearch.has(step.id))
+    return fail('conditional','동일 기지에서 진행 중인 연구 여부 미확인 또는 이미 진행 중');
+  if(!availableFreeCandidates(rule,world).length)
+    return fail('blocked','현재 해금되어 남아 있는 무료 연구 보상이 없음');
+  // SavedGame::getAvailableResearchProjects preserves completed projects
+  // with undiscovered, non-disabled, currently available getOneFree targets.
+  // Do not widen this to unmodeled protected-unlock/lookup reruns.
+  const lookup=rule.lookup&&rule.lookup!==step.id?data.researchRules?.[rule.lookup]:null;
+  const safeExistingLookup=!rule.lookup||rule.lookup===step.id||
+    (lookup&&world.researched.has(rule.lookup)&&!world.disabled.has(rule.lookup)&&
+      !arr(lookup.reenables).length&&!arr(lookup.unlocks).length&&
+      !arr(lookup.getOneFree).length&&!Object.keys(lookup.getOneFreeProtected||{}).length);
+  if(arr(rule.reenables).length||arr(rule.unlocks).some(id=>
+    arr(data.researchRules?.[id]?.requires).length&&!world.researched.has(id)&&!world.disabled.has(id))||
+    !safeExistingLookup)
+    return fail('conditional','재완료 보호 해금·lookup 부수효과는 별도 증거 필요');
+  const result=grantResearch(world,step.id,data,'research',{repeatableProof:true});
+  if(result.kind!=='applied')return result;
+  return {...result,assumed:true,notes:[...arr(result.notes),
+    '원본 남은 getOneFree 후보·보호 조건·연구실 표본/시설을 확인한 반복 연구 가정. 실제 연구 기간·완료·추첨은 미검증']};
+}
 function eventResearch(world,step,data){
   if(world.disabled.has(step.research))
     return fail("blocked","비활성 연구는 이벤트 직접 지급으로도 획득할 수 없음: "+step.research);
@@ -360,6 +388,7 @@ export function verifyCampaignSequence(initial,steps,data){
         result=fail("blocked","시간 역행 또는 잘못된 월");
       else{trial.month=step.month;result={kind:"applied",notes:[]};}
     }else if(step.type==="research")result=grantResearch(trial,step.id,data,"research");
+    else if(step.type==="repeatResearch")result=repeatResearch(trial,step,data);
     else if(step.type==="freeResearch")result=freeResearch(trial,step,data);
     else if(step.type==="eventResearch")result=eventResearch(trial,step,data);
     else if(step.type==="missionResearch")result=missionResearch(trial,step,data);
