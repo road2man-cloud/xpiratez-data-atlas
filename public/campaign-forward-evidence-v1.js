@@ -1,7 +1,7 @@
 // Shared forward evidence reader. Never merge completed research from distinct states.
 export const ROOT_RESEARCH=['STR_INSPECT_MACHINERY','STR_JACKSTOWN_SCOUTING','STR_RECRUIT_PEASANTS','STR_WAT_DO'];
 export const SOURCE='a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e';
-export const FILES=['campaign-forward-tree-v2-japan-d4.json','campaign-forward-tree-v6-hybrid-synced-d7.json','campaign-forward-tree-v7-hybrid-awards-d20.json'];
+export const FILES=['campaign-forward-tree-v2-japan-d4.json','campaign-forward-tree-v6-hybrid-synced-d7.json','campaign-forward-tree-v7-hybrid-awards-d20.json','campaign-forward-tree-v8-supply-d9.json'];
 export function indexGraph(g,file=''){
  if(g.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||g.sourceMetadataSha256!==SOURCE||!Array.isArray(g.nodes)||!Array.isArray(g.edges))throw Error('forward graph version mismatch');
  const root=g.nodes[0];
