@@ -1,0 +1,44 @@
+name: XPZ3D V23 recover N19 textile fine detail
+on:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-athletic-v23-detail-recovery-20261129/source/**'
+      - '.github/workflows/xpz3d-r36hw-v23-detail-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36hw-v23-recovery
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Check V22 source GLB
+        run: |
+          test -s experimental/xpz3d/f11/r36hw-athletic-v22-normal-refine-20261129/output/R36HW_F11_ATHLETIC_SUIT_V22_N19_REFINED.glb
+      - name: Build V23 GLB normal map and change map using Node.js
+        run: |
+          node experimental/xpz3d/f11/r36hw-athletic-v23-detail-recovery-20261129/source/build.cjs \
+            experimental/xpz3d/f11/r36hw-athletic-v22-normal-refine-20261129/output/R36HW_F11_ATHLETIC_SUIT_V22_N19_REFINED.glb \
+            experimental/xpz3d/f11/r36hw-athletic-v23-detail-recovery-20261129/output/R36HW_F11_ATHLETIC_SUIT_V23_N19_MICRODETAIL.glb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r36hw-v23-n19-microdetail
+          path: |
+            experimental/xpz3d/f11/r36hw-athletic-v23-detail-recovery-20261129/output/*
+            experimental/xpz3d/f11/r36hw-athletic-v23-detail-recovery-20261129/reports/*
+      - name: Publish V23 GLB and PNG assets
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-athletic-v23-detail-recovery-20261129/output experimental/xpz3d/f11/r36hw-athletic-v23-detail-recovery-20261129/reports
+          if ! git diff --cached --quiet; then
+            git commit -m "build(xpz3d): publish V23 N19 microdetail GLB and maps"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
