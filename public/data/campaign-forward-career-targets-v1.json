@@ -28,45 +28,31 @@
       "file": "campaign-forward-tree-v8-supply-d9.json",
       "states": 650,
       "edges": 1260,
-      "sha256": "2c4e2553375f744712dea3161fbf93ca7cae49029b88031758bd2d015c3bad0d",
-      "gitBlob": "78a66346a37f728ac2f669112f2363ecf94924b0"
+      "sha256": "855d3a371ae7794efcc3636292d0a1ed1347dba1ab7e1bb5bdff4dc1c39687e8",
+      "gitBlob": "07cf4cd5930f02aee3a4d48b5b30b7655bb10290"
     },
     {
       "file": "campaign-forward-tree-v9-career-focus-d20.json",
       "states": 1400,
       "edges": 2599,
-      "sha256": "c729fde1a4bab10ed79b7983a21089665bf5a69db6c6609d89bd828378a910b2"
+      "sha256": "42b5196df32fd696745c04fd65f1ef7c8d6cd61ea20a3c35a5e45895823d3c0e",
+      "gitBlob": "e1d7e76e670dfd5f26c886b6dea7dbe351f5eb29"
     },
     {
       "file": "campaign-forward-tree-v10-firearms-d24.json",
       "states": 1409,
       "edges": 2609,
-      "sha256": "070266b42f42579995c4aa83a018c42b1126504c2245cea224093da960f5b8f3"
+      "sha256": "070266b42f42579995c4aa83a018c42b1126504c2245cea224093da960f5b8f3",
+      "gitBlob": "d7c5c50555b6827fd4e40dcebd55d169ec33ee04"
+    },
+    {
+      "file": "campaign-forward-tree-v11-militia-d40.json",
+      "states": 1437,
+      "edges": 2645,
+      "sha256": "a374203533397dd1c7cfa65fe939294361b14c10297b94817c86901c08bdf150",
+      "gitBlob": "52c289bc668c14a7a789062a6fd8e65c06bc2b78"
     }
   ],
-  "summary": {
-    "profiles": {
-      "total": 72,
-      "jointResearch": 3,
-      "noExplicitResearch": 9,
-      "notObservedJointly": 60,
-      "manufactureActions": 1,
-      "careerCertified": 0
-    },
-    "trainings": {
-      "total": 83,
-      "jointResearch": 2,
-      "noExplicitResearch": 0,
-      "notObservedJointly": 81,
-      "manufactureActions": 0,
-      "careerCertified": 0
-    },
-    "missingResearchTopics": 139,
-    "ordinaryExpansionTopics": 138,
-    "specialGateTopics": 1,
-    "gameCertified": 0
-  },
-  "runtimeSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
   "profiles": [
     {
       "id": "manufacture:STR_FREAK_RECRUITMENT",
@@ -664,15 +650,15 @@
       "kind": "profile",
       "researchStatus": "joint-model-reached",
       "researchWitness": {
-        "file": "campaign-forward-tree-v2-japan-d4.json",
+        "file": "campaign-forward-tree-v10-firearms-d24.json",
         "state": 3,
-        "stateHash": "2edc3c5298819986174f301d8aed4990621cee3f0e10b72a1f8a6a6e128ed95a",
+        "stateHash": "8e68f4c491a2f9a08c7ad18c87fee605383ded09e0255c580983c25a9d8a7243",
         "scenario": {
           "difficulty": 1,
-          "regions": null,
-          "countries": [
-            "STR_JAPAN"
-          ]
+          "regions": [
+            "STR_SIBERIA"
+          ],
+          "countries": null
         },
         "conditional": true,
         "steps": [
@@ -1943,15 +1929,15 @@
       "kind": "profile",
       "researchStatus": "joint-model-reached",
       "researchWitness": {
-        "file": "campaign-forward-tree-v2-japan-d4.json",
-        "state": 29,
-        "stateHash": "284060ae114e2705419a3e484797446d15b519da0c10523e20fd8637e4536fb8",
+        "file": "campaign-forward-tree-v10-firearms-d24.json",
+        "state": 26,
+        "stateHash": "21c80122b31975c31315c984eb5f53ba127abfbb0971b69fcd23d5ecab6afc18",
         "scenario": {
           "difficulty": 1,
-          "regions": null,
-          "countries": [
-            "STR_JAPAN"
-          ]
+          "regions": [
+            "STR_SIBERIA"
+          ],
+          "countries": null
         },
         "conditional": true,
         "steps": [
@@ -2761,12 +2747,179 @@
       ],
       "output": null,
       "kind": "training",
-      "researchStatus": "not-observed-jointly",
-      "researchWitness": null,
+      "researchStatus": "joint-model-reached",
+      "researchWitness": {
+        "file": "campaign-forward-tree-v11-militia-d40.json",
+        "state": 1436,
+        "stateHash": "11a7ddab6d2b2f5a0dcd7e6567403f65d3e84d04c3c4756c072480ccf470ea81",
+        "scenario": {
+          "difficulty": 1,
+          "regions": [
+            "STR_SIBERIA"
+          ],
+          "countries": null
+        },
+        "conditional": true,
+        "steps": [
+          {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          {
+            "type": "research",
+            "id": "STR_THE_PHARMACIST"
+          },
+          {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          {
+            "type": "research",
+            "id": "STR_GUNS_N_AMMO"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_GUNS_N_AMMO",
+            "research": "STR_RIFLE_AK",
+            "assumeOutcome": true
+          },
+          {
+            "type": "research",
+            "id": "STR_PISTOLS_SUMMARY"
+          },
+          {
+            "type": "research",
+            "id": "STR_RIFLES_SUMMARY"
+          },
+          {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          {
+            "type": "research",
+            "id": "STR_KULTUR"
+          },
+          {
+            "type": "research",
+            "id": "STR_SURVIVAL"
+          },
+          {
+            "type": "research",
+            "id": "STR_CUNNING"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_CUNNING",
+            "research": "STR_GROG_BARREL",
+            "assumeOutcome": false
+          },
+          {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          {
+            "type": "research",
+            "id": "STR_CONTACT_GENERAL_SUPPLIES"
+          },
+          {
+            "type": "research",
+            "id": "STR_SMGS_SUMMARY"
+          },
+          {
+            "type": "research",
+            "id": "STR_BASIC_FIREARMS_TRAINING"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_BASIC_FIREARMS_TRAINING",
+            "research": "STR_TRAININGS",
+            "assumeOutcome": false
+          },
+          {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          {
+            "type": "research",
+            "id": "STR_UBER_WHEAT"
+          },
+          {
+            "type": "research",
+            "id": "STR_FARMING"
+          },
+          {
+            "type": "research",
+            "id": "STR_VIOLENCE"
+          },
+          {
+            "type": "research",
+            "id": "STR_SMITHING"
+          },
+          {
+            "type": "research",
+            "id": "STR_WEIRDNESS"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_WEIRDNESS",
+            "research": "STR_LABORATORY",
+            "assumeOutcome": false
+          },
+          {
+            "type": "research",
+            "id": "STR_SCHOOLING_1"
+          },
+          {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          {
+            "type": "research",
+            "id": "STR_BOWS_SUMMARY"
+          },
+          {
+            "type": "research",
+            "id": "STR_MELEE_SUMMARY"
+          },
+          {
+            "type": "research",
+            "id": "STR_PRIMITIVE_WEAPONS"
+          },
+          {
+            "type": "research",
+            "id": "STR_TACTICS"
+          },
+          {
+            "type": "research",
+            "id": "STR_PEASANT_MILITIA"
+          }
+        ],
+        "gameCertified": false
+      },
       "topicStatus": [
         {
           "id": "STR_PEASANT_MILITIA",
-          "observed": false
+          "observed": true
         }
       ],
       "manufactureWitness": null,
@@ -5109,13 +5262,6 @@
       ]
     },
     {
-      "id": "STR_PEASANT_MILITIA",
-      "profiles": [],
-      "trainings": [
-        "STR_MILITIA_TRAINING"
-      ]
-    },
-    {
       "id": "STR_PEOPLES_ARMY_PREQ",
       "profiles": [],
       "trainings": [
@@ -5575,5 +5721,28 @@
       ],
       "reason": "zero-cost self-sample gate; ordinary expansion excluded"
     }
-  ]
+  ],
+  "summary": {
+    "profiles": {
+      "total": 72,
+      "jointResearch": 3,
+      "noExplicitResearch": 9,
+      "notObservedJointly": 60,
+      "manufactureActions": 1,
+      "careerCertified": 0
+    },
+    "trainings": {
+      "total": 83,
+      "jointResearch": 3,
+      "noExplicitResearch": 0,
+      "notObservedJointly": 80,
+      "manufactureActions": 0,
+      "careerCertified": 0
+    },
+    "missingResearchTopics": 138,
+    "ordinaryExpansionTopics": 137,
+    "specialGateTopics": 1,
+    "gameCertified": 0
+  },
+  "runtimeSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971"
 }
