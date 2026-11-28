@@ -1,0 +1,201 @@
+{
+  "schema": "ATLAS_FORWARD_CAMPAIGN_RESEARCH_V2",
+  "artifact": "tools/data/overcap-forward-research-v2-goal-str_personal_labs.json.gz",
+  "artifactSha256": "8589d14ff5d60241a32f6ce99fac43a6f401522d3e8dbd2778149d845bbf7722",
+  "inputs": {
+    "rulesSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+    "supplySha256": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+    "engineFiles": {
+      "tools/atlas-overcap-forward-research-v2.mjs": "533dfbc273ae31b46115257fe2fa5ea149a63b93da47602652760400ecc0bc58",
+      "tools/atlas-overcap-forward-supply-v2.mjs": "bfd3344156f3c82b5f5062f76a9d2eacf6235602c4c2c95c25df85e702885bad",
+      "tools/build-overcap-forward-supply-catalog-v2.mjs": "9798cdbaa7b637e16a60faafb810dcf2fd3a05423d4bbc205c2bfc6d802d67ca",
+      "tools/atlas-overcap-rooted-early-research.mjs": "995671628f388f76d3473cd8fedfabd2824733f904299576d72420a94005bfc2",
+      "tools/origin-pair-exact-prefix-checkpoint.mjs": "a569fa2651f658c573417f60370349933aecd1e036fc87cf5dae91c18366a113",
+      "tools/population-research-career-core.mjs": "4a2adc75ddcf74974479c44e4bd22ec46320f97e1735d77e7c8478422b39e373",
+      "public/soldiers/modern/origin-witness.js": "d5b87f0d91d9f3b285f291187bdf1b5aff616180b0ddb5886df7ba33dcdc0af1",
+      "public/soldiers/modern/campaign-proof.js": "add07136ecb621d4ce2c085a60b0da73848e66f4144db1bf0e7486b740b383d7",
+      "public/soldiers/modern/event-chronology.js": "2af4c9d106f85ab0ecfa5726b1b887922715fd186581ce1edca065dec79e7d0f",
+      "public/soldiers/modern/auto-zero-cascade.js": "827f213c024e1580801469533920ba24d93244eb7d6025b0cd3e6222b6ea6ade",
+      "public/soldiers/modern/eligibility.js": "518d0f2b129d4fe431cc18b5499a5edad3fcc945eddab1277313568bdb697612",
+      "public/soldiers/modern/origin-campaign-context.js": "0cadb7a741d4000e36a87c2e04704dcd1e9633f313f567907bfc77a71d90cd71"
+    },
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+  },
+  "previous": {
+    "nodes": 6103,
+    "edges": 13831,
+    "expanded": 325
+  },
+  "nodes": 8012,
+  "edges": 18016,
+  "expanded": 364,
+  "openUnexpanded": 7648,
+  "openNoSupportedSuccessor": 0,
+  "distinctResearch": 150,
+  "byRoot": {
+    "STR_JACKSTOWN_SCOUTING": {
+      "states": 1871,
+      "expanded": 91,
+      "open": 1780,
+      "maxLabDepth": 24,
+      "distinctResearch": 121
+    },
+    "STR_WAT_DO": {
+      "states": 1735,
+      "expanded": 91,
+      "open": 1644,
+      "maxLabDepth": 22,
+      "distinctResearch": 117
+    },
+    "STR_RECRUIT_PEASANTS": {
+      "states": 1987,
+      "expanded": 91,
+      "open": 1896,
+      "maxLabDepth": 24,
+      "distinctResearch": 117
+    },
+    "STR_INSPECT_MACHINERY": {
+      "states": 2418,
+      "expanded": 90,
+      "open": 2328,
+      "maxLabDepth": 33,
+      "distinctResearch": 150
+    }
+  },
+  "byAction": {
+    "research": 2041,
+    "freeResearch": 101,
+    "sourceEventItems": 4686,
+    "eventResearch": 10338,
+    "missionResearch": 506,
+    "advanceMonth": 136,
+    "sourceResearchDelivery": 126,
+    "sourceBuildFacility": 69,
+    "sourceManufactureItem": 5,
+    "sourceBuySample": 8
+  },
+  "failed": 0,
+  "sampleResearchEdges": 24,
+  "sampleResearchIds": [
+    "STR_SCAVENGER_OUTFIT",
+    "STR_SC_WIRE",
+    "STR_SLAVE"
+  ],
+  "goalRun": {
+    "schema": "ATLAS_FORWARD_GOAL_RUN_V1",
+    "goal": "STR_PERSONAL_LABS",
+    "baseSha256": "1f75b402aff273a6444e1f6873cff8084009bc1bdee83b5fe27f40a3862f81b3",
+    "schedulerSha256": "aee07ac5e41a6a85ddb338ffb12528d71e27cdc20f3825e2432d02e34d7780cc",
+    "maxSteps": 18,
+    "hintResearch": [
+      "STR_CONTACT_GENERAL_SUPPLIES",
+      "STR_CUNNING",
+      "STR_GUN_SHOPPING",
+      "STR_HARDWARE_SHOPPING",
+      "STR_INSPECT_MACHINERY",
+      "STR_JACKSTOWN_SCOUTING",
+      "STR_KULTUR",
+      "STR_PERSONAL_LABS",
+      "STR_PIRATE_LIFE",
+      "STR_PIRATE_STYLE",
+      "STR_SCHOOLING_1",
+      "STR_SCI_REP",
+      "STR_SC_WIRE",
+      "STR_THE_PHARMACIST",
+      "STR_WEIRDNESS"
+    ],
+    "hintSamples": [
+      "STR_PIRATE_LIFE",
+      "STR_SC_WIRE"
+    ],
+    "results": [
+      {
+        "root": "STR_JACKSTOWN_SCOUTING",
+        "seed": 5407,
+        "final": 6542,
+        "status": "CONDITIONAL_GOAL_REACHED",
+        "reason": null,
+        "selected": [
+          13836,
+          13969,
+          14103,
+          14238,
+          14377,
+          14504,
+          14524,
+          14642,
+          14653,
+          14789
+        ],
+        "missing": [],
+        "finalStateHash": "35039f44d834e6cbd8efff1cb637be26789e0cc9de5445039373cdbac8e1bdb1"
+      },
+      {
+        "root": "STR_WAT_DO",
+        "seed": 4818,
+        "final": 7050,
+        "status": "CONDITIONAL_GOAL_REACHED",
+        "reason": null,
+        "selected": [
+          14923,
+          15058,
+          15194,
+          15331,
+          15473,
+          15600,
+          15622,
+          15740,
+          15752,
+          15890
+        ],
+        "missing": [],
+        "finalStateHash": "c25b5a350139337be30a09d41b179d59b800005c2147d74cd576c5cbbcf0b759"
+      },
+      {
+        "root": "STR_RECRUIT_PEASANTS",
+        "seed": 5112,
+        "final": 7544,
+        "status": "CONDITIONAL_GOAL_REACHED",
+        "reason": null,
+        "selected": [
+          16024,
+          16157,
+          16291,
+          16426,
+          16565,
+          16692,
+          16712,
+          16830,
+          16841,
+          16977
+        ],
+        "missing": [],
+        "finalStateHash": "ff273db69b9e046bd9dc4750dfb608dab29a57b20fba4dc6d449640bb6c1b439"
+      },
+      {
+        "root": "STR_INSPECT_MACHINERY",
+        "seed": 5350,
+        "final": 7958,
+        "status": "CONDITIONAL_GOAL_REACHED",
+        "reason": null,
+        "selected": [
+          17107,
+          17235,
+          17364,
+          17497,
+          17621,
+          17640,
+          17753,
+          17761,
+          17891
+        ],
+        "missing": [],
+        "finalStateHash": "fab8d52d55c58d85df9a1325f3993f61d7b5389ec3b7c3c8fddfb8885f696ca6"
+      }
+    ],
+    "normalizationComplete": false,
+    "actualGameCertified": false
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false
+}
