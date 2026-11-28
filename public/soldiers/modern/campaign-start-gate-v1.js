@@ -1,6 +1,7 @@
 // Campaign-start gate. Legacy hypothetical witnesses remain unchanged.
 import {foundationWorld,applyOriginWitnessStep} from './origin-witness.js';
 import {researchStep,eventScriptVerdict} from './event-chronology.js';
+import {applyFacilityAction} from './campaign-start-construction-v1.js';
 import {START_EVENT_RULES} from './campaign-start-event-rules-v1.js';
 export const START_RESEARCH=Object.freeze({
  STR_JACKSTOWN_SCOUTING:3,STR_WAT_DO:3,STR_RECRUIT_PEASANTS:3,STR_INSPECT_MACHINERY:6
@@ -32,6 +33,7 @@ export function campaignStartWorld(data,snapshot){
   difficulty:snapshot.difficulty,facilities:new Set(snapshot.facilities),baseFunctions:new Set(snapshot.functions),
   researched:new Set(snapshot.researched),disabled:new Set(snapshot.disabled),
   soldiers:structuredClone(snapshot.soldiers),startDate:structuredClone(snapshot.startDate),
+  baseLayout:structuredClone(snapshot.baseLayout),elapsedBuildDays:0,
   autoZeroScenario:false,autoZeroEvidence:true,sourceFingerprint:snapshot.sourceFingerprint};
  for(const [id,n] of Object.entries(world.items))if(!Number.isSafeInteger(n)||n<0)throw Error('invalid-start-item:'+id);
  for(const [id,cost] of Object.entries(START_RESEARCH))if(data.researchRules[id]?.cost!==cost)throw Error('start-cost-mismatch:'+id);
@@ -40,9 +42,12 @@ export function campaignStartWorld(data,snapshot){
  return world;
 }
 // Both the planner and replay use this identical transactional action.
-export function applyCampaignStartStep(input,step,data){
+function applyCampaignStartCore(input,step,data){
  if(step.type==='externalInputs'||step.type==='campaignContext')return {ok:false,world:input,reason:'external-state-forbidden'};
  if(input.pendingFree&&step.type!=='freeResearch')return {ok:false,world:input,reason:'pending-free-award'};
+ if(['buildFacility','finishFacility'].includes(step.type)){
+  try{return applyFacilityAction(input,step,data);}catch(e){return {ok:false,world:input,reason:e.message};}
+ }
  const e=START_EVENT_RULES[step.event];
  if(step.type!=='eventResearch'||!e)return applyOriginWitnessStep(input,step,data);
  try{
@@ -61,6 +66,29 @@ export function applyCampaignStartStep(input,step,data){
   result.world.funds+=e.funds;
   return {...result,assumed:true,notes:[...(result.notes||[]),'fixed-event-bundle:'+step.event,'event-clock-and-reward-order-unverified']};
  }catch(err){return {ok:false,world:input,reason:err.message};}
+}
+// Apply indexed research item rewards once, only on newly completed research.
+// Timing relative to native auto queues remains conditional.
+export function applyCampaignStartStep(input,step,data){
+ const result=applyCampaignStartCore(input,step,data);
+ if(!result.ok)return result;
+ const world=result.world;
+ try{
+  const paid=new Set(input.paidResearchGrants||input.researched);
+  const notes=[...(result.notes||[])];
+  for(const id of world.researched){
+   if(input.researched.has(id)||paid.has(id))continue;
+   const grants=data.campaignAssets?.researchGrants?.[id]||{};
+   for(const [item,n] of Object.entries(grants)){
+    if(!Number.isSafeInteger(n)||n<1)throw Error('invalid-research-grant:'+id);
+    world.items[item]=(world.items[item]||0)+n;
+    notes.push('research-grant:'+id+' -> '+item+' x'+n);
+   }
+   paid.add(id);
+  }
+  world.paidResearchGrants=paid;
+  return {...result,notes,assumed:result.assumed||notes.length>(result.notes||[]).length};
+ }catch(e){return {ok:false,world:input,reason:e.message};}
 }
 export function replayCampaignStart(steps,data,snapshot){
  let world;const trace=[];
