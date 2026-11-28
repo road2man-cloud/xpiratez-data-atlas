@@ -224,7 +224,7 @@ if(args.careerOut){
  let result;
  if(args.growthSearch==='1'){
   const {produceCareerGrowthSearch}=await import('./atlas-v59-career-growth-search.mjs');
-  result=produceCareerGrowthSearch({data:d,snapshot,graph,graphFile:path.basename(args.graph),graphSha256,profileIds:args.profiles?.split(','),targetStates:args.states?.split(',').map(Number),maxTrainings:Number(args.maxTrainings??4),maxAttempts:Number(args.maxAttempts??5000),financeMode:args.financeMode||'unlimited',conditionalPromotion:args.conditionalPromotion==='1'});
+  result=produceCareerGrowthSearch({data:d,snapshot,graph,graphFile:path.basename(args.graph),graphSha256,profileIds:args.profiles?.split(','),targetStates:args.states?.split(',').map(Number),maxTrainings:Number(args.maxTrainings??4),maxAttempts:Number(args.maxAttempts??5000),financeMode:args.financeMode||'unlimited',conditionalPromotion:args.conditionalPromotion==='1',rollBand:args.rollBand??null});
  }else if(args.growthSeed){
   const {produceCareerGrowth}=await import('./atlas-v58-career-growth.mjs');
   const seedBytes=fs.readFileSync(args.growthSeed);

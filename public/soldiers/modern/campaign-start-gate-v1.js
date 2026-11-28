@@ -1,5 +1,6 @@
 // Campaign-start gate. Legacy hypothetical witnesses remain unchanged.
 import {foundationWorld,applyOriginWitnessStep} from './origin-witness.js';
+import {resolveConditionalRoll} from './campaign-start-roll-v1.js';
 import {researchStep,eventScriptVerdict} from './event-chronology.js';
 import {applyReachabilityAction} from './campaign-start-reachability-v1.js';
 import {applyFacilityAction} from './campaign-start-construction-v1.js';
@@ -67,6 +68,23 @@ function applyCampaignStartCore(input,step,data){
  if(step.type==='externalInputs'||step.type==='campaignContext')return {ok:false,world:input,reason:'external-state-forbidden'};
  if(input.pendingFree&&step.type!=='freeResearch')return {ok:false,world:input,reason:'pending-free-award'};
  if(CAREER_ACTIONS.has(step.type))return applyConditionalCareerAction(input,step,data);
+ if(step.type==='conditionalTransformRoll'){
+  try{
+   if(step.assumption!==true||step.soldier!=='origin'||data.campaignAssets?.sourceFingerprint!==input.sourceFingerprint)throw Error('conditional-roll-context-invalid');
+   const member=input.soldiers.find(s=>s.id===step.soldier);
+   if(!member?.state?.exactStats||member.state.retired)throw Error('conditional-roll-input-unresolved');
+   const rule=data.transformations.find(t=>t.id===step.transform);
+   if(!rule)throw Error('conditional-roll-rule-missing');
+   const {resolved,selected}=resolveConditionalRoll(rule,step.band);
+   const projected={...data,transformations:data.transformations.map(t=>t.id===rule.id?resolved:t)};
+   const result=applyCampaignStartCore(input,{type:'transform',soldier:step.soldier,transform:step.transform},projected);
+   if(!result.ok)return result;
+   const next=result.world.soldiers.find(s=>s.id===step.soldier);
+   if(!next?.state?.exactStats)throw Error('conditional-roll-result-unresolved');
+   (next.conditionalRolls??=[]).push({transform:step.transform,band:step.band,selected});
+   return {...result,assumed:true,notes:[...(result.notes||[]),'conditional-transform-endpoint:'+step.band,'joint-random-outcome-not-native-verified']};
+  }catch(e){return {ok:false,world:input,reason:e.message};}
+ }
  // Supply-chain purchases debit the raw list price. Discounts, faction
  // adjustments and delivery time remain conditional, not native certified.
  if(step.type==='acquireFundedPurchase'){

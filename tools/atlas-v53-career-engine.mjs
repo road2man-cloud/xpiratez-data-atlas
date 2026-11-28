@@ -2,6 +2,7 @@
 import {createHash} from 'node:crypto';
 import {campaignStartWorld,applyCampaignStartStep,availableResearch} from '../public/soldiers/modern/campaign-start-gate-v1.js';
 import {careerStatVectors} from '../public/soldiers/modern/campaign-start-career-actions-v1.js';
+import {hasConditionalRoll} from '../public/soldiers/modern/campaign-start-roll-v1.js';
 const canon=x=>x instanceof Set?[...x].sort().map(canon):x instanceof Map?Object.fromEntries([...x.entries()].sort(([a],[b])=>String(a).localeCompare(String(b))).map(([k,v])=>[k,canon(v)])):Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
 const digest=x=>createHash('sha256').update(JSON.stringify(canon(x))).digest('hex');
 const active=(w,k)=>w.researched.has(k)&&!w.disabled.has(k);
@@ -13,7 +14,7 @@ function apply(w,a,data,{funded=false}={}){
  if(!r.ok)throw Error(r.reason);
  return r;
 }
-export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,targetState,profileId,trainingId,trainingIds=trainingId?[trainingId]:[],birthBand='min',financeMode='unlimited',conditionalPromotion=false,growthSlots=[],prefixCache=null}){
+export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,targetState,profileId,trainingId,trainingIds=trainingId?[trainingId]:[],birthBand='min',financeMode='unlimited',conditionalPromotion=false,growthSlots=[],prefixCache=null,rollBand=null}){
  if(graph.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||graph.sourceMetadataSha256!==snapshot.sourceFingerprint||graph.difficulty!==snapshot.difficulty||JSON.stringify(graph.regions)!==JSON.stringify(snapshot.regions??null)||JSON.stringify(graph.countries)!==JSON.stringify(snapshot.countries??null))throw Error('graph-source-mismatch');
  if(!['unlimited','funded'].includes(financeMode))throw Error('invalid-finance-mode');
  const funded=financeMode==='funded';
@@ -21,6 +22,7 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
  const profile=data.profiles.find(x=>x.id===profileId);
  if(birthBand!=='min'||!Array.isArray(trainingIds)||!trainingIds.length||trainingIds.some(k=>typeof k!=='string'))throw Error('unsupported-birth-or-training-sequence');
  if(!Array.isArray(growthSlots)||growthSlots.some((n,i)=>!Number.isSafeInteger(n)||n<0||n>trainingIds.length||(i>0&&n<=growthSlots[i-1])))throw Error('invalid-growth-slots');
+ if(rollBand!==null&&!['min','max'].includes(rollBand))throw Error('invalid-roll-band');
  const trainings=trainingIds.map(id=>data.transformations.find(x=>x.id===id));
  if(!profile||profile.sourceType!=='direct'||trainings.some(t=>!t))throw Error('unsupported-profile-or-training');
  const costs=[profile.cost,...trainings.map(t=>t.cost)];
@@ -98,14 +100,15 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
    promotions.push(rank);
   }
   const beforeStep=careerStatVectors(member(),data),fundsBeforeTraining=world.funds;
-  step({type:'transform',transform:training.id,soldier:'origin'},{funded});
+  const rolled=rollBand!==null&&hasConditionalRoll(training);
+  step(rolled?{type:'conditionalTransformRoll',transform:training.id,soldier:'origin',band:rollBand,assumption:true}:{type:'transform',transform:training.id,soldier:'origin'},{funded});
   if(funded&&world.funds!==fundsBeforeTraining-training.cost)throw Error('training-cost-not-debited:'+training.id);
   if(!member().state.history.has(training.id))throw Error('training-history-missing:'+training.id);
   const afterStep=careerStatVectors(member(),data);
-  trainingResults.push({id:training.id,promotions,before:beforeStep,after:afterStep,cost:training.cost,recoveryTime:training.recoveryTime??null,fundsAfter:funded?world.funds:null});
+  trainingResults.push({id:training.id,rollBand:rolled?rollBand:null,promotions,before:beforeStep,after:afterStep,cost:training.cost,recoveryTime:training.recoveryTime??null,fundsAfter:funded?world.funds:null});
  }
  growAt(trainings.length);
  const after=careerStatVectors(member(),data);
  const delta=Object.fromEntries(Object.keys(after.stats).map(k=>[k,after.stats[k]-before.stats[k]]));
- return {schema:'ATLAS_FORWARD_CAREER_REPLAY_V1',sourceMetadataSha256:snapshot.sourceFingerprint,graphFile,graphSha256,targetState,scenario:{difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null},profileId,trainingId:trainingIds.length===1?trainingIds[0]:null,trainingIds:[...trainingIds],trainingResults,growthSlots:[...growthSlots],growthResults,body:member().state.soldierType,finalRank:member().state.rank,conditionalPromotion,birthBand,prefixLength,trace,blocked,finalStateHash:digest(world),before,after,delta,financeMode,totalCost,finalFunds:funded?world.funds:null,history:canon(member().state.history),status:funded?'conditional-funded-career-model':'conditional-unlimited-finance-career-model',gameCertified:false,globalMaximum:false,limitations:[funded?'initial funding model zero; event outcome and scheduling conditional':'funds excluded for career actions; historical graph prefix replay unchanged','birth minimum vector, not sampled native RNG','transfer and recovery calendar not advanced; salaries and upkeep not modeled','no native engine replay or complete career certification',...(conditionalPromotion?['promotion achievements and timing are conditional, not native verified']:[]),...(growthSlots.length?['selected battle growth checkpoints assume reachable raw caps; actual opportunities, RNG and duration not simulated']:[])]};
+ return {schema:'ATLAS_FORWARD_CAREER_REPLAY_V1',sourceMetadataSha256:snapshot.sourceFingerprint,graphFile,graphSha256,targetState,scenario:{difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null},profileId,trainingId:trainingIds.length===1?trainingIds[0]:null,trainingIds:[...trainingIds],trainingResults,growthSlots:[...growthSlots],growthResults,body:member().state.soldierType,finalRank:member().state.rank,conditionalPromotion,rollBand,conditionalRolls:member().conditionalRolls||[],birthBand,prefixLength,trace,blocked,finalStateHash:digest(world),before,after,delta,financeMode,totalCost,finalFunds:funded?world.funds:null,history:canon(member().state.history),status:funded?'conditional-funded-career-model':'conditional-unlimited-finance-career-model',gameCertified:false,globalMaximum:false,limitations:[funded?'initial funding model zero; event outcome and scheduling conditional':'funds excluded for career actions; historical graph prefix replay unchanged','birth minimum vector, not sampled native RNG','transfer and recovery calendar not advanced; salaries and upkeep not modeled','no native engine replay or complete career certification',...(conditionalPromotion?['promotion achievements and timing are conditional, not native verified']:[]),...(growthSlots.length?['selected battle growth checkpoints assume reachable raw caps; actual opportunities, RNG and duration not simulated']:[]),...(member().conditionalRolls?.length?['joint transformation random endpoints are explicit conditional scenarios, not verified native RNG outcomes']:[])]};
 }
