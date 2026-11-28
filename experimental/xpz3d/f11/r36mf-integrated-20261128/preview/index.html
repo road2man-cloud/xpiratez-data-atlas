@@ -1,0 +1,99 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R36MF · 목표 형상 우선 CLAY 비교</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101a23;color:#e8f1f4;font:14px system-ui,"Malgun Gothic",sans-serif}
+header{padding:16px 20px;background:#1b2b38;border-bottom:1px solid #3b5363}h1{margin:0 0 6px;font-size:18px}header p{margin:0;color:#abc6ce;line-height:1.5}
+main{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - 93px);min-height:570px}
+aside{overflow:auto;background:#182b39;border-right:1px solid #3a5362;padding:18px}label{display:block;margin-top:13px;margin-bottom:6px;color:#b7d3d8}
+select,button{border:1px solid #4c7080;background:#254658;color:#fff;border-radius:6px;padding:10px;font:inherit}select{width:100%}
+button{cursor:pointer}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+#canvas{display:block;width:100%;height:100%;touch-action:none}
+#view{position:relative;min-height:460px}#labels{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none}
+#labels span{background:#122231d9;border:1px solid #597381;padding:8px;border-radius:6px}
+.note{font-size:12px;line-height:1.7;color:#a4c4c9}a{color:#7ae1c7}
+#status{font-size:12px;white-space:pre-wrap;word-break:break-word;color:#88dac4}
+@media(max-width:800px){main{display:block;height:auto}.viewer{height:60vh}}
+</style>
+<script type="importmap">{"imports":{"three":"../../r36kp/preview/vendor/three.module.js","three/addons/":"../../r36kp/preview/vendor/"}}</script>
+</head><body>
+<header><h1>R36MF · 형상 우선 CLAY 검사</h1>
+<p>몸체 전면 −Y · 수직 +Z 좌표계 · 왼쪽 기존 R36MB / 오른쪽 R36MF · 동일 카메라·조명 · 사진 깊이는 추정값</p></header>
+<main><aside>
+<label>버전</label><select id="variant"><option>ART</option><option>SUBTLE</option></select>
+<label>형상 강도</label><select id="mode"><option value="DENSE">DENSE · 구조 밀도 보정</option><option value="GUARDED">GUARDED · 제한적 변화</option></select>
+<label>표면 모드</label><select id="surface"><option value="clay">CLAY · 텍스처/노멀 제거</option><option value="textured">TEXTURED · 원본 이미지 포함</option></select>
+<div class="buttons"><button data-camera="front">정면(−Y)</button><button data-camera="oblique">35°</button>
+<button data-camera="side">측면</button><button data-camera="full">전신</button></div>
+<label><input type="checkbox" id="wire"> 삼각형 보기</label>
+<label><input type="checkbox" id="split" checked> 원본과 새 모델 좌우 비교</label>
+<p class="note">핵심 평가: CLAY 상태에서 큰 윤곽·융기·함몰이 맞지 않으면 텍스처 작업을 더 하지 않고 메시를 수정합니다. 한 장의 사진은 실제 깊이를 증명하지 않습니다.</p>
+<p id="status">모델 로딩 대기</p>
+<a href="../output/compact/">실제 GLB 출력 폴더</a>
+</aside><div id="view"><canvas id="canvas"></canvas><div id="labels"><span>R36MB 기준</span><span>R36MF 통합 후보</span></div></div></main>
+<script type="module">
+import * as THREE from 'three';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const $=s=>document.getElementById(s);const canvas=$('canvas');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x151f29);
+scene.add(new THREE.HemisphereLight(0xffffff,0x596676,2));
+const key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(-.9,-1.6,2.8);scene.add(key);
+const rim=new THREE.DirectionalLight(0xaacbee,.8);rim.position.set(1.3,1.4,1.7);scene.add(rim);
+const cam=new THREE.PerspectiveCamera(35,1,.005,60);cam.up.set(0,0,1);
+const controls=new OrbitControls(cam,canvas);controls.enableDamping=true;controls.minDistance=.09;
+const cache=new Map(),pending=new Set();let cameraMode='front';
+function filepath(type,v,m,clay){
+ if(type==='old')return '../../r36mb-frame-transport-20261128/output/compact/R36MB_'+v+'_FLOW_2100_COMPACT_FULL.glb';
+ return '../output/compact/R36MF_'+v+'_'+m+(clay?'_CLAY':'')+'_2100_COMPACT_FULL.glb';
+}
+function request(type,v,m,clay){const k=[type,v,m,clay].join('/');
+ if(cache.has(k)||pending.has(k))return;
+ pending.add(k);$('status').textContent='로딩: '+k;
+ new GLTFLoader().load(filepath(type,v,m,clay),gl=>{
+  const root=gl.scene;root.visible=false;root.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.userData.org=Array.isArray(o.material)?o.material.map(m=>m.clone()):[o.material.clone()];}});
+  scene.add(root);cache.set(k,root);pending.delete(k);update();
+ },undefined,e=>{pending.delete(k);$('status').textContent='오류: '+e.message});
+}
+function state(){return {v:$('variant').value,m:$('mode').value,clay:$('surface').value==='clay'}}
+function materialize(){
+ const wire=$('wire').checked,clay=$('surface').value==='clay';
+ for(const root of cache.values())root.traverse(o=>{
+  if(!o.isMesh||!o.userData.org)return;
+  const a=o.userData.org.map(m=>{
+   if(!clay){const n=m.clone();n.wireframe=wire;return n;}
+   return new THREE.MeshStandardMaterial({color:0xb8b8b8,roughness:.95,metalness:0,wireframe:wire,side:THREE.DoubleSide});
+  });o.material=a.length===1?a[0]:a;
+ });
+}
+function active(){const s=state();const left=cache.get(['old',s.v,s.m,s.clay].join('/'));
+ const right=cache.get(['new',s.v,s.m,s.clay].join('/'));return {left,right};}
+function focus(){
+ const {left,right}=active(),root=right||left;if(!root)return;
+ const bbox=new THREE.Box3().setFromObject(root),center=bbox.getCenter(new THREE.Vector3()),size=bbox.getSize(new THREE.Vector3());
+ if(cameraMode!=='full')center.z=.861;
+ const dist=cameraMode==='full'?Math.max(.9,size.z*1.3):.24;
+ const angle=cameraMode==='oblique'?35*Math.PI/180:0;
+ const off=cameraMode==='side'?[1,0,0]:[Math.sin(angle),-Math.cos(angle),.12];
+ cam.position.copy(center).add(new THREE.Vector3(...off).normalize().multiplyScalar(dist));
+ cam.lookAt(center);controls.target.copy(center);controls.update();
+}
+function update(){const s=state();request('old',s.v,s.m,s.clay);request('new',s.v,s.m,s.clay);
+ materialize();if(active().left&&active().right){$('status').textContent='두 GLB 로드됨 · CLAY 화면에서 윤곽을 먼저 평가';focus();}
+}
+for(const x of ['variant','mode','surface','wire','split'])$(x).addEventListener('change',update);
+document.querySelectorAll('[data-camera]').forEach(b=>b.addEventListener('click',()=>{cameraMode=b.dataset.camera;focus();}));
+function frame(){
+ requestAnimationFrame(frame);const w=canvas.clientWidth,h=canvas.clientHeight;if(w<1||h<1)return;
+ renderer.setSize(w,h,false);const {left,right}=active(),split=$('split').checked&&left&&right;
+ if(left)left.visible=false;if(right)right.visible=false;
+ cam.aspect=(split?w/2:w)/h;cam.updateProjectionMatrix();controls.update();
+ if(split){renderer.setScissorTest(true);for(let i=0;i<2;i++){
+  const obj=i===0?left:right;obj.visible=true;
+  renderer.setViewport(i*w/2,0,w/2,h);renderer.setScissor(i*w/2,0,w/2,h);renderer.render(scene,cam);obj.visible=false;
+ }renderer.setScissorTest(false);}else{
+  if(right)right.visible=true;else if(left)left.visible=true;
+  renderer.setViewport(0,0,w,h);renderer.render(scene,cam);
+ }
+}
+update();frame();
+</script></body></html>
