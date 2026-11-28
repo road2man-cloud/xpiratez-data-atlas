@@ -157,6 +157,8 @@ async function openDetail(id){
   '<h3 class="section-title">시설 ID 역참조</h3><div class="section-card">'+refsHtml(d)+'</div>'+
   '<details><summary>원본 effective facility 룰 보기</summary><p class="muted">맵 배치 전용 필드 '+esc((d.omittedLayoutFields||[]).join(", ")||"없음")+' 및 스프라이트/사운드 리소스는 공개 데이터에서 분리했습니다.</p><pre class="raw">'+esc(JSON.stringify(d.raw,null,2))+'</pre></details>';
   if(!$("#detailDialog").open)$("#detailDialog").showModal();
+  const forwardHost=document.createElement('div');$("#detailBody").append(forwardHost);
+  import('../campaign-forward-evidence-v1.js').then(m=>{if(forwardHost.isConnected)m.mountForwardAssetEvidence(forwardHost,[{kind:'facility',id:d.id,label:'시설'}],{legacy:true});}).catch(e=>{if(forwardHost.isConnected)forwardHost.textContent='정방향 근거 로드 실패: '+e.message;});
   // Stable, reloadable link from a research/item facility-function path.
   const deepLink='#facility='+encodeURIComponent(id);
   if(location.hash!==deepLink)history.replaceState(null,'',deepLink);
