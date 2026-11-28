@@ -97,7 +97,7 @@ function raster(meshes,view,mode,bbox,focus='full'){
 function main(file,out){
  assert(fs.existsSync(file),'R36HW-N17 GLB must exist in Actions checkout');
  const expected='56af097238c2b562f98330648b2e8a9782c64b3cef4e7320f2c9a03e38029e6f';
- assert(sha(fs.readFileSync(file))===expected,'N10 open-cap geometry SHA mismatch');
+ assert(sha(fs.readFileSync(file))===expected,'N17 source SHA mismatch');
  assert(!fs.existsSync(out),'Output directory exists; refusing overwrite');
  const q=load(file),meshes=[];
  let body=0,other=0;
@@ -105,14 +105,14 @@ function main(file,out){
   const mesh=q.g.meshes[mi];
   for(let pi=0;pi<mesh.primitives.length;pi++){
    const prim=mesh.primitives[pi];if(prim.mode!=null&&prim.mode!==4)continue;
-   const m=extract(q,mi,pi);m.name=q.g.materials[prim.material]?.name||mesh.name||'';
+   const m=extract(q,mi,pi);m.name=q.g.materials[prim.material]?.name||mesh.name||'';m.primitiveIndex=pi;
    if(!m.indices.length)continue;
    if([2,3,4,5,6,9].includes(pi))body+=m.indices.length/3;
    else other+=m.indices.length/3;
    meshes.push(m);
   }
  }
- assert(body===1143&&other===956,'Unexpected N12 triangle count: '+body+'/'+other);
+ assert(body===1143&&other===956,'Unexpected N17 triangle count: '+body+'/'+other);
  const box=bounds(meshes),images=[];
  fs.mkdirSync(out,{recursive:true});
  for(const mode of ['clay','shaded'])for(const view of ['front','oblique','side'])for(const focus of ['detail']){
@@ -121,7 +121,17 @@ function main(file,out){
   fs.writeFileSync(path.join(out,name),png);
   images.push({...report,file:name,bytes:png.length,sha256:sha(png)});
  }
- const result={version:'R36HW-N17-CPU',renderer:'pure Node CPU diagnostic rasterizer of actual N11 GLB triangles (S2-source-inspired illumination; NOT native S2)',framing:'pelvic-center ROI only; no full-body preview',sourceFile:path.basename(file),sourceSHA256:q.sha,totalTriangles:body+other,bodyTriangles:body,otherTriangles:other,bodyMeshCount:meshes.length,bounds:box,sourceShaderMath:['CalcNormal packed normalization approximation','CalcDirAmbLightDO direct + ambient'],syntheticCamera:true,syntheticLighting:true,images,limitations:['static glTF bind-pose positions; no animated skinning','does not sample embedded N4 baseColor PNG, micro-normal atlas, ORM, or native S2 bump shader','not Direct3D 9 execution or screenshot']};
+ // Extra engineering output: render only the actual center pelvis primitive.
+ // This reveals whether an earlier mesh overlays/occludes the modified surface.
+ const pelvisOnly=meshes.filter(m=>m.primitiveIndex===3);
+ assert(pelvisOnly.length===1,'Pelvis primitive 3 unavailable');
+ for(const mode of ['clay','shaded'])for(const view of ['front','oblique','side']){
+  const {png,report}=raster(pelvisOnly,view,mode,box,'detail');
+  const name='R36HW_N17_PELVIS_ONLY_'+mode.toUpperCase()+'_'+view.toUpperCase()+'_DETAIL.png';
+  fs.writeFileSync(path.join(out,name),png);
+  images.push({...report,layer:'pelvis primitive 3 isolated',file:name,bytes:png.length,sha256:sha(png)});
+ }
+ const result={version:'R36HW-N17-CPU',renderer:'pure Node CPU diagnostic rasterizer of actual N17 GLB triangles (S2-source-inspired illumination; NOT native S2)',framing:'pelvic-center ROI only; no full-body preview',sourceFile:path.basename(file),sourceSHA256:q.sha,totalTriangles:body+other,bodyTriangles:body,otherTriangles:other,bodyMeshCount:meshes.length,bounds:box,sourceShaderMath:['CalcNormal packed normalization approximation','CalcDirAmbLightDO direct + ambient'],syntheticCamera:true,syntheticLighting:true,images,limitations:['static glTF bind-pose positions; no animated skinning','does not sample embedded N4 baseColor PNG, micro-normal atlas, ORM, or native S2 bump shader','not Direct3D 9 execution or screenshot']};
  fs.writeFileSync(path.join(out,'R36HW_N17_RENDER.report.json'),JSON.stringify(result,null,2)+'\n');
  console.log(JSON.stringify({sourceSHA256:q.sha,body,other,rendered:images.length,files:images.map(x=>({name:x.file,bytes:x.bytes}))}));
 }
