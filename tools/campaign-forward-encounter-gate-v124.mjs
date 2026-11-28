@@ -86,8 +86,8 @@ assert(trophyRow>=0&&items[trophy].recover!==false&&!items[trophy].fixed&&!items
 assert.deepEqual(research[trophy].unlocks,["STR_ANY_BASIC_TROPHY_UNLOCKED"]);
 const nativeDir=path.join(root,"tools/headless-simulator/native"),lock=read(path.join(nativeDir,"source.lock.json")),archive=path.join(nativeDir,lock.archive);
 assert.equal(createHash("sha256").update(fs.readFileSync(archive)).digest("hex"),lock.archiveSha256);
-const itemCpp=execFileSync("tar",["-xOf",archive,"./src/Mod/RuleItem.cpp"],{encoding:"utf8",maxBuffer:4*1024*1024});
-const missionCpp=execFileSync("tar",["-xOf",archive,"./src/Savegame/AlienMission.cpp"],{encoding:"utf8",maxBuffer:4*1024*1024});
+const itemCpp=execFileSync("tar",["--force-local","-xOf",archive,"./src/Mod/RuleItem.cpp"],{encoding:"utf8",maxBuffer:4*1024*1024});
+const missionCpp=execFileSync("tar",["--force-local","-xOf",archive,"./src/Savegame/AlienMission.cpp"],{encoding:"utf8",maxBuffer:4*1024*1024});
 assert(itemCpp.includes("_recover(true)")&&itemCpp.includes('reader.tryRead("recover", _recover)'));
 assert(missionCpp.includes("texture->getRandomDeployment()"));
 const trophyAction={type:"conditionalBountyRecovery",script:bountyScript,mission:bountyMission,region:bountyRegion,texture:-122,race:"STR_BANDIT_TOWN",rowIndex:trophyRow,item:trophy,count:1,sourceFileSha256:files["Piratez_Factions.rul"],planetSha256:files["Piratez_Planet.rul"],nativeArchiveSha256:lock.archiveSha256,assumeMissionGeneration:true,assumeTransport:true,assumeEncounterAndVictory:true,assumePhysicalRecovery:true};
@@ -112,8 +112,8 @@ assert(leader.canSurrender===true&&leaderItem.liveAlien===true&&leaderItem.recov
 assert(!leaderItem.recoveryTransformations&&!leader.spawnUnit);
 assert(leaderRule.unlocks.includes("STR_ALIEN_ORIGINS")&&leaderRule.getOneFree.includes("STR_OLD_BOOKS"));
 const armor=armors[leader.armor];assert(armor&&arr(armor.corpseBattle).length&&items[armor.corpseBattle[0]]?.recover!==false);
-const debriefCpp=execFileSync("tar",["-xOf",archive,"./src/Battlescape/DebriefingState.cpp"],{encoding:"utf8",maxBuffer:4*1024*1024});
-const facilityCpp=execFileSync("tar",["-xOf",archive,"./src/Mod/RuleBaseFacility.cpp"],{encoding:"utf8",maxBuffer:4*1024*1024});
+const debriefCpp=execFileSync("tar",["--force-local","-xOf",archive,"./src/Battlescape/DebriefingState.cpp"],{encoding:"utf8",maxBuffer:4*1024*1024});
+const facilityCpp=execFileSync("tar",["--force-local","-xOf",archive,"./src/Mod/RuleBaseFacility.cpp"],{encoding:"utf8",maxBuffer:4*1024*1024});
 assert(debriefCpp.includes("getLiveAlienGeoscape()")&&debriefCpp.includes("getAvailableContainment(ruleLiveAlienItem->getPrisonType())")&&debriefCpp.includes("addItemsToBaseStores(ruleLiveAlienItem, base, 1, false)"));
 assert(itemCpp.includes("_liveAlienPrisonType(0)")&&facilityCpp.includes("_prisonType(0)"));
 const captureAction={type:"conditionalDistressWithCaptive",encounter:recoveryAction,unit:captive,item:captive,armor:leader.armor,prisonType:leaderItem.liveAlienPrisonType??0,count:1,assumeSurrenderOrNonlethalCapture:true,assumeLiveRecovery:true,assumeNativeUnitItemMapping:true,nativeArchiveSha256:lock.archiveSha256,sourceFileSha256:files["Piratez_Factions.rul"]};
