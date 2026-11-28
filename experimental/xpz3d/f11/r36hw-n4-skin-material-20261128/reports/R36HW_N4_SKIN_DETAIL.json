@@ -1,0 +1,105 @@
+{
+  "stage": "R36HW N4: subtle tiled procedural skin albedo and tangent-space normal on source HW garment shell primitives",
+  "inputSha256": "87295d5b09b735110838f4bdbad4729b07b632ea7c4e11c4d01216f0ea412424",
+  "outputSha256": "82e085bd91e8e48d2d6e6794047b54d39d47c2abe5940c184e12c45a25114482",
+  "modelTriangles": 2076,
+  "skinJoints": 63,
+  "originalBinaryBytes": 257696,
+  "newBinaryBytes": 941160,
+  "originalFacePrimitive": {
+    "attributes": {
+      "POSITION": 88,
+      "NORMAL": 89,
+      "JOINTS_0": 90,
+      "WEIGHTS_0": 91,
+      "COLOR_0": 92
+    },
+    "indices": 93,
+    "material": 0,
+    "mode": 4,
+    "extras": {
+      "ranges": [
+        {
+          "name": "Head - source 3",
+          "startTriangle": 0,
+          "triangles": 644
+        }
+      ]
+    }
+  },
+  "originalHairPrimitive": {
+    "attributes": {
+      "POSITION": 94,
+      "NORMAL": 95,
+      "JOINTS_0": 96,
+      "WEIGHTS_0": 97,
+      "COLOR_0": 98,
+      "TEXCOORD_0": 99
+    },
+    "indices": 100,
+    "material": 1,
+    "mode": 4,
+    "extras": {
+      "ranges": [
+        {
+          "name": "Rounded scalp and staggered fringe",
+          "startTriangle": 0,
+          "triangles": 168
+        },
+        {
+          "name": "High swept crown lock",
+          "startTriangle": 168,
+          "triangles": 28
+        },
+        {
+          "name": "Rear swept crown lock",
+          "startTriangle": 196,
+          "triangles": 28
+        },
+        {
+          "name": "Front diagonal fringe lock",
+          "startTriangle": 224,
+          "triangles": 28
+        },
+        {
+          "name": "Lower swept temple lock",
+          "startTriangle": 252,
+          "triangles": 28
+        },
+        {
+          "name": "Asymmetric side fringe lock",
+          "startTriangle": 280,
+          "triangles": 14
+        }
+      ]
+    }
+  },
+  "texturedPrimitives": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "untouchedExposedSkinPrimitiveIndex": 6,
+  "albedoTexture": {
+    "width": 512,
+    "height": 512,
+    "pngBytes": 121208,
+    "minChannel": 232,
+    "maxChannel": 255
+  },
+  "microNormalTexture": {
+    "width": 512,
+    "height": 512,
+    "pngBytes": 562253,
+    "minChannel": 68,
+    "maxChannel": 255,
+    "scale": 0.48
+  },
+  "limitations": [
+    "No screenshot or native S2 confirmation",
+    "Subtle procedural micro-detail is not target anatomy",
+    "Existing clothing-origin UV mapping still needs seam retopology",
+    "Skin material only; original face and hair preserved"
+  ]
+}
