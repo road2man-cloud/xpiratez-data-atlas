@@ -1,4 +1,4 @@
-// V172: supplemental branch-local forward production panel in the existing soldier DB.
+// V173: supplemental branch-local forward production panel in the existing soldier DB.
 // Never changes the certified/conditional route table or its ranking.
 const BRANCH_LABELS={existing:'기존 남성 병종',hybrid:'혼종',priest:'성직자'};
 const list=x=>Array.isArray(x)?x:[];
@@ -41,7 +41,7 @@ function loadPanel(panel){
  async function load(){
   if(loading||loaded)return;loading=true;status.textContent='순방향 연구 연결 자료를 불러오는 중…';
   try{
-   const response=await fetch(new URL('../../data/soldier-forward-trait-progress-v172.json',import.meta.url));
+   const response=await fetch(new URL('../../data/soldier-forward-trait-progress-v173.json',import.meta.url));
    if(!response.ok)throw Error('HTTP '+response.status);
    const d=await response.json(),index=validateProgress(d);
    render(d,index,body,status);loaded=true;
@@ -67,16 +67,19 @@ function render(d,index,root,status){
  const partial=checkbox('V167 부분 적용 이력만'),same=checkbox('목표 난이도 일치만');
  const counter=node('p',null,{role:'status','aria-live':'polite'});
  const note=node('p','정렬 기준은 선택한 한 캠페인의 미충족 연구 수입니다. 실제 시술 가능 여부와 최종 능력치 순위가 아닙니다.',{class:'scope-note'});
+ const checkpoint=node('p',null,{class:'scope-note','aria-live':'polite'});
  const shell=node('div',null,{class:'table-shell',role:'region',tabindex:'0','aria-label':'순방향 목표 연결 비교'}),table=node('table'),head=node('thead'),tbody=node('tbody'),tr=node('tr');
  for(const h of ['기존 목표 / 출생처','목표 특성 (미인증)','연구 충족 / 미충족','신규 획득 조건','별도 V167 부분 적용 이력'])tr.append(node('th',h,{scope:'col'}));
  head.append(tr);table.append(head,tbody);shell.append(table);
  const controls=node('div',null,{class:'route-toolbar'}),prev=node('button','이전',{type:'button'}),next=node('button','다음',{type:'button'}),pageLabel=node('span');
- controls.append(prev,pageLabel,next);root.append(fields,counter,note,controls,shell);
+ controls.append(prev,pageLabel,next);root.append(fields,counter,checkpoint,note,controls,shell);
  let page=0;const size=25;
  function refresh(reset=false){
   if(reset)page=0;
   const rows=rowsFor(d,{branch:branch.value,origin:origin.value,query:query.value,partialOnly:partial.checked,difficultyMatch:same.checked},index);
   const pages=Math.max(1,Math.ceil(rows.length/size));page=Math.min(page,pages-1);
+  const b=index.branches.get(branch.value),cp=b.checkpoint;
+  checkpoint.textContent=cp?'V'+cp.version+' · 신규 행동 '+cp.newActions+'개 · 신규 활성 연구 '+cp.newResearch+'개 · GDX '+cp.gdx.length+'/6 · 도서관 '+(cp.library?'건설':'미건설')+' · 마법기술 개론 '+(cp.magitech?'완료':'미완료')+' · 사이오닉 교감 '+cp.psiDone+'/'+cp.psiTotal+' · 섹토위드 '+cp.weed+'개 · 조건부 재생 결과':'선택한 분기의 독립 체크포인트 · '+b.actionCount+'개 누적 행동';
   counter.textContent=rows.length+'개 목표 · '+(BRANCH_LABELS[branch.value]||branch.value)+' 단독 · 최종 인증 0건';
   pageLabel.textContent=(page+1)+' / '+pages;prev.disabled=page===0;next.disabled=page+1>=pages;tbody.replaceChildren();
   for(const r of rows.slice(page*size,(page+1)*size)){
