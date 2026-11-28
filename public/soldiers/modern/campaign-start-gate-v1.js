@@ -94,6 +94,27 @@ function applyCampaignStartCore(input,step,data){
    return {...result,assumed:true,notes:[...(result.notes||[]),'fixed-map-recovery:'+route.terrain+'/'+route.block+' '+loot.item+' x'+route.count,'conditional-purchased-transport:'+route.craft,'tactical-arrival-victory-and-recovery-not-native-certified','other-map-loot-not-credited']};
   }catch(e){return {ok:false,world:input,reason:e.message};}
  }
+ if(step.type==='acquireEventItems'){
+  try{
+   const route=(data.campaignAssets?.fixedItemEvents?.[step.item]||[]).find(r=>r.event===step.event&&r.script.script===step.script);
+   if(!route||data.campaignAssets.sourceFingerprint!==input.sourceFingerprint)throw Error('fixed-event-source-mismatch');
+   if(step.assumeOutcome!==true||step.count!==route.items[step.item])throw Error('fixed-event-outcome-or-count-mismatch');
+   // Conservative one use per event; even repeatable event paths cannot
+   // manufacture unbounded grants without an explicit repeat scheduler.
+   if(input.generatedEvents?.[step.event])throw Error('fixed-event-repeat-unmodeled');
+   const triggerItems={...input.otherItems};
+   for(const [id,n] of Object.entries(input.items))triggerItems[id]=(triggerItems[id]||0)+n;
+   const verdict=eventScriptVerdict({...route.script,eventId:step.event},{...input,triggerItems,triggerFacilities:input.globalFacilities},{mode:'current'});
+   if(verdict.blocked.length||verdict.unknown.length)throw Error('fixed-event-trigger-unresolved:'+ [...verdict.blocked,...verdict.unknown].join('; '));
+   const world=structuredClone(input);
+   for(const [id,n] of Object.entries(route.items)){
+    if(!Number.isSafeInteger(n)||n<1)throw Error('invalid-fixed-event-grant');
+    world.items[id]=(world.items[id]||0)+n;
+   }
+   world.generatedEvents[step.event]=(world.generatedEvents[step.event]||0)+1;
+   return {ok:true,world,assumed:true,notes:[...verdict.pending,'fixed-item-only-event:'+step.event,'event-scheduler-and-receipt-not-native-certified']};
+  }catch(e){return {ok:false,world:input,reason:e.message};}
+ }
  const e=START_EVENT_RULES[step.event];
  if(step.type!=='eventResearch'||!e){
   // Legacy actions still enforce items and research. Ignore monetary cost only
