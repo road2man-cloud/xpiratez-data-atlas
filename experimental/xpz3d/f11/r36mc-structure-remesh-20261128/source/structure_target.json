@@ -1,0 +1,289 @@
+{
+  "version": "R36MC-v1",
+  "basis": "user-provided oblique cropped photo, hand interpreted landmarks; NOT calibrated depth",
+  "photo": {
+    "width": 373,
+    "height": 467,
+    "sourceBounds": [
+      122,
+      158,
+      244,
+      412
+    ],
+    "privateSource": true
+  },
+  "bind": {
+    "xMin": -0.091,
+    "xMax": 0.091,
+    "zMin": 0.754,
+    "zMax": 0.962,
+    "frontYMax": -0.025,
+    "frontDirection": "-Y",
+    "verticalDirection": "+Z"
+  },
+  "features": [
+    {
+      "id": "left_outer",
+      "type": "ridge",
+      "width": 0.014,
+      "amplitude": -0.008,
+      "control": [
+        [
+          179,
+          191
+        ],
+        [
+          163,
+          222
+        ],
+        [
+          145,
+          264
+        ],
+        [
+          135,
+          307
+        ],
+        [
+          143,
+          348
+        ],
+        [
+          163,
+          383
+        ],
+        [
+          183,
+          401
+        ]
+      ]
+    },
+    {
+      "id": "left_inner",
+      "type": "ridge",
+      "width": 0.009,
+      "amplitude": -0.0105,
+      "control": [
+        [
+          184,
+          206
+        ],
+        [
+          177,
+          237
+        ],
+        [
+          160,
+          277
+        ],
+        [
+          157,
+          315
+        ],
+        [
+          164,
+          346
+        ],
+        [
+          179,
+          377
+        ]
+      ]
+    },
+    {
+      "id": "right_inner",
+      "type": "ridge",
+      "width": 0.01,
+      "amplitude": -0.0077,
+      "control": [
+        [
+          193,
+          207
+        ],
+        [
+          200,
+          240
+        ],
+        [
+          211,
+          282
+        ],
+        [
+          220,
+          323
+        ],
+        [
+          212,
+          356
+        ],
+        [
+          200,
+          380
+        ]
+      ]
+    },
+    {
+      "id": "right_outer",
+      "type": "ridge",
+      "width": 0.014,
+      "amplitude": -0.004,
+      "control": [
+        [
+          201,
+          200
+        ],
+        [
+          212,
+          245
+        ],
+        [
+          227,
+          281
+        ],
+        [
+          235,
+          329
+        ],
+        [
+          226,
+          372
+        ],
+        [
+          210,
+          392
+        ]
+      ]
+    },
+    {
+      "id": "upper_fold",
+      "type": "ridge",
+      "width": 0.012,
+      "amplitude": -0.0055,
+      "control": [
+        [
+          173,
+          224
+        ],
+        [
+          179,
+          198
+        ],
+        [
+          187,
+          178
+        ],
+        [
+          198,
+          208
+        ],
+        [
+          204,
+          234
+        ]
+      ]
+    },
+    {
+      "id": "lower_fold",
+      "type": "ridge",
+      "width": 0.015,
+      "amplitude": -0.009,
+      "control": [
+        [
+          154,
+          350
+        ],
+        [
+          163,
+          374
+        ],
+        [
+          179,
+          390
+        ],
+        [
+          194,
+          399
+        ],
+        [
+          210,
+          393
+        ],
+        [
+          226,
+          368
+        ]
+      ]
+    },
+    {
+      "id": "central_recess",
+      "type": "recess",
+      "width": 0.018,
+      "amplitude": 0.011,
+      "control": [
+        [
+          187,
+          211
+        ],
+        [
+          184,
+          247
+        ],
+        [
+          182,
+          282
+        ],
+        [
+          188,
+          319
+        ],
+        [
+          193,
+          354
+        ],
+        [
+          194,
+          374
+        ]
+      ]
+    },
+    {
+      "id": "lower_recess",
+      "type": "recess",
+      "width": 0.012,
+      "amplitude": 0.0053,
+      "control": [
+        [
+          178,
+          338
+        ],
+        [
+          180,
+          355
+        ],
+        [
+          190,
+          371
+        ],
+        [
+          203,
+          375
+        ]
+      ]
+    }
+  ],
+  "production": {
+    "source": "R36MB skinned compact GLB ART / SUBTLE",
+    "maxTriangles": 2100,
+    "bodyTriangles": 1132,
+    "otherTriangles": 968,
+    "bones": 63,
+    "displacementBound": 0.016,
+    "surfaceShiftBound": 0.005,
+    "variants": [
+      "structure",
+      "guarded"
+    ],
+    "noOriginalPhotoUpload": true
+  },
+  "uncertainty": "Contour points estimated from single rotated photo. Control paths may need manual correction; preserve editable JSON."
+}
