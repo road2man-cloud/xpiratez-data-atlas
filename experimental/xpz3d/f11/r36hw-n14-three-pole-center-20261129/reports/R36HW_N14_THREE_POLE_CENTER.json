@@ -1,0 +1,46 @@
+{
+  "stage": "R36HW-N14 true sewn center-pole split, no separate anatomical overlay",
+  "inputSHA256": "1bef905242461912a91853b6802ab8564ce6ad0f19e549754035a4d7314f7f19",
+  "outputSHA256": "4b11da809e8df858b3f70e74d8088dbefee3f1058a9a3f5a2da0798bf359e59e",
+  "trianglesBefore": 2095,
+  "trianglesAfter": 2099,
+  "addedTriangles": 4,
+  "originalHubVertex": 32,
+  "originalHubDegree": 40,
+  "newHubVertices": [
+    32,
+    238,
+    239
+  ],
+  "centerDegrees": [
+    16,
+    21,
+    12
+  ],
+  "originalPelvisVertices": 238,
+  "newPelvisVertices": 240,
+  "relocatedExistingVertices": 1,
+  "appendedNewVertices": 2,
+  "changedOriginalVertexMovementMeters": 0.0072972597596631895,
+  "originalBoundaryEdgeCount": 45,
+  "boundaryEdgesPreserved": true,
+  "manifoldInternalEdges": true,
+  "faceOrientationFlips": 0,
+  "initialInversions": 2,
+  "displacementScale": 0.5,
+  "skinJoints": 63,
+  "sourceFaceHairUnmodified": true,
+  "originalBINbytes": 997648,
+  "newBINbytes": 1014228,
+  "minimumTriangleAreaSqMeters": 0.000001907918186257542,
+  "materialPhotoEmbedded": false,
+  "modelArtApproved": false,
+  "nativeS2Rendered": false,
+  "sourceRigging": "JOINTS_0 and WEIGHTS_0 conserved; two added vertices interpolated from source hub and region",
+  "remainingIssues": [
+    "Target-photo likeness not confirmed",
+    "Entire pre-existing pelvis side/front clothing-derived surface is not fully reconstructed",
+    "Visible waist/upper-thigh seam welding remains incomplete",
+    "CPU preview cannot prove native S2 material/skinning performance"
+  ]
+}
