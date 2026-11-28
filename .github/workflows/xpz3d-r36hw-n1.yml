@@ -1,0 +1,43 @@
+name: XPZ3D R36HW-N1 direct-preservation stage1
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n1-direct-undress/source/**'
+      - '.github/workflows/xpz3d-r36hw-n1.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build HW-based GLB and original preservation report
+        run: node experimental/xpz3d/f11/r36hw-n1-direct-undress/source/build_r36hw_n1.cjs
+      - name: Check stage1 result
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const base='experimental/xpz3d/f11/r36hw-n1-direct-undress/';
+          const r=JSON.parse(fs.readFileSync(base+'reports/R36HW_N1_STAGE1.json','utf8'));
+          if(r.originalTriangles!==2100 || r.outputTriangles>2100 || r.retainedSkinJoints!==63) process.exit(1);
+          console.log(JSON.stringify({original:r.originalTriangles,output:r.outputTriangles,removed:r.removed,converted:r.converted}));
+          NODE
+      - name: Publish actual generated binaries and report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n1-direct-undress/output/R36HW_N1_STAGE1.glb experimental/xpz3d/f11/r36hw-n1-direct-undress/reports/R36HW_N1_STAGE1.json
+          if ! git diff --cached --quiet; then git commit -m "build(f11): generate R36HW N1 preservation-stage model"; git push; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36HW-N1-stage1-glb-and-report
+          path: |
+            experimental/xpz3d/f11/r36hw-n1-direct-undress/output/R36HW_N1_STAGE1.glb
+            experimental/xpz3d/f11/r36hw-n1-direct-undress/reports/R36HW_N1_STAGE1.json
