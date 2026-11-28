@@ -1,0 +1,249 @@
+{
+  "version": "R36HW-N6-CPU",
+  "renderer": "pure Node CPU diagnostic rasterizer of actual N6 GLB triangles (S2-source-inspired illumination; NOT native S2)",
+  "sourceFile": "R36HW_N6_REBASED_SURFACE.glb",
+  "sourceSHA256": "f03169cc12dc53e8304238543dc5f8f5d28274f76ad64102cfa91d44e7a9e041",
+  "totalTriangles": 2080,
+  "bodyTriangles": 1124,
+  "otherTriangles": 956,
+  "bodyMeshCount": 10,
+  "bounds": {
+    "min": [
+      -0.8640000224113464,
+      -0.18165811896324158,
+      0.036500003188848495
+    ],
+    "max": [
+      0.8640000224113464,
+      0.1605721265077591,
+      1.9795557260513306
+    ],
+    "center": [
+      0,
+      -0.010542996227741241,
+      1.0080278646200895
+    ],
+    "size": [
+      1.7280000448226929,
+      0.34223024547100067,
+      1.943055722862482
+    ]
+  },
+  "sourceShaderMath": [
+    "CalcNormal packed normalization approximation",
+    "CalcDirAmbLightDO direct + ambient"
+  ],
+  "syntheticCamera": true,
+  "syntheticLighting": true,
+  "images": [
+    {
+      "view": "front",
+      "mode": "clay",
+      "focus": "full",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2002,
+      "projectedDegenerate": 78,
+      "fragmentWrites": 169733,
+      "meanDirectionalTerm": 0.31978513466870057,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_CLAY_FRONT_FULL.png",
+      "bytes": 22814,
+      "sha256": "9d1b5bf4bb5fdb3b0124a48494c79737ff7e0c4e50ff60ff7ce58d8c7201af29"
+    },
+    {
+      "view": "front",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2002,
+      "projectedDegenerate": 78,
+      "fragmentWrites": 754418,
+      "meanDirectionalTerm": 0.27917795591555494,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_CLAY_FRONT_DETAIL.png",
+      "bytes": 28996,
+      "sha256": "e629d29c286cb0ff165e7c666f23e8793ce2b1d298bb65863eb29b53162b9c1f"
+    },
+    {
+      "view": "oblique",
+      "mode": "clay",
+      "focus": "full",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2080,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 160951,
+      "meanDirectionalTerm": 0.2847605704838199,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_CLAY_OBLIQUE_FULL.png",
+      "bytes": 21889,
+      "sha256": "241533c0e4b2b978d8fc60594dd404d3f0caee9721c08f211a398dd0bc2e7a12"
+    },
+    {
+      "view": "oblique",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2080,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 691460,
+      "meanDirectionalTerm": 0.2535280822270551,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_CLAY_OBLIQUE_DETAIL.png",
+      "bytes": 27014,
+      "sha256": "845aee94fc1a3b34f197a18374fc0b340bcff9ba4041b67cda099f386156c850"
+    },
+    {
+      "view": "side",
+      "mode": "clay",
+      "focus": "full",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2080,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 103073,
+      "meanDirectionalTerm": 0.2606631444680305,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_CLAY_SIDE_FULL.png",
+      "bytes": 15077,
+      "sha256": "dd28f992731809af72d66e396854a985c276a988fe21d8d87a9ee29958375d48"
+    },
+    {
+      "view": "side",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2080,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 459917,
+      "meanDirectionalTerm": 0.23412754146451314,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_CLAY_SIDE_DETAIL.png",
+      "bytes": 18151,
+      "sha256": "3354c10bdad87232ff5a1044ce38a11155ca91bded8aad9dff63c78a84b24f83"
+    },
+    {
+      "view": "front",
+      "mode": "shaded",
+      "focus": "full",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2002,
+      "projectedDegenerate": 78,
+      "fragmentWrites": 169733,
+      "meanDirectionalTerm": 0.321491482173305,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_SHADED_FRONT_FULL.png",
+      "bytes": 128473,
+      "sha256": "cdcbe68758a4643063c7b0402fe037c20d029730aa388f0cbc17e391a9356b2c"
+    },
+    {
+      "view": "front",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2002,
+      "projectedDegenerate": 78,
+      "fragmentWrites": 754418,
+      "meanDirectionalTerm": 0.28697764895880695,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_SHADED_FRONT_DETAIL.png",
+      "bytes": 193800,
+      "sha256": "bb53604da92fd50f68c9777260ad08c12f07bd04a60b9749ac35d93dceb9749f"
+    },
+    {
+      "view": "oblique",
+      "mode": "shaded",
+      "focus": "full",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2080,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 160951,
+      "meanDirectionalTerm": 0.2896641224350835,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_SHADED_OBLIQUE_FULL.png",
+      "bytes": 120737,
+      "sha256": "4e8a8690dbc70a7be6f156422359c43aba955dba1629eb2c1e3df3490697d39f"
+    },
+    {
+      "view": "oblique",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2080,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 691460,
+      "meanDirectionalTerm": 0.2629882098276037,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_SHADED_OBLIQUE_DETAIL.png",
+      "bytes": 175772,
+      "sha256": "f812651fa2e363074781552fe30871dee285f3e8bd9ab730dfde9ff8fd7a058d"
+    },
+    {
+      "view": "side",
+      "mode": "shaded",
+      "focus": "full",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2080,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 103073,
+      "meanDirectionalTerm": 0.2609092699944106,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_SHADED_SIDE_FULL.png",
+      "bytes": 63502,
+      "sha256": "9605e34123cc4ec6c44fd87e9569d69a92c590584f10d2cfcb1faf3b7f5c2251"
+    },
+    {
+      "view": "side",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 2080,
+      "nondegenerateTriangles": 2080,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 459917,
+      "meanDirectionalTerm": 0.23166668639517016,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36HW_N6_SHADED_SIDE_DETAIL.png",
+      "bytes": 115314,
+      "sha256": "406af5eb7ddaca983ad7416d518e568675eee25869397029fe2ea4e105356867"
+    }
+  ],
+  "limitations": [
+    "static glTF bind-pose positions; no animated skinning",
+    "does not sample embedded N4 baseColor PNG, micro-normal atlas, ORM, or native S2 bump shader",
+    "not Direct3D 9 execution or screenshot"
+  ]
+}
