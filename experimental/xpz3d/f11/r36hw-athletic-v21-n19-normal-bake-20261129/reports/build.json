@@ -1,0 +1,33 @@
+{
+  "baseSha256": "090ed628cc67c1d18a3bc1700193a43530b3f7ce65dfaf749174549f16403431",
+  "donorSha256": "ad4b40635460f2be7df0596a865bb867a28d4a648101f02289c65779a3b950e7",
+  "outputSha256": "c4ef68546345f1c2a8b0997330b7131944405421956d9b72adf8980697f41787",
+  "outputBytes": 617400,
+  "outputAtlasBytes": 81431,
+  "atlasDimensions": [
+    512,
+    512
+  ],
+  "inputNormalTexture": 3,
+  "outputNormalTexture": 4,
+  "originalNormalScale": 0.22,
+  "eligibleTriangles": 1148,
+  "rasterSamples": 19930,
+  "bakedTexels": 19887,
+  "overlapTexelsProtected": 0,
+  "meanTangentNormalDeltaDegrees": 22.282658536713587,
+  "maxTangentNormalDeltaDegrees": 41.52066513799595,
+  "peakSlopeComponent": 0.62,
+  "originalTotalTriangles": 3214,
+  "outputTotalTriangles": 3214,
+  "originalGarmentVertices": 1343,
+  "outputGarmentVertices": 1343,
+  "skinJoints": 63,
+  "opaque": true,
+  "additionalGarmentPrimitives": 0,
+  "material18NormalTextureOnly": true,
+  "n19DonorMeshCopied": false,
+  "originalV20GeometryPreserved": true,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false
+}
