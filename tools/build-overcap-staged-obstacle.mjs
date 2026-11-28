@@ -1,6 +1,7 @@
 // Staged obstacle production from exact terminal research/training endpoints.
 // All successful research transactions survive an unresolved final goal.
 import fs from 'node:fs';
+import {readTrainingLedger} from './overcap-training-ledger-store.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {defaultRankData} from './population-frontier-default-rank.mjs';
@@ -17,7 +18,7 @@ const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=x=>createHash('sha256')
 const arg=(k,d)=>process.argv.find(x=>x.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const num=(k,d,min,max)=>{const n=Number(arg(k,d));assert(Number.isSafeInteger(n)&&n>=min&&n<=max,k);return n;};
 const active=(w,k)=>w.researched.has(k)&&!w.disabled.has(k),sort=x=>[...x].sort(),sum=x=>x.reduce((a,b)=>a+b,0);
-const source=read('tools/data/overcap-terminal-source-v1.json'),base=read('public/data/soldier-overcap-expanded-lifecycle.json'),next=read('public/data/soldier-overcap-direct-successors.json'),terminal=read('public/data/soldier-overcap-terminal-continuations.json'),training=read('public/data/soldier-overcap-terminal-training.json'),material=read('public/data/soldier-overcap-successor-material-ledger.json');
+const source=read('tools/data/overcap-terminal-source-v1.json'),base=read('public/data/soldier-overcap-expanded-lifecycle.json'),next=read('public/data/soldier-overcap-direct-successors.json'),terminal=read('public/data/soldier-overcap-terminal-continuations.json'),training=readTrainingLedger(arg('resume','')?read(arg('resume','')).trainingSourceHash:null),material=read('public/data/soldier-overcap-successor-material-ledger.json');
 const d=defaultRankData(read('public/data/soldiers-modern-index.json')).data;
 d.originRows=read('public/data/soldier-acquisition-progression-20261102.json').rows;d.sourceItemIds=new Set(read('public/data/soldier-source-catalog.json').itemIds);
 assert.equal(source.sourceMetadataSha256,d.meta.source.metadataSha256);assert.equal(next.sourceHash,hash(base));assert.equal(terminal.sourceHash,hash(next));assert.equal(terminal.terminalSourceHash,hash(source));assert.equal(training.sourceHash,hash(terminal));assert.equal(material.inputs.lifecycle.canonicalJsonSha256,hash(next));

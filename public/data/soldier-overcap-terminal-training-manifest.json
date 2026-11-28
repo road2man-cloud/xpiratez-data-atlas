@@ -1,0 +1,8 @@
+{
+  "schema": "ATLAS_OVERCAP_TRAINING_SNAPSHOT_INDEX_V1",
+  "current": "0105859fb924cd551c4d416517edda66df1b9e8b307fcc0fda75851d917fd28e",
+  "snapshots": {
+    "0eba91e4612baf84468a161c81db7943fe42dcc2898047625db9878b8d924cc9": "public/data/soldier-overcap-terminal-training.json",
+    "0105859fb924cd551c4d416517edda66df1b9e8b307fcc0fda75851d917fd28e": "public/data/soldier-overcap-terminal-training-merged-0105859fb924cd551c4d416517edda66df1b9e8b307fcc0fda75851d917fd28e.json.gz"
+  }
+}

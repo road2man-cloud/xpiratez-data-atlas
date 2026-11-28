@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R36LH 피부 명암 원인 분리 실험실</title>
+<style>
+body{margin:0;background:#0b1721;color:#e5f1f4;font:14px system-ui}header{padding:15px 20px;border-bottom:1px solid #35505d}h1{font-size:19px;margin:0 0 5px}small{color:#a8c0c9}
+main{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 83px)}aside{padding:18px;background:#112733;overflow:auto}label{display:block;margin:14px 0 5px;color:#b7d2da}select,input,button{width:100%;padding:8px;background:#1b3b49;color:#e5f1f4;border:1px solid #416c79;border-radius:6px;box-sizing:border-box}input[type=range]{padding:0}button{cursor:pointer;margin:8px 0}.view{position:relative;min-width:0}canvas{width:100%;height:100%;display:block;touch-action:none}#status{white-space:pre-wrap;word-break:break-word;font-size:12px;color:#9bd6c3}p{line-height:1.6;color:#b7c9d2;font-size:12px}.chip{position:absolute;top:12px;left:12px;padding:8px;background:#112733d9;border:1px solid #446472} @media(max-width:700px){main{display:block;height:auto}aside{max-height:none}.view{height:65vh}}
+</style>
+<script type="importmap">{"imports":{"three":"../r36kp/preview/vendor/three.module.js","three/addons/":"../r36kp/preview/vendor/"}}</script>
+<header><h1>R36LH · 피부 삼각형 명암 원인 분리</h1><small>R36LE 실물 GLB 활용 · 메시/텍스처 수정 없음 · S2 엔진 재현 주장 없음</small></header>
+<main><aside>
+<label for="variant">실물 기준 모델</label><select id="variant"><option value="skin">R36LE Skin</option><option value="flow">R36LE Flow</option></select>
+<label for="shader">명암 격리 모드</label><select id="shader">
+<option value="pbr">PBR + 노멀맵 (기준)</option>
+<option value="pbr-flat">PBR · 노멀맵 해제</option>
+<option value="neutral">중성 재질 · 컬러/노멀맵 해제</option>
+<option value="classic">Classic · 약한 노멀</option>
+<option value="classic-flat">Classic · 노멀맵 해제</option>
+<option value="albedo">Albedo · 무조명 피부색</option>
+<option value="normal">World normal · 형상/노멀 진단</option>
+<option value="wire">Wire · 실제 삼각형</option></select>
+<label for="exposure">노출 <span id="exposureLabel">1.00</span></label><input id="exposure" type="range" min="50" max="150" value="100">
+<label for="normalScale">노멀 강도 <span id="normalLabel">0.22</span></label><input id="normalScale" type="range" min="0" max="100" value="22">
+<label for="angle">모델 회전 <span id="angleLabel">0°</span></label><input id="angle" type="range" min="-90" max="90" value="0">
+<button id="reset">정면 카메라 복원</button><button id="capture">현재 실물 화면 PNG 캡처</button>
+<p>비교 규칙: 모델·카메라·조명·노출을 고정하고 모드만 바꿉니다. 무조명에서도 보이는 색 블록은 컬러맵 후보, 무노멀에서 사라지는 경계는 노멀맵 후보입니다. 무노멀에서도 조명에 따라 드러나는 경계는 형상/정점 법선 후보입니다. 중성 재질에서 사라지면 컬러/재질 원인, 계속 남으면 형상/정점 법선/조명 원인을 의심합니다.</p>
+<p>주의: 이 페이지는 R36LG 원본 복원물이 아닙니다. 저장소에 보존된 R36LE 바이너리를 이용한 독립 진단 도구입니다.</p>
+<div id="status">GLB 다운로드 준비 중</div></aside>
+<div class="view"><canvas id="c"></canvas><div class="chip" id="metric">로딩 중</div></div></main>
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const $=x=>document.getElementById(x),renderer=new THREE.WebGLRenderer({canvas:$('c'),antialias:true,preserveDrawingBuffer:true});
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x14232d);
+const camera=new THREE.PerspectiveCamera(36,1,.01,100),controls=new OrbitControls(camera,$('c'));controls.enableDamping=true;
+const hemi=new THREE.HemisphereLight(0xffffff,0x425465,1.35);scene.add(hemi);
+const key=new THREE.DirectionalLight(0xffffff,1.7);key.position.set(3,5,5);scene.add(key);
+const fill=new THREE.DirectionalLight(0xbed8fa,0.35);fill.position.set(-3,2,-4);scene.add(fill);
+const partsBase='../r36le-seamsafe-20261128/assets/parts/';
+const paths={skin:'skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part',flow:'flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part'};
+let root=null,mats=new Map(),loading=false,renderCount=0;
+function log(s){$('status').textContent=s}
+async function loadVariant(){
+ if(loading)return;loading=true;
+ try{
+  const v=$('variant').value,prefix=paths[v],buffers=[];
+  for(let i=0;i<9;i++){let url=partsBase+prefix+String(i).padStart(2,'0');let r=await fetch(url);if(!r.ok)throw Error('Part '+i+': HTTP '+r.status);buffers.push(await r.arrayBuffer());log('GLB 조립 '+(i+1)+'/9')}
+  const length=buffers.reduce((s,b)=>s+b.byteLength,0),bytes=new Uint8Array(length);let offset=0;
+  for(const b of buffers){bytes.set(new Uint8Array(b),offset);offset+=b.byteLength}
+  if(String.fromCharCode(...bytes.slice(0,4))!=='glTF')throw Error('GLB 헤더 불일치');
+  const gltf=await new GLTFLoader().parseAsync(bytes.buffer,location.href);
+  if(root)scene.remove(root);root=gltf.scene;scene.add(root);mats.clear();
+  root.traverse(o=>{if(o.isMesh){mats.set(o,o.material);o.frustumCulled=false}});
+  const bounds=new THREE.Box3().setFromObject(root),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
+  controls.target.copy(center);const d=Math.max(size.x,size.y,size.z)*2.4;camera.position.copy(center).add(new THREE.Vector3(0,0,d));camera.near=Math.max(d/1000,.001);camera.far=d*20;camera.updateProjectionMatrix();controls.update();
+  log('실제 GLB 로드 완료 · '+length.toLocaleString()+' bytes · '+mats.size+' mesh');
+  apply();
+ }catch(e){log('로딩 실패: '+e.message+'\n해당 GitHub 자산/상대경로 확인 필요')}finally{loading=false}
+}
+function cloneMat(m,mode){
+ if(Array.isArray(m))return m.map(x=>cloneMat(x,mode));
+ if(mode==='normal')return new THREE.MeshNormalMaterial({skinning:!!m.skinning,side:m.side});
+ if(mode==='wire')return new THREE.MeshBasicMaterial({color:0x77c6d1,wireframe:true,side:THREE.DoubleSide,skinning:!!m.skinning});
+ if(mode==='neutral')return new THREE.MeshPhongMaterial({color:0xb99583,shininess:4,specular:0x080808,side:m.side,transparent:m.transparent,opacity:m.opacity,alphaTest:m.alphaTest||0});
+ if(mode==='albedo')return new THREE.MeshBasicMaterial({map:m.map||null,color:m.color?m.color.clone():0xffffff,transparent:m.transparent,opacity:m.opacity,alphaTest:m.alphaTest||0,side:m.side,skinning:!!m.skinning});
+ let result;
+ if(mode.startsWith('classic'))result=new THREE.MeshPhongMaterial({color:m.color?m.color.clone():0xffffff,map:m.map||null,normalMap:m.normalMap||null,shininess:12,specular:0x171717,side:m.side,transparent:m.transparent,opacity:m.opacity,skinning:!!m.skinning});
+ else result=m.clone();
+ if(mode.endsWith('flat'))result.normalMap=null;
+ else if(result.normalMap)result.normalScale=new THREE.Vector2(mode==='classic'?Number($('normalScale').value)/100:1,mode==='classic'?Number($('normalScale').value)/100:1);
+ return result;
+}
+function apply(){
+ if(!root)return;const mode=$('shader').value;
+ for(const [mesh,original] of mats){if(mesh.material!==original){const old=mesh.material;(Array.isArray(old)?old:[old]).forEach(m=>m.dispose())}mesh.material=cloneMat(original,mode)}
+ renderer.toneMapping=mode==='albedo'||mode==='normal'||mode==='wire'?THREE.NoToneMapping:THREE.ACESFilmicToneMapping;
+ renderer.toneMappingExposure=Number($('exposure').value)/100;
+ $('normalLabel').textContent=(Number($('normalScale').value)/100).toFixed(2);
+ $('exposureLabel').textContent=renderer.toneMappingExposure.toFixed(2);
+ $('angleLabel').textContent=$('angle').value+'°';
+ root.rotation.y=Number($('angle').value)*Math.PI/180;
+ let tris=0;root.traverse(o=>{if(o.isMesh){const g=o.geometry;tris+=g.index?g.index.count/3:g.attributes.position.count/3}});
+ $('metric').textContent=mode+' · '+tris.toLocaleString()+'△ · '+mats.size+' meshes';
+}
+$('variant').onchange=loadVariant;$('shader').onchange=apply;
+for(const k of ['exposure','normalScale','angle'])$(k).oninput=apply;
+$('reset').onclick=()=>{if(!root)return;const b=new THREE.Box3().setFromObject(root),sz=b.getSize(new THREE.Vector3()),ctr=b.getCenter(new THREE.Vector3());controls.target.copy(ctr);camera.position.copy(ctr).add(new THREE.Vector3(0,0,Math.max(sz.x,sz.y,sz.z)*2.4));controls.update();$('angle').value=0;apply()};
+$('capture').onclick=()=>{const a=document.createElement('a');a.download='R36LH_'+$('variant').value+'_'+$('shader').value+'.png';a.href=renderer.domElement.toDataURL('image/png');a.click()};
+function frame(){requestAnimationFrame(frame);const c=$('c'),w=c.clientWidth,h=c.clientHeight;if(w&&h&&(c.width!==Math.round(w*renderer.getPixelRatio())||c.height!==Math.round(h*renderer.getPixelRatio()))){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}controls.update();renderer.render(scene,camera);renderCount++}frame();loadVariant();
+</script>

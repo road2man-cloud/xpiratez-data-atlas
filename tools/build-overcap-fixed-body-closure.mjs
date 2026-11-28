@@ -2,6 +2,7 @@
 // This is a separate gate artifact, not a mutation of the canonical final
 // registry. Only candidates with complete same-body inventory are closed.
 import fs from 'node:fs';
+import {readTrainingLedger} from './overcap-training-ledger-store.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {defaultRankData,RANK_POLICY} from './population-frontier-default-rank.mjs';
@@ -10,7 +11,7 @@ import {member,exactWorld} from './population-growth-replay-core.mjs';
 import {createIrreversibleBodyCareerScope,SCOPE} from './atlas-body-career-scope-v4-irreversible.mjs';
 import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
-const source=read('tools/data/overcap-terminal-source-v1.json'),base=read('public/data/soldier-overcap-expanded-lifecycle.json'),next=read('public/data/soldier-overcap-direct-successors.json'),terminal=read('public/data/soldier-overcap-terminal-continuations.json'),training=read('public/data/soldier-overcap-terminal-training.json'),material=read('public/data/soldier-overcap-successor-material-ledger.json'),catalog=read('public/data/soldier-source-catalog.json');
+const source=read('tools/data/overcap-terminal-source-v1.json'),base=read('public/data/soldier-overcap-expanded-lifecycle.json'),next=read('public/data/soldier-overcap-direct-successors.json'),terminal=read('public/data/soldier-overcap-terminal-continuations.json'),training=readTrainingLedger(),material=read('public/data/soldier-overcap-successor-material-ledger.json'),catalog=read('public/data/soldier-source-catalog.json');
 const data=defaultRankData(read('public/data/soldiers-modern-index.json')).data;
 data.originRows=read('public/data/soldier-acquisition-progression-20261102.json').rows;data.sourceItemIds=new Set(catalog.itemIds);
 assert.equal(data.meta.source.metadataSha256,source.sourceMetadataSha256);assert.equal(next.sourceHash,hash(base));assert.equal(terminal.sourceHash,hash(next));assert.equal(terminal.baseSourceHash,hash(base));assert.equal(terminal.terminalSourceHash,hash(source));assert.equal(training.sourceHash,hash(terminal));assert.equal(material.inputs.lifecycle.canonicalJsonSha256,hash(next));assert.deepEqual(catalog.sourceHashes,data.meta.source.rules);
