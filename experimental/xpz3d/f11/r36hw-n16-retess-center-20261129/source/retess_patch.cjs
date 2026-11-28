@@ -36,7 +36,26 @@ module.exports=function retess({positions,triangles,innerIds,oldNormals}){
    if(polygon.some(k=>!f.includes(k)&&((v)=>v&&Math.min(...v)>1e-8)(bary(xz(k),...f))))continue;
    const q=quality(f);if(!best||q>best.q)best={i,f,q};
   }
-  if(!best)throw Error('Ear clipping blocked at '+polygon.length+' vertices');
+  if(!best){
+   // Projected 2D ring can contain shallow self-overlaps even though the
+   // original 3D surface is manifold. Prefer minimum-overlap forward ear;
+   // the 3D manifold, non-zero area and orientation checks below still apply.
+   let fallback=null;
+   for(let i=0;i<polygon.length;i++){
+    const f=[polygon[(i+polygon.length-1)%polygon.length],polygon[i],polygon[(i+1)%polygon.length]];
+    const signed=orient(...f)*sign;
+    if(signed<1e-12)continue;
+    let overlap=0;for(const k of polygon){
+     if(f.includes(k))continue;
+     const w=bary(xz(k),...f);
+     if(w&&Math.min(...w)>1e-7)overlap++;
+    }
+    const q=score(f)-overlap*1e3;
+    if(!fallback||q>fallback.q)fallback={i,f,q};
+   }
+   if(!fallback)throw Error('No forward nondegenerate ear at '+polygon.length);
+   best=fallback;
+  }
   patch.push(best.f);polygon.splice(best.i,1);
  }
  patch.push(polygon);
