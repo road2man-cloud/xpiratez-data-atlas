@@ -18,6 +18,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kp/reference/R36HW_F11_CLOTHED.glb
+            experimental/xpz3d/f11/r36hw-n2-local-sculpt-20261128/
+            .github/workflows/xpz3d-r36hw-n2.yml
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
