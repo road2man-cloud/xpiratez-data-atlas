@@ -1,0 +1,472 @@
+{
+  "stage": "N12 centered attached 3D sculpt, no full-body remodeling",
+  "inputSHA256": "9f99e92f93bdc5f74b0d1df1d66b3f34cbf3cb188c19537faeb51c3cdf6fe2ba",
+  "outputSHA256": "9dbc2e9ee158276d7080f12ae3f7a5b97298da149886d834d6609c94550536fe",
+  "trianglesBefore": 1985,
+  "trianglesAfter": 2095,
+  "regionTrianglesSplit": 55,
+  "regionTrianglesAdded": 110,
+  "regionCentroidVertices": 55,
+  "originalPelvisVertices": 183,
+  "newPelvisVertices": 238,
+  "boundaryVerticesHeld": 45,
+  "modifiedOriginalVertices": 35,
+  "maxOriginalVertexMovementMeters": 0.009499999999999995,
+  "minTriangleAreaSqMeters": 0.000001907918186257542,
+  "centralSurfaceRemainsOriginalPrimitive": true,
+  "localSkinWeightInterpolation": true,
+  "sourceFaceHairUnmodified": true,
+  "skinJoints": 63,
+  "referenceLandmarks": 14,
+  "referencePhotoEmbedded": false,
+  "realNativeS2Render": false,
+  "visualApproval": false,
+  "limitations": [
+    "A single angled image cannot establish absolute anatomical depth",
+    "The underlying N11 clothing-derived side silhouette and unwelded seams remain",
+    "This is a localized functional mesh iteration, not an artist-approved final anatomy",
+    "No native S2 PBR rendering or real-time bone motion"
+  ],
+  "detailVertices": [
+    {
+      "sourceTriangle": 4,
+      "newVertex": 183,
+      "centroidX": 0.03436,
+      "centroidZ": 0.97122,
+      "targetDepthMm": -0.498,
+      "residualMm": -1.076
+    },
+    {
+      "sourceTriangle": 58,
+      "newVertex": 184,
+      "centroidX": -0.02823,
+      "centroidZ": 0.97122,
+      "targetDepthMm": -0.378,
+      "residualMm": -0.948
+    },
+    {
+      "sourceTriangle": 60,
+      "newVertex": 185,
+      "centroidX": 0.00706,
+      "centroidZ": 0.926,
+      "targetDepthMm": 2.74,
+      "residualMm": 0.374
+    },
+    {
+      "sourceTriangle": 61,
+      "newVertex": 186,
+      "centroidX": 0.02823,
+      "centroidZ": 0.926,
+      "targetDepthMm": -4.758,
+      "residualMm": -6.491
+    },
+    {
+      "sourceTriangle": 62,
+      "newVertex": 187,
+      "centroidX": 0.02823,
+      "centroidZ": 0.953,
+      "targetDepthMm": -2.242,
+      "residualMm": -1.645
+    },
+    {
+      "sourceTriangle": 63,
+      "newVertex": 188,
+      "centroidX": 0.03499,
+      "centroidZ": 0.917,
+      "targetDepthMm": -4.81,
+      "residualMm": -6.411
+    },
+    {
+      "sourceTriangle": 64,
+      "newVertex": 189,
+      "centroidX": 0.0341,
+      "centroidZ": 0.89,
+      "targetDepthMm": -6.036,
+      "residualMm": -7.482
+    },
+    {
+      "sourceTriangle": 65,
+      "newVertex": 190,
+      "centroidX": 0.05528,
+      "centroidZ": 0.917,
+      "targetDepthMm": -1.023,
+      "residualMm": 0.495
+    },
+    {
+      "sourceTriangle": 66,
+      "newVertex": 191,
+      "centroidX": 0.06832,
+      "centroidZ": 0.926,
+      "targetDepthMm": -0.147,
+      "residualMm": 0.066
+    },
+    {
+      "sourceTriangle": 111,
+      "newVertex": 192,
+      "centroidX": -0.08495,
+      "centroidZ": 0.917,
+      "targetDepthMm": -0.014,
+      "residualMm": 0.039
+    },
+    {
+      "sourceTriangle": 112,
+      "newVertex": 193,
+      "centroidX": -0.08406,
+      "centroidZ": 0.89,
+      "targetDepthMm": -0.022,
+      "residualMm": 0.174
+    },
+    {
+      "sourceTriangle": 113,
+      "newVertex": 194,
+      "centroidX": -0.06777,
+      "centroidZ": 0.917,
+      "targetDepthMm": -0.225,
+      "residualMm": 0.006
+    },
+    {
+      "sourceTriangle": 114,
+      "newVertex": 195,
+      "centroidX": -0.05528,
+      "centroidZ": 0.926,
+      "targetDepthMm": -0.936,
+      "residualMm": 0.202
+    },
+    {
+      "sourceTriangle": 115,
+      "newVertex": 196,
+      "centroidX": -0.0341,
+      "centroidZ": 0.926,
+      "targetDepthMm": -4.223,
+      "residualMm": -3.728
+    },
+    {
+      "sourceTriangle": 116,
+      "newVertex": 197,
+      "centroidX": -0.03499,
+      "centroidZ": 0.953,
+      "targetDepthMm": -1.81,
+      "residualMm": -1.456
+    },
+    {
+      "sourceTriangle": 117,
+      "newVertex": 198,
+      "centroidX": -0.02646,
+      "centroidZ": 0.917,
+      "targetDepthMm": -3.697,
+      "residualMm": -4.137
+    },
+    {
+      "sourceTriangle": 118,
+      "newVertex": 199,
+      "centroidX": -0.02646,
+      "centroidZ": 0.89,
+      "targetDepthMm": -5.297,
+      "residualMm": -8.067
+    },
+    {
+      "sourceTriangle": 119,
+      "newVertex": 200,
+      "centroidX": -0.00215,
+      "centroidZ": 0.92,
+      "targetDepthMm": 7.292,
+      "residualMm": 1.313
+    },
+    {
+      "sourceTriangle": 120,
+      "newVertex": 201,
+      "centroidX": -0.00833,
+      "centroidZ": 0.929,
+      "targetDepthMm": 6.39,
+      "residualMm": 3.337
+    },
+    {
+      "sourceTriangle": 121,
+      "newVertex": 202,
+      "centroidX": -0.00833,
+      "centroidZ": 0.902,
+      "targetDepthMm": 6.637,
+      "residualMm": 1.253
+    },
+    {
+      "sourceTriangle": 122,
+      "newVertex": 203,
+      "centroidX": 0.01999,
+      "centroidZ": 0.85378,
+      "targetDepthMm": -0.818,
+      "residualMm": -2.346
+    },
+    {
+      "sourceTriangle": 123,
+      "newVertex": 204,
+      "centroidX": 0.04027,
+      "centroidZ": 0.85378,
+      "targetDepthMm": -2.031,
+      "residualMm": -0.44
+    },
+    {
+      "sourceTriangle": 124,
+      "newVertex": 205,
+      "centroidX": 0.0301,
+      "centroidZ": 0.87511,
+      "targetDepthMm": -5.632,
+      "residualMm": -6.978
+    },
+    {
+      "sourceTriangle": 125,
+      "newVertex": 206,
+      "centroidX": 0.04869,
+      "centroidZ": 0.84377,
+      "targetDepthMm": -0.441,
+      "residualMm": -0.244
+    },
+    {
+      "sourceTriangle": 127,
+      "newVertex": 207,
+      "centroidX": 0.06351,
+      "centroidZ": 0.8431,
+      "targetDepthMm": -0.091,
+      "residualMm": 0.106
+    },
+    {
+      "sourceTriangle": 128,
+      "newVertex": 208,
+      "centroidX": 0.07284,
+      "centroidZ": 0.8508,
+      "targetDepthMm": -0.056,
+      "residualMm": 0.131
+    },
+    {
+      "sourceTriangle": 130,
+      "newVertex": 209,
+      "centroidX": 0.08531,
+      "centroidZ": 0.8728,
+      "targetDepthMm": -0.011,
+      "residualMm": 0.175
+    },
+    {
+      "sourceTriangle": 157,
+      "newVertex": 210,
+      "centroidX": -0.00466,
+      "centroidZ": 0.85031,
+      "targetDepthMm": 3.021,
+      "residualMm": -0.873
+    },
+    {
+      "sourceTriangle": 158,
+      "newVertex": 211,
+      "centroidX": -0.00207,
+      "centroidZ": 0.85827,
+      "targetDepthMm": 6.313,
+      "residualMm": 1.827
+    },
+    {
+      "sourceTriangle": 159,
+      "newVertex": 212,
+      "centroidX": -0.00534,
+      "centroidZ": 0.83827,
+      "targetDepthMm": 0.404,
+      "residualMm": -1.145
+    },
+    {
+      "sourceTriangle": 160,
+      "newVertex": 213,
+      "centroidX": 0.00312,
+      "centroidZ": 0.85572,
+      "targetDepthMm": 4.301,
+      "residualMm": -0.092
+    },
+    {
+      "sourceTriangle": 161,
+      "newVertex": 214,
+      "centroidX": 0.00243,
+      "centroidZ": 0.84367,
+      "targetDepthMm": 1.057,
+      "residualMm": -0.991
+    },
+    {
+      "sourceTriangle": 162,
+      "newVertex": 215,
+      "centroidX": -0.00013,
+      "centroidZ": 0.85962,
+      "targetDepthMm": 6.77,
+      "residualMm": 1.785
+    },
+    {
+      "sourceTriangle": 163,
+      "newVertex": 216,
+      "centroidX": -0.00329,
+      "centroidZ": 0.84966,
+      "targetDepthMm": 3.269,
+      "residualMm": -0.703
+    },
+    {
+      "sourceTriangle": 164,
+      "newVertex": 217,
+      "centroidX": -0.0006,
+      "centroidZ": 0.83566,
+      "targetDepthMm": 0.413,
+      "residualMm": -0.901
+    },
+    {
+      "sourceTriangle": 165,
+      "newVertex": 218,
+      "centroidX": 0.00267,
+      "centroidZ": 0.85566,
+      "targetDepthMm": 6.425,
+      "residualMm": 2.174
+    },
+    {
+      "sourceTriangle": 167,
+      "newVertex": 219,
+      "centroidX": 0.01286,
+      "centroidZ": 0.84567,
+      "targetDepthMm": 1.24,
+      "residualMm": -1.976
+    },
+    {
+      "sourceTriangle": 207,
+      "newVertex": 220,
+      "centroidX": -0.06018,
+      "centroidZ": 0.83956,
+      "targetDepthMm": -0.119,
+      "residualMm": 0.059
+    },
+    {
+      "sourceTriangle": 208,
+      "newVertex": 221,
+      "centroidX": -0.0483,
+      "centroidZ": 0.85354,
+      "targetDepthMm": -1.135,
+      "residualMm": 0.326
+    },
+    {
+      "sourceTriangle": 209,
+      "newVertex": 222,
+      "centroidX": -0.02562,
+      "centroidZ": 0.85079,
+      "targetDepthMm": -2.876,
+      "residualMm": -4.581
+    },
+    {
+      "sourceTriangle": 210,
+      "newVertex": 223,
+      "centroidX": -0.02123,
+      "centroidZ": 0.86648,
+      "targetDepthMm": -3.55,
+      "residualMm": -3.972
+    },
+    {
+      "sourceTriangle": 211,
+      "newVertex": 224,
+      "centroidX": -0.03743,
+      "centroidZ": 0.84491,
+      "targetDepthMm": -1.351,
+      "residualMm": 1.164
+    },
+    {
+      "sourceTriangle": 212,
+      "newVertex": 225,
+      "centroidX": -0.0321,
+      "centroidZ": 0.87511,
+      "targetDepthMm": -5.25,
+      "residualMm": -6.726
+    },
+    {
+      "sourceTriangle": 213,
+      "newVertex": 226,
+      "centroidX": -0.02407,
+      "centroidZ": 0.84809,
+      "targetDepthMm": -2.29,
+      "residualMm": -4.538
+    },
+    {
+      "sourceTriangle": 214,
+      "newVertex": 227,
+      "centroidX": -0.03123,
+      "centroidZ": 0.83409,
+      "targetDepthMm": -0.343,
+      "residualMm": 0.607
+    },
+    {
+      "sourceTriangle": 215,
+      "newVertex": 228,
+      "centroidX": -0.01503,
+      "centroidZ": 0.85566,
+      "targetDepthMm": -0.5,
+      "residualMm": -2.486
+    },
+    {
+      "sourceTriangle": 217,
+      "newVertex": 229,
+      "centroidX": -0.00973,
+      "centroidZ": 0.84966,
+      "targetDepthMm": 1.413,
+      "residualMm": -1.548
+    },
+    {
+      "sourceTriangle": 218,
+      "newVertex": 230,
+      "centroidX": -0.01143,
+      "centroidZ": 0.85566,
+      "targetDepthMm": 1.452,
+      "residualMm": -1.248
+    },
+    {
+      "sourceTriangle": 219,
+      "newVertex": 231,
+      "centroidX": -0.01689,
+      "centroidZ": 0.83566,
+      "targetDepthMm": -0.306,
+      "residualMm": -0.069
+    },
+    {
+      "sourceTriangle": 220,
+      "newVertex": 232,
+      "centroidX": -0.00783,
+      "centroidZ": 0.85031,
+      "targetDepthMm": 2.251,
+      "residualMm": -1.422
+    },
+    {
+      "sourceTriangle": 221,
+      "newVertex": 233,
+      "centroidX": -0.00926,
+      "centroidZ": 0.83827,
+      "targetDepthMm": 0.186,
+      "residualMm": -1.112
+    },
+    {
+      "sourceTriangle": 222,
+      "newVertex": 234,
+      "centroidX": -0.0038,
+      "centroidZ": 0.85827,
+      "targetDepthMm": 5.943,
+      "residualMm": 1.708
+    },
+    {
+      "sourceTriangle": 224,
+      "newVertex": 235,
+      "centroidX": 0.00286,
+      "centroidZ": 0.85572,
+      "targetDepthMm": 4.395,
+      "residualMm": -0.048
+    },
+    {
+      "sourceTriangle": 225,
+      "newVertex": 236,
+      "centroidX": -0.00113,
+      "centroidZ": 0.85962,
+      "targetDepthMm": 6.799,
+      "residualMm": 1.795
+    },
+    {
+      "sourceTriangle": 226,
+      "newVertex": 237,
+      "centroidX": 0.00143,
+      "centroidZ": 0.84367,
+      "targetDepthMm": 1.17,
+      "residualMm": -0.897
+    }
+  ]
+}
