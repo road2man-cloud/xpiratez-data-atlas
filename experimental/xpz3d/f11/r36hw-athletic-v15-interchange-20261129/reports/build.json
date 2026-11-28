@@ -1,0 +1,45 @@
+{
+  "sourceBlob": "b824e5ec3d9564950909037a5f0ba2533593b8d3",
+  "inputBytes": 402980,
+  "geometryBytes": 112576,
+  "geometryBytesCompared": 112576,
+  "imageBytes": 269698,
+  "images": [
+    {
+      "path": "textures/identity-equipment.png",
+      "width": 384,
+      "height": 288,
+      "bytes": 49992
+    },
+    {
+      "path": "textures/hair-strands.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 39664
+    },
+    {
+      "path": "textures/eye-atlas.png",
+      "width": 192,
+      "height": 96,
+      "bytes": 12339
+    },
+    {
+      "path": "textures/athletic-normal.png",
+      "width": 512,
+      "height": 512,
+      "bytes": 167703
+    }
+  ],
+  "bufferViewsBefore": 46,
+  "bufferViewsAfter": 42,
+  "accessors": 42,
+  "primitiveCount": 6,
+  "triangles": 2100,
+  "joints": 63,
+  "geometryBytePreserved": true,
+  "skinWeightBytePreserved": true,
+  "textureBytePreserved": true,
+  "materialPreserved": true,
+  "nativeS2Rendered": false,
+  "nativeS2Compiled": false
+}

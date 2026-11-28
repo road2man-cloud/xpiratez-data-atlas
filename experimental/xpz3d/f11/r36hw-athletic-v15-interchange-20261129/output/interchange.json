@@ -1,0 +1,1361 @@
+{
+  "schema": "r36hw-interchange-v1",
+  "sourceBlob": "b824e5ec3d9564950909037a5f0ba2533593b8d3",
+  "format": "glTF 2.0 external resources",
+  "nativeS2": false,
+  "entry": "model.gltf",
+  "binary": "model.bin",
+  "triangles": 2100,
+  "skinJoints": 63,
+  "coordinateSystem": {
+    "meshLocal": "Z-up",
+    "sceneRoot": "Y-up conversion",
+    "rootNode": 64,
+    "rootQuaternion": [
+      -0.7071067811865476,
+      0,
+      0,
+      0.7071067811865476
+    ],
+    "keepRootTransform": true
+  },
+  "primitives": [
+    {
+      "mesh": 0,
+      "primitive": 0,
+      "materialIndex": 0,
+      "materialName": "face",
+      "vertices": 352,
+      "triangles": 644,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "JOINTS_0",
+        "WEIGHTS_0",
+        "COLOR_0"
+      ],
+      "indexComponentType": 5123
+    },
+    {
+      "mesh": 0,
+      "primitive": 1,
+      "materialIndex": 1,
+      "materialName": "hair",
+      "vertices": 174,
+      "triangles": 294,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "JOINTS_0",
+        "WEIGHTS_0",
+        "COLOR_0",
+        "TEXCOORD_0"
+      ],
+      "indexComponentType": 5123
+    },
+    {
+      "mesh": 0,
+      "primitive": 2,
+      "materialIndex": 8,
+      "materialName": "skin",
+      "vertices": 230,
+      "triangles": 112,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "JOINTS_0",
+        "WEIGHTS_0",
+        "COLOR_0"
+      ],
+      "indexComponentType": 5123
+    },
+    {
+      "mesh": 0,
+      "primitive": 3,
+      "materialIndex": 11,
+      "materialName": "eye_white",
+      "vertices": 18,
+      "triangles": 14,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "JOINTS_0",
+        "WEIGHTS_0",
+        "COLOR_0",
+        "TEXCOORD_0"
+      ],
+      "indexComponentType": 5123
+    },
+    {
+      "mesh": 0,
+      "primitive": 4,
+      "materialIndex": 12,
+      "materialName": "eye",
+      "vertices": 8,
+      "triangles": 4,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "JOINTS_0",
+        "WEIGHTS_0",
+        "COLOR_0",
+        "TEXCOORD_0"
+      ],
+      "indexComponentType": 5123
+    },
+    {
+      "mesh": 0,
+      "primitive": 5,
+      "materialIndex": 18,
+      "materialName": "R36HW_V13_OPAQUE_WARM_OCHRE_ATHLETIC_WEAR",
+      "vertices": 706,
+      "triangles": 1032,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "JOINTS_0",
+        "WEIGHTS_0",
+        "COLOR_0",
+        "TEXCOORD_0",
+        "TANGENT"
+      ],
+      "indexComponentType": 5123
+    }
+  ],
+  "images": [
+    {
+      "index": 0,
+      "path": "textures/identity-equipment.png",
+      "name": "F11 identity equipment atlas",
+      "bytes": 49992,
+      "width": 384,
+      "height": 288,
+      "sourceView": 6
+    },
+    {
+      "index": 1,
+      "path": "textures/hair-strands.png",
+      "name": "F11 swept hair strand atlas",
+      "bytes": 39664,
+      "width": 256,
+      "height": 256,
+      "sourceView": 7
+    },
+    {
+      "index": 2,
+      "path": "textures/eye-atlas.png",
+      "name": "F11 continuous deep-set eye atlas",
+      "bytes": 12339,
+      "width": 192,
+      "height": 96,
+      "sourceView": 28
+    },
+    {
+      "index": 3,
+      "path": "textures/athletic-normal.png",
+      "name": "R36HW V8 athletic textile normal atlas",
+      "bytes": 167703,
+      "width": 512,
+      "height": 512,
+      "sourceView": 37
+    }
+  ],
+  "skin": {
+    "inverseBindMatricesAccessor": 5,
+    "joints": [
+      {
+        "index": 0,
+        "node": 0,
+        "name": "Hip",
+        "children": [
+          1,
+          2,
+          3,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57
+        ],
+        "translation": [
+          0,
+          0,
+          1.007725
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 1,
+        "node": 1,
+        "name": "Spine",
+        "children": [
+          4
+        ],
+        "translation": [
+          0,
+          -0.013503,
+          0.095223
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 2,
+        "node": 2,
+        "name": "L_Thigh",
+        "children": [
+          5
+        ],
+        "translation": [
+          0.09,
+          0,
+          -0.023585
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 3,
+        "node": 3,
+        "name": "R_Thigh",
+        "children": [
+          6
+        ],
+        "translation": [
+          -0.089791,
+          0,
+          -0.023585
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 4,
+        "node": 4,
+        "name": "Chest",
+        "children": [
+          7,
+          8,
+          9,
+          47,
+          49,
+          50
+        ],
+        "translation": [
+          0,
+          0.027007,
+          0.172534
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 5,
+        "node": 5,
+        "name": "L_Leg",
+        "children": [
+          10
+        ],
+        "translation": [
+          0,
+          -0.065633,
+          -0.441512
+        ],
+        "rotation": [
+          -0.000001,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 6,
+        "node": 6,
+        "name": "R_Leg",
+        "children": [
+          11
+        ],
+        "translation": [
+          0,
+          -0.065633,
+          -0.441512
+        ],
+        "rotation": [
+          -0.000001,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 7,
+        "node": 7,
+        "name": "Neck",
+        "children": [
+          12
+        ],
+        "translation": [
+          0,
+          0.019641,
+          0.242771
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 8,
+        "node": 8,
+        "name": "R_Clavicle",
+        "children": [
+          13
+        ],
+        "translation": [
+          -0.071,
+          -0.037745,
+          0.149039
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 9,
+        "node": 9,
+        "name": "L_Clavicle",
+        "children": [
+          14
+        ],
+        "translation": [
+          0.071,
+          -0.037745,
+          0.149039
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 10,
+        "node": 10,
+        "name": "L_Foot",
+        "children": [
+          15
+        ],
+        "translation": [
+          0,
+          0.084047,
+          -0.432873
+        ],
+        "rotation": [
+          0.000001,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 11,
+        "node": 11,
+        "name": "R_Foot",
+        "children": [
+          16
+        ],
+        "translation": [
+          0,
+          0.084047,
+          -0.432873
+        ],
+        "rotation": [
+          0.000001,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 12,
+        "node": 12,
+        "name": "Head",
+        "children": [
+          17,
+          46
+        ],
+        "translation": [
+          0,
+          -0.020847,
+          0.10427
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 13,
+        "node": 13,
+        "name": "R_UArm",
+        "children": [
+          18,
+          19
+        ],
+        "translation": [
+          -0.111129,
+          0.022584,
+          -0.013204
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 14,
+        "node": 14,
+        "name": "L_UArm",
+        "children": [
+          20,
+          21
+        ],
+        "translation": [
+          0.111458,
+          0.022584,
+          -0.013204
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 15,
+        "node": 15,
+        "name": "L_Toe",
+        "children": [
+          22
+        ],
+        "translation": [
+          0,
+          -0.097646,
+          -0.073953
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 16,
+        "node": 16,
+        "name": "R_Toe",
+        "children": [
+          23
+        ],
+        "translation": [
+          0,
+          -0.097646,
+          -0.073953
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 17,
+        "node": 17,
+        "name": "HeadTip",
+        "children": [],
+        "translation": [
+          0,
+          -0.109251,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 18,
+        "node": 18,
+        "name": "R_LArm",
+        "children": [
+          24
+        ],
+        "translation": [
+          -0.26041,
+          0.020662,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 19,
+        "node": 19,
+        "name": "R_UArmCorr",
+        "children": [
+          25
+        ],
+        "translation": [
+          -0.001,
+          -0.000002,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 20,
+        "node": 20,
+        "name": "L_LArm",
+        "children": [
+          26
+        ],
+        "translation": [
+          0.260081,
+          0.020662,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 21,
+        "node": 21,
+        "name": "L_UArmCorr",
+        "children": [
+          27
+        ],
+        "translation": [
+          0.001,
+          -0.000002,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 22,
+        "node": 22,
+        "name": "L_ToeTip",
+        "children": [],
+        "translation": [
+          0,
+          -0.08772,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 23,
+        "node": 23,
+        "name": "R_ToeTip",
+        "children": [],
+        "translation": [
+          0,
+          -0.08772,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 24,
+        "node": 24,
+        "name": "R_Hand",
+        "children": [
+          28,
+          29,
+          30,
+          48,
+          58,
+          59,
+          60,
+          61,
+          62
+        ],
+        "translation": [
+          -0.250408,
+          -0.012666,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 25,
+        "node": 25,
+        "name": "R_UArmCorrTip",
+        "children": [],
+        "translation": [
+          -0.099666,
+          0.007939,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 26,
+        "node": 26,
+        "name": "L_Hand",
+        "children": [
+          31,
+          32,
+          33
+        ],
+        "translation": [
+          0.250408,
+          -0.012666,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 27,
+        "node": 27,
+        "name": "L_UArmCorrTip",
+        "children": [],
+        "translation": [
+          0.099665,
+          0.007949,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 28,
+        "node": 28,
+        "name": "R_Palm1",
+        "children": [
+          34
+        ],
+        "translation": [
+          -0.083348,
+          0.008811,
+          0.013647
+        ],
+        "rotation": [
+          0.000001,
+          0,
+          0.000003,
+          1
+        ]
+      },
+      {
+        "index": 29,
+        "node": 29,
+        "name": "R_Point1",
+        "children": [
+          35
+        ],
+        "translation": [
+          -0.086455,
+          -0.035649,
+          0.012115
+        ],
+        "rotation": [
+          0.000001,
+          0,
+          0.000003,
+          1
+        ]
+      },
+      {
+        "index": 30,
+        "node": 30,
+        "name": "R_Thumb1",
+        "children": [
+          36
+        ],
+        "translation": [
+          -0.007505,
+          -0.03482,
+          -0.016167
+        ],
+        "rotation": [
+          0.000001,
+          0,
+          0.000003,
+          1
+        ]
+      },
+      {
+        "index": 31,
+        "node": 31,
+        "name": "L_Palm1",
+        "children": [
+          37
+        ],
+        "translation": [
+          0.083348,
+          0.008812,
+          0.013647
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 32,
+        "node": 32,
+        "name": "L_Point1",
+        "children": [
+          38
+        ],
+        "translation": [
+          0.086455,
+          -0.035648,
+          0.012115
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 33,
+        "node": 33,
+        "name": "L_Thumb1",
+        "children": [
+          39
+        ],
+        "translation": [
+          0.007505,
+          -0.03482,
+          -0.016167
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 34,
+        "node": 34,
+        "name": "R_Palm2",
+        "children": [
+          40
+        ],
+        "translation": [
+          -0.037747,
+          -0.000474,
+          -0.00329
+        ],
+        "rotation": [
+          0,
+          -0.000001,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 35,
+        "node": 35,
+        "name": "R_Point2",
+        "children": [
+          41
+        ],
+        "translation": [
+          -0.038024,
+          -0.000696,
+          -0.00294
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 36,
+        "node": 36,
+        "name": "R_Thumb2",
+        "children": [
+          42
+        ],
+        "translation": [
+          -0.058801,
+          -0.037132,
+          -0.015648
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 37,
+        "node": 37,
+        "name": "L_Palm2",
+        "children": [
+          43
+        ],
+        "translation": [
+          0.037747,
+          -0.000474,
+          -0.00329
+        ],
+        "rotation": [
+          0,
+          0.000001,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 38,
+        "node": 38,
+        "name": "L_Point2",
+        "children": [
+          44
+        ],
+        "translation": [
+          0.038024,
+          -0.000696,
+          -0.00294
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 39,
+        "node": 39,
+        "name": "L_Thumb2",
+        "children": [
+          45
+        ],
+        "translation": [
+          0.058801,
+          -0.037132,
+          -0.015648
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 40,
+        "node": 40,
+        "name": "R_Palm2tip",
+        "children": [],
+        "translation": [
+          -0.056288,
+          -0.002573,
+          -0.02276
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 41,
+        "node": 41,
+        "name": "R_Point2tip",
+        "children": [],
+        "translation": [
+          -0.057615,
+          -0.001055,
+          -0.022729
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 42,
+        "node": 42,
+        "name": "R_Thumb2tip",
+        "children": [],
+        "translation": [
+          -0.070117,
+          -0.004019,
+          -0.011511
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 43,
+        "node": 43,
+        "name": "L_Palm2tip",
+        "children": [],
+        "translation": [
+          0.056288,
+          -0.002573,
+          -0.02276
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 44,
+        "node": 44,
+        "name": "L_Point2tip",
+        "children": [],
+        "translation": [
+          0.057615,
+          -0.001055,
+          -0.022729
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 45,
+        "node": 45,
+        "name": "L_Thumb2tip",
+        "children": [],
+        "translation": [
+          0.070117,
+          -0.004019,
+          -0.011511
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 46,
+        "node": 46,
+        "name": "Cap",
+        "children": [],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 47,
+        "node": 47,
+        "name": "BackPack",
+        "children": [],
+        "translation": [
+          0,
+          0.077761,
+          0.084819
+        ],
+        "rotation": [
+          -0.5,
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "index": 48,
+        "node": 48,
+        "name": "Corpse",
+        "children": [],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 49,
+        "node": 49,
+        "name": "Slot1",
+        "children": [],
+        "translation": [
+          -0.133889,
+          -0.148451,
+          0.094791
+        ],
+        "rotation": [
+          0.6455,
+          0.288669,
+          -0.577951,
+          0.407397
+        ]
+      },
+      {
+        "index": 50,
+        "node": 50,
+        "name": "Slot2",
+        "children": [],
+        "translation": [
+          0.122656,
+          -0.147898,
+          0.094445
+        ],
+        "rotation": [
+          0.346915,
+          0.616157,
+          -0.457218,
+          0.5394
+        ]
+      },
+      {
+        "index": 51,
+        "node": 51,
+        "name": "Slot3",
+        "children": [],
+        "translation": [
+          -0.102462,
+          -0.13819,
+          0.092079
+        ],
+        "rotation": [
+          0.617578,
+          0.34438,
+          -0.617578,
+          0.34438
+        ]
+      },
+      {
+        "index": 52,
+        "node": 52,
+        "name": "Slot4",
+        "children": [],
+        "translation": [
+          0,
+          -0.162703,
+          0.092079
+        ],
+        "rotation": [
+          0.5,
+          0.5,
+          -0.5,
+          0.5
+        ]
+      },
+      {
+        "index": 53,
+        "node": 53,
+        "name": "Slot5",
+        "children": [],
+        "translation": [
+          0.102278,
+          -0.138168,
+          0.092079
+        ],
+        "rotation": [
+          0.326744,
+          0.627087,
+          -0.326744,
+          0.627087
+        ]
+      },
+      {
+        "index": 54,
+        "node": 54,
+        "name": "Slot6",
+        "children": [],
+        "translation": [
+          -0.169723,
+          -0.020306,
+          0.086445
+        ],
+        "rotation": [
+          -0.678536,
+          -0.009601,
+          0.734061,
+          0.0255
+        ]
+      },
+      {
+        "index": 55,
+        "node": 55,
+        "name": "Slot7",
+        "children": [],
+        "translation": [
+          -0.085576,
+          0.091448,
+          0.08359
+        ],
+        "rotation": [
+          -0.522175,
+          0.435977,
+          0.592096,
+          0.432063
+        ]
+      },
+      {
+        "index": 56,
+        "node": 56,
+        "name": "Slot8",
+        "children": [],
+        "translation": [
+          0.07351,
+          0.097071,
+          0.08359
+        ],
+        "rotation": [
+          -0.416354,
+          0.543949,
+          0.413085,
+          0.600108
+        ]
+      },
+      {
+        "index": 57,
+        "node": 57,
+        "name": "Slot9",
+        "children": [],
+        "translation": [
+          0.172204,
+          -0.022683,
+          0.090691
+        ],
+        "rotation": [
+          -0.007784,
+          0.667941,
+          0.000743,
+          0.744174
+        ]
+      },
+      {
+        "index": 58,
+        "node": 58,
+        "name": "Item",
+        "children": [],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 59,
+        "node": 59,
+        "name": "MachineGun",
+        "children": [],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 60,
+        "node": 60,
+        "name": "Rifle",
+        "children": [],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 61,
+        "node": 61,
+        "name": "RocketLauncher",
+        "children": [],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "index": 62,
+        "node": 62,
+        "name": "SubMachineGun",
+        "children": [],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "materialIndex18": {
+    "name": "R36HW_V13_OPAQUE_WARM_OCHRE_ATHLETIC_WEAR",
+    "alphaMode": "OPAQUE",
+    "doubleSided": false,
+    "pbrMetallicRoughness": {
+      "baseColorFactor": [
+        0.63,
+        0.45,
+        0.255,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 0.93
+    },
+    "normalTexture": {
+      "index": 3,
+      "texCoord": 0,
+      "scale": 0.22
+    }
+  },
+  "limitations": [
+    "Standard glTF interchange only; not an S2-native compiled model.",
+    "No native S2 import or animation execution performed.",
+    "Original mesh, skin weights and texture bytes preserved; no visual modifications."
+  ]
+}
