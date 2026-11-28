@@ -17,3 +17,11 @@ N20/N21 whole-body outputs are **not** the body baseline. N21 is read only as a 
 
 ## Output
 `output/R36HW_V11_BODY_NCENTER.glb`; diagnostics `reports/build.json`.
+
+## Second implementation: continuous V11 mesh
+
+`source/build_continuous.cjs` builds `output/R36HW_V11_BODY_NCENTER_CONTINUOUS.glb` directly from the pinned V11 COMPACT GLB and N21's central primitive. It retains **all original 2,100 V11 triangles**, index topology, 63-joint skin and V11 full-body silhouette. It samples only the central relief (Y depth) from N21 onto original V11 vertices, with capped moves and triangle-orientation guards. V11's own skin material and colors replace the textile appearance.
+
+The first `build.cjs` file remains an **experimental N21 patch-primitive** variant. The continuous variant is preferable for topology safety because no V11 center faces are excised; its limitation is that anatomical detail cannot exceed available V11 vertex density. The patch-primitive variant contains higher-density N21 central triangles but carries unwelded open boundaries.
+
+Both outputs are distinct and are published by the same GitHub Actions workflow. Neither is art-accepted or native-S2-rendered yet. This does NOT restore N-series full-body shapes.
