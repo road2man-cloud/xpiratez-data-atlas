@@ -2,10 +2,11 @@
 // Derived scheduling artifact, not a campaign/terminal certificate.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import {gzipSync,gunzipSync} from 'node:zlib';
 import {readTrainingLedger,hashLedger} from './overcap-training-ledger-store.mjs';
 import {defaultRankData} from './population-frontier-default-rank.mjs';
 import {deterministicRule} from './population-scalar-upper-bound.mjs';
-const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const read=p=>JSON.parse(p.endsWith('.gz')?gunzipSync(fs.readFileSync(p)):fs.readFileSync(p));
 const arg=(k,d)=>process.argv.find(x=>x.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const ledger=readTrainingLedger(arg('training-hash',null)),trainingHash=hashLedger(ledger);
 const data=defaultRankData(read('public/data/soldiers-modern-index.json')).data;
@@ -74,5 +75,5 @@ const order={NEW_LIVE_READY:0,RESUME_PARTIAL_RESEARCH:1,NEW_LIVE_RESEARCH:2};
 batches.sort((a,b)=>order[a.lane]-order[b.lane]||a.body.localeCompare(b.body)||a.goal.localeCompare(b.goal)||a.seedIds[0].localeCompare(b.seedIds[0]));
 const report={schema:'ATLAS_OVERCAP_CONTINUATION_QUEUE_V1',trainingHash,sourceMetadataSha256:ledger.sourceMetadataSha256,scope:'Indexed first-successor scheduling only. Non-live, repeat and unresolved paths are not discarded and never count as closed.',summary:{witnesses:ledger.rows.length,obligations:entries.length,lanes:counts,batches:batches.length,issues:issues.length,finalAdmission:0},issues,entries,batches};
 const path=arg('out','tools/data/overcap-continuation-queue-'+trainingHash.slice(0,16)+'.json');
-if(fs.existsSync(path))assert.deepEqual(read(path),report,'queue output differs; choose another output path');else fs.writeFileSync(path,JSON.stringify(report)+'\n');
+if(fs.existsSync(path))assert.deepEqual(read(path),report,'queue output differs; choose another output path');else {const payload=JSON.stringify(report)+'\n';fs.writeFileSync(path,path.endsWith('.gz')?gzipSync(payload):payload,{flag:'wx'});}
 console.log(JSON.stringify({path,summary:report.summary,first:batches.slice(0,2)}));
