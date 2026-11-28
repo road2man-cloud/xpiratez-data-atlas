@@ -1,0 +1,21 @@
+{
+  "version": "R36LS-COMPACT",
+  "input": "R36MJ_DEPTH_LAYERS_2100_FULL.glb",
+  "inputBytes": 18849312,
+  "output": "R36MJ_ART_DENSE_2100_COMPACT_FULL.glb",
+  "outputBytes": 18849352,
+  "sourceSHA256": "91ddba719b3db3a78c3026577e2f125222e5a8ee92291c72a216e0072abd1062",
+  "outputSHA256": "14b45844d95b27af5bfba115ae49c86871cef24e13609fc021d16fe2c284a369",
+  "reducedBytes": -40,
+  "ratio": 1.000002,
+  "textureObjectsBefore": 9,
+  "textureObjectsAfter": 9,
+  "imageObjectsBefore": 9,
+  "imageObjectsAfter": 9,
+  "bufferViewsBefore": 160,
+  "bufferViewsAfter": 160,
+  "geometryAccessorValuesLossless": true,
+  "skinAccessorsUnchanged": true,
+  "embeddedPngBytesLossless": true,
+  "caveat": "GPU image look unchanged intended; browser visual test still required"
+}
