@@ -27,6 +27,13 @@ export const START_EVENT_RULES=Object.freeze({
   timer:7000,timerRandom:23000,points:0,funds:0,
   scripts:[weighted('STR_FUEGO_ANOMALY_EVENT',['STR_FUEGO_ANOMALY','STR_ANOMALY_DEP'],['STR_ANOMALY_DEP2'],['STR_FUEGO_ANOMALY'])]
  },
+ // Japan's starting-country event grants the actual research marker and
+ // complete fixed item bundle. It is never a region-independent item grant.
+ STR_START_COUNTRY_JAPAN_EVENT:{
+  research:'STR_JAPAN',items:{STR_KATANA:3,STR_WAKIZASHI:3,STR_FAN:6,STR_FUSO_KNIVES:30,STR_BUSHIDO_HANDBOOK:1,STR_GLAMOUR:20},
+  timer:3200,timerRandom:1200,points:150,funds:0,
+  scripts:[weighted('STR_START_COUNTRY_JAPAN_EVENT',[],[],[],100,100,100,{lastMonth:0,countryPositive:['STR_JAPAN']})]
+ },
  STR_START_COUNTRY_EGYPT_EVENT:{
   research:'STR_EGYPT',items:{STR_THEBAN_ASSAULT_CLONE_LICENSE:12},
   timer:3200,timerRandom:1200,points:-600,funds:0,
