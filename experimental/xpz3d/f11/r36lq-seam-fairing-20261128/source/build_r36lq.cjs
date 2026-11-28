@@ -70,7 +70,7 @@ function gatherEdges(mesh){
      map.get(id).push({i,j,k,face:f/3,ki,kj});
    }
  }
- return [...map].filter(([,e])=>e.length===2&&e[0].face!==e[1].face);
+ return [...map].filter(([,e])=>e.length===2&&e[0].face!==e[1].face).map(([,e])=>e);
 }
 function frontOnly(m){
  const p=m.positions;return (p[0]||0);
