@@ -1,0 +1,89 @@
+name: XPZ3D R36MC landmark anatomy sculpt clay and texture GLBs
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36mc-landmark-sculpt-20261128/source/**'
+      - '.github/workflows/xpz3d-r36mc-landmark-sculpt.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36mc-landmark-sculpt
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+            experimental/xpz3d/f11/r36mb-frame-transport-20261128
+            experimental/xpz3d/f11/r36mc-landmark-sculpt-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sculpt reference-informed asymmetric center and produce clay+texture
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          ROOT=$BASE/r36mc-landmark-sculpt-20261128
+          SRC=$ROOT/source/build_r36mc.cjs
+          COMPACT=$BASE/r36ls-illustrated-skin-20261128/source/compact_glb.cjs
+          node --check "$SRC"
+          rm -rf "$ROOT/output"
+          mkdir -p "$ROOT/output/compact"
+          for V in ART SUBTLE; do
+            SOURCE="$BASE/r36mb-frame-transport-20261128/output/compact/R36MB_${V}_FLOW_2100_COMPACT_FULL.glb"
+            for STYLE in sculpt guarded; do
+              OUT="$ROOT/output/${V}_${STYLE}"
+              node --max-old-space-size=4096 "$SRC" "$SOURCE" "$OUT" "$STYLE"
+              UPPER=$(echo "$STYLE" | tr '[:lower:]' '[:upper:]')
+              node "$COMPACT" "$OUT/R36MC_${UPPER}_2100_FULL.glb" "$ROOT/output/compact/R36MC_${V}_${UPPER}_2100_COMPACT_FULL.glb"
+              node "$COMPACT" "$OUT/R36MC_${UPPER}_CLAY_2100_FULL.glb" "$ROOT/output/compact/R36MC_${V}_${UPPER}_CLAY_2100_COMPACT_FULL.glb"
+            done
+          done
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root=process.argv[2];
+          for(const v of ['ART','SUBTLE'])for(const s of ['SCULPT','GUARDED']){
+            const r=JSON.parse(fs.readFileSync(path.join(root,v+'_'+s.toLowerCase(),'R36MC_'+s+'.report.json')));
+            if(r.triangles!==2100||r.bones!==63||r.movedGroups<30||r.shapeStats.folds||r.shapeStats.changedFaces<60)throw Error('Bad geometric result '+v+' '+s);
+            for(const suffix of ['','_CLAY']){
+              const p=path.join(root,'compact','R36MC_'+v+'_'+s+suffix+'_2100_COMPACT_FULL.glb'),b=fs.readFileSync(p);
+              if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error('Bad GLB '+p);
+            }
+            console.log(v,s,r.movedGroups,r.shapeStats.changedFaces,r.maxMove);
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36MC-clay-and-actual-sculpted-textured-glbs
+          path: experimental/xpz3d/f11/r36mc-landmark-sculpt-20261128/output/
+          retention-days: 90
+      - name: Publish compact GLBs and result metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36mc-landmark-sculpt-20261128/output
+          rm -f "$ROOT"/ART_sculpt/*.glb "$ROOT"/ART_guarded/*.glb
+          rm -f "$ROOT"/SUBTLE_sculpt/*.glb "$ROOT"/SUBTLE_guarded/*.glb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$ROOT"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36MC physical relief and clay variants"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
