@@ -24,7 +24,7 @@ const read=p=>JSON.parse(bytes(p));const gz=f=>JSON.parse(gunzipSync(bytes('publ
 const d=read('public/data/soldiers-modern-index.json'),catalog=read('public/data/soldier-source-catalog.json');
 if(d.meta.mod.version!=='v.o2')throw Error('wrong-game-version');
 d.sourceItemIds=new Set(catalog.itemIds);
-const rules=path.join(game,'user/mods/Piratez/Ruleset'),files={},facilities={},items={},research={},terrains={},mapScripts={},alienDeployments={},missionScripts={},startingConditions={},crafts={},events={},eventScripts={},regions={};
+const rules=path.join(game,'user/mods/Piratez/Ruleset'),files={},facilities={},items={},research={},terrains={},mapScripts={},alienDeployments={},missionScripts={},startingConditions={},crafts={},events={},eventScripts={},regions={},countries={};
 let base,date;
 function load(p,expected){
  const bytes=fs.readFileSync(p),h=createHash('sha256').update(bytes).digest('hex');
@@ -33,7 +33,7 @@ function load(p,expected){
  const doc=yaml.load(bytes.toString('utf8'),{json:true})||{};
  if(doc.startingBase)base=doc.startingBase;
  if(doc.startingTime)date=doc.startingTime;
- for(const [key,target] of Object.entries({facilities,items,research,terrains,mapScripts,alienDeployments,missionScripts,startingConditions,crafts,events,eventScripts,regions}))for(const row of doc[key]||[]){
+ for(const [key,target] of Object.entries({facilities,items,research,terrains,mapScripts,alienDeployments,missionScripts,startingConditions,crafts,events,eventScripts,regions,countries}))for(const row of doc[key]||[]){
   if(row.delete){delete target[row.delete];continue;}
   const id=row.type||row.name;if(id)target[id]={...target[id],...row};
  }
@@ -116,14 +116,30 @@ for(const [eventId,scriptIds] of Object.entries(selectedEvents)){
   for(const item of Object.keys(grants))(fixedItemEvents[item]??=[]).push(route);
  }
 }
-const scenarioRegion=args.region||null;
+const scenarioRegion=args.region||null,scenarioCountry=args.country||null;
+// Country-only and region-only are disjoint scenarios until an actual
+// geographically consistent base placement is modeled. Never combine rewards.
+if(scenarioRegion&&scenarioCountry)throw Error('mixed-start-geography-not-modeled');
 if(scenarioRegion&&(scenarioRegion!=='STR_SIBERIA'||!regions[scenarioRegion]?.areas?.length||base.lon!=null||base.lat!=null))throw Error('unsupported-start-region-scenario');
+if(scenarioCountry&&(!['STR_EGYPT','STR_JAPAN'].includes(scenarioCountry)||!countries[scenarioCountry]?.areas?.length||base.lon!=null||base.lat!=null))throw Error('unsupported-start-country-scenario');
+if(scenarioCountry){
+ const eventId='STR_START_COUNTRY_'+scenarioCountry.slice(4)+'_EVENT',e=events[eventId],s=eventScripts[eventId];
+ const expected=scenarioCountry==='STR_EGYPT'?{STR_THEBAN_ASSAULT_CLONE_LICENSE:12}:{STR_KATANA:3,STR_WAKIZASHI:3,STR_FAN:6,STR_FUSO_KNIVES:30,STR_BUSHIDO_HANDBOOK:1,STR_GLAMOUR:20};
+ const equal=(a,b)=>JSON.stringify(Object.entries(a||{}).sort())===JSON.stringify(Object.entries(b||{}).sort());
+ const eventKeys=new Set(['name','type','description','background','music','points','funds','everyMultiItemList','researchList','timer','timerRandom']);
+ const scriptKeys=new Set(['type','eventWeights','firstMonth','lastMonth','xcomBaseInCountryTriggers','executionOdds']);
+ if(!e||!s||Object.keys(e).some(k=>!eventKeys.has(k))||Object.keys(s).some(k=>!scriptKeys.has(k))||
+ !equal(e.everyMultiItemList,expected)||JSON.stringify(e.researchList)!==JSON.stringify([scenarioCountry])||
+ (e.points??0)!==(scenarioCountry==='STR_EGYPT'?-600:150)||(e.funds??0)!==0||e.timer!==3200||e.timerRandom!==1200||
+ s.firstMonth!==0||s.lastMonth!==0||s.executionOdds!==100||!equal(s.xcomBaseInCountryTriggers,{[scenarioCountry]:true})||
+ Object.keys(s.eventWeights||{}).length!==1||!equal(s.eventWeights[0],{[eventId]:100}))throw Error('start-country-reward-source-mismatch:'+scenarioCountry);
+}
 d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot,fixedItemEvents};
 const layout=base.facilities.map(f=>({id:f.type,x:f.x,y:f.y,complete:!(f.buildTime>0),readyDay:f.buildTime||0}));
 const complete=layout.filter(f=>f.complete),functions=[...new Set(complete.flatMap(f=>facilities[f.id]?.provideBaseFunc||[]))].sort();
 const snapshot={sourceFingerprint:d.meta.source.metadataSha256,items:base.items,facilities:complete.map(f=>f.id),functions,baseLayout:layout,
  funds:0,difficulty:Number(args.difficulty??1),researched:[],disabled:[],soldiers:[],startDate:date,
- ...(scenarioRegion?{regions:[scenarioRegion]}:{}),
+ ...(scenarioRegion?{regions:[scenarioRegion]}:{}),...(scenarioCountry?{countries:[scenarioCountry]}:{}),
  otherItems:Object.fromEntries(Object.entries((base.crafts||[]).reduce((a,c)=>{for(const [k,n] of Object.entries(c.items||{}))a[k]=(a[k]||0)+n;return a;},{})))};
 
 const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
@@ -252,7 +268,7 @@ function produce(q){
  try{
   a=actionsFor(q);const g=groups.get(q.prefixGroup);
   if(!g||hash({difficulty:g.difficulty,old:a.slice(0,index)})!==g.id)throw Error('legacy-prefix-group-mismatch');
-  const p=planner(g.difficulty);n=prefixNode(g);rec.difficulty=g.difficulty;rec.startRegion=scenarioRegion;
+  const p=planner(g.difficulty);n=prefixNode(g);rec.difficulty=g.difficulty;rec.startRegion=scenarioRegion;rec.startCountry=scenarioCountry;
   const future=new Set(a.slice(index).flatMap(s=>[s.type==='research'||s.type==='repeatResearch'?s.id:null,s.type==='freeResearch'?s.research:null,...requirementsSafe(s)]).filter(Boolean));
   for(;index<a.length;index++){
    const s=a[index],before=n.world;
@@ -299,7 +315,7 @@ function produce(q){
   if(ctx.kind!=='compatible'||!ctx.allowedDifficulties.includes(rec.difficulty))throw Error('final-campaign-context-unresolved');
   rec.state=resultState(n.world);
   rec.stateHash=hash(canon(n.world));rec.traitId=hash(rec.state.traitCounts);
-  rec.researchPathId=hash({startRegion:scenarioRegion,actions:n.steps.filter(s=>['research','repeatResearch','freeResearch','eventResearch','missionResearch','acquireEventItems'].includes(s.type))});
+  rec.researchPathId=hash({startRegion:scenarioRegion,...(scenarioCountry?{startCountry:scenarioCountry}:{}),actions:n.steps.filter(s=>['research','repeatResearch','freeResearch','eventResearch','missionResearch','acquireEventItems'].includes(s.type))});
   rec.pairId=hash([rec.researchPathId,rec.traitId]);
   rec.routeId='CAMPAIGN-V15:'+hash({difficulty:rec.difficulty,actions:n.steps,stateHash:rec.stateHash});
   rec.status='conditional-career-replayed';
@@ -320,7 +336,7 @@ const selected=eligible.slice(offset,offset+limit),records=[];
 const output=args.out||'campaign-suffix-repair-v1.json';
 const head={schema:'ATLAS_CAMPAIGN_SUFFIX_REPAIR_V1',sourceCommit:ref,sourceMetadataSha256:meta,sourceFiles:files,
  prefixInputHash:hash(prefix),queueInputHash:hash(worklist),scope:'CONDITIONAL_FULL_CAREER_REPLAY_ONLY; NO_TERMINAL_OR_NATIVE_CERTIFICATION',
- selection:{offset,limit,priority:args.priority??null,source:args.source??null,eligible:eligible.length},originRows:d.originRows.length,startRegion:scenarioRegion,regionAssumption:scenarioRegion?'conditional start base placement; country and native land placement not certified':null};
+ selection:{offset,limit,priority:args.priority??null,source:args.source??null,eligible:eligible.length},originRows:d.originRows.length,startRegion:scenarioRegion,startCountry:scenarioCountry,regionAssumption:scenarioRegion?'conditional start base placement; country and native land placement not certified':null,countryAssumption:scenarioCountry?'conditional start country; no concurrent region assumption; native base placement not certified':null};
 function save(){
  const summary={selected:selected.length,processed:records.length,completed:records.filter(r=>r.status==='conditional-career-replayed').length,
  failed:records.filter(r=>r.status!=='conditional-career-replayed').length,normalizedTerminal:0,gameCertified:0};
